@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { Route, Routes, useNavigate, useRoutes } from "react-router-dom";
-import Header from "./Header";
+import Header from "../components/Header";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
 

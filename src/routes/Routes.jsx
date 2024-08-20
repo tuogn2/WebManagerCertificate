@@ -6,6 +6,7 @@ import NotFound from "../pages/NotFound";
 import Home from "../pages/Home";
 import Profile from "../pages/Profile";
 import Setting from "../pages/Setting";
+import Login from "../pages/Login";
 
 const Routes = () => {
   return useRoutes([
@@ -22,6 +23,10 @@ const Routes = () => {
       path: "/account-settings",
       element: <Setting />,
     },
+    {
+      path: "/login",
+      element: <Login />,
+    }
   ]);
 };
 
