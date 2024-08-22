@@ -21,6 +21,7 @@ export const loginUser = createAsyncThunk(
       return response.data.user;
     } catch (error) {
       // Trả về thông báo lỗi nếu đăng nhập thất bại
+      console.error(error);
       return thunkAPI.rejectWithValue("Invalid email or password");
     }
   }

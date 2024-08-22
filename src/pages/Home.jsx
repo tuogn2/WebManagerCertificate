@@ -1,46 +1,40 @@
-// src/pages/Home.jsx
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   AppBar,
-  Avatar,
   Box,
-  Button,
+  Button, // Import Button từ MUI
   Container,
   CssBaseline,
   Grid,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Toolbar,
   Typography,
 } from "@mui/material";
-import FolderIcon from "@mui/icons-material/Folder";
-import { purple } from "@mui/material/colors";
 import Header from "../components/Header";
-
-const settings = [
-  "My Documents",
-  "Give Access",
-  "Free Access",
-  "Change Institute",
-];
+import { getAllTests } from "../store/slices/testSlice"; // Import hành động getAllTests
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { tests, loading, error } = useSelector((state) => state.tests); // Lấy dữ liệu từ store
   const user = useSelector((state) => state.auth.user); // Lấy người dùng từ Redux store
-  const navigate = useNavigate(); // Hook để điều hướng
 
   useEffect(() => {
     if (!user) {
       navigate("/login"); // Điều hướng đến trang đăng nhập nếu người dùng không tồn tại
+    } else {
+      dispatch(getAllTests()); // Gọi hành động getAllTests để lấy dữ liệu
     }
-  }, [user, navigate]);
+  }, [user, navigate, dispatch]);
 
   if (!user) {
     return null; // Hoặc hiển thị một loader nếu muốn
   }
+
+  const handleTakeTest = (testId) => {
+    navigate(`/tests/${testId}`); // Điều hướng đến trang chi tiết test
+  };
 
   return (
     <>
@@ -53,52 +47,61 @@ const Home = () => {
       <main>
         <Container maxWidth="xl" sx={{ display: "flex" }}>
           <Grid container spacing={1}>
-            <Grid item xs={2}>
-              <Box bgcolor="white" display={"flex"} flexDirection={"column"}>
-                <Typography variant="h5" mt={4} color="purple">
-                  My Profile
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    mt: 2,
-                  }}
-                >
-                  <Avatar src={user.avt} />
-                  <Typography variant="subtitle1">{user.name}</Typography>
-                  <Typography variant="subtitle2">{user.email}</Typography>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    color="secondary"
-                    sx={{ mt: 2 }}
-                  >
-                    View Profile
-                  </Button>
-                </Box>
-                <List>
-                  {settings.map((text) => (
-                    <ListItemButton key={text}>
-                      <ListItemIcon>
-                        <FolderIcon style={{ color: purple[400] }} />
-                      </ListItemIcon>
-                      <ListItemText primary={text} />
-                    </ListItemButton>
-                  ))}
-                </List>
-              </Box>
-            </Grid>
-            <Grid item xs={7}>
-              <Box bgcolor="lightgreen" p={2} height="100vh">
-                Part 2
-              </Box>
-            </Grid>
-            <Grid item xs={3}>
-              <Box bgcolor="lightcoral" p={2} height="100vh">
-                Part 3
-              </Box>
+            <Grid item xs={12}>
+              <Typography variant="h4" component="h1" gutterBottom>
+                Available Tests
+              </Typography>
+              {loading && <Typography>Loading...</Typography>}
+              {error && <Typography color="error">{error}</Typography>}
+              <Grid container spacing={2}>
+              {tests.map((test) => (
+                  <Grid item xs={12} sm={6} md={4} key={test._id}>
+                    <Box
+                      bgcolor="white"
+                      p={2}
+                      borderRadius="8px"
+                      boxShadow={3}
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                    >
+                      {test.image && (
+                        <img
+                          src={test.image}
+                          alt={test.title}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            borderRadius: "8px",
+                          }}
+                        />
+                      )}
+                      <Box sx={{ mt: 2, width: "100%" }}>
+                        <Typography variant="h6" component="h2">
+                          {test.title}
+                        </Typography>
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          mt={1}
+                        >
+                          <Typography variant="body1" color="textSecondary">
+                            {test.price === 0 ? "Free" : `$${test.price}`}
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleTakeTest(test._id)}
+                          >
+                            Take Test
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
           </Grid>
         </Container>

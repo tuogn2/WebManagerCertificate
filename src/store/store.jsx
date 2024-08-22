@@ -6,6 +6,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import { combineReducers } from 'redux';
 import counterReducer from './slices/counterSlice';
 import authReducer from './slices/authSlice';
+import testReducer from './slices/testSlice';
 
 // Cấu hình persist
 const persistConfig = {
@@ -17,6 +18,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   counter: counterReducer,
   auth: authReducer,
+  tests: testReducer,
 });
 
 // Tạo persisted reducer
