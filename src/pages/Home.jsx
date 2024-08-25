@@ -1,6 +1,6 @@
 // src/pages/Home.jsx
 import * as React from "react";
-import Header from "./Header";
+import Header from "../components/Header";
 import {
   AppBar,
   Avatar,
@@ -17,6 +17,8 @@ import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { purple } from "@mui/material/colors";
+import CourseCard from "./CourseCard";
+import Footer from "../components/Footer";
 
 const settings = [
   "My Documents",
@@ -34,10 +36,47 @@ const Home = () => {
           <Header />
         </Toolbar>
       </AppBar>
-      <main>
-        <div>
-          <Container maxWidth="xl" sx={{ display: "flex" }}>
-            <Grid container spacing={1}>
+      <Container maxWidth="lg">
+        <Typography variant="h4" gutterBottom mt={10}>
+          Most Popular Certificates
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <CourseCard
+              title="Google Data Analytics"
+              subtitle="Professional Certificate"
+              imageUrl="src\assets\iStock-1169539468.png"
+              provider="Google"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CourseCard
+              title="Google Project Management"
+              subtitle="Professional Certificate"
+              imageUrl="src\assets\iStock-1169539468.png"
+              provider="Google"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CourseCard
+              title="Google Project Management"
+              subtitle="Professional Certificate"
+              imageUrl="src\assets\iStock-1169539468.png"
+              provider="Google"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CourseCard
+              title="Google Project Management"
+              subtitle="Professional Certificate"
+              imageUrl="src\assets\iStock-1169539468.png"
+              provider="Google"
+            />
+          </Grid>
+          {/* Add more cards as needed */}
+        </Grid>
+
+        {/* <Grid container spacing={1}>
               <Grid item xs={2}>
                 <Box bgcolor="white" display={"flex"} flexDirection={"column"}>
                   <Typography variant="h5" mt={4} color="purple">
@@ -85,10 +124,8 @@ const Home = () => {
                   Part 3
                 </Box>
               </Grid>
-            </Grid>
-          </Container>
-        </div>
-      </main>
+            </Grid> */}
+      </Container>
     </>
   );
 };

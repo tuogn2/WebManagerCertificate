@@ -5,6 +5,7 @@ import { Provider } from "react-redux"; // Import Provider
 import Routes from "./routes/Routes";
 import store from "./store/store";
 
+
 function App() {
   return (
     <Provider store={store}>

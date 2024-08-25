@@ -14,20 +14,30 @@ import {
 import { Google as GoogleIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-const Login = ({ open, onClose }) => {
+const Signup = ({ open, onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+
+  const navigate = useNavigate();
 
   const handleLogin = () => {
     console.log("Email:", email, "Password:", password);
   };
 
-  const navigate = useNavigate();
-
   return (
     <Dialog open={true} onClose={onClose}>
-      <DialogTitle textAlign={"center"}>Welcome</DialogTitle>
+      <DialogTitle textAlign={"center"}>Sign up</DialogTitle>
       <DialogContent>
+        <TextField
+          label="Full name"
+          type="text"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+        />
         <TextField
           label="Email"
           type="email"
@@ -46,9 +56,7 @@ const Login = ({ open, onClose }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Link href="#" variant="body2">
-          Forgot password?
-        </Link>
+
         <Button
           variant="contained"
           color="primary"
@@ -56,7 +64,7 @@ const Login = ({ open, onClose }) => {
           onClick={handleLogin}
           style={{ marginTop: "20px", marginBottom: "10px" }}
         >
-          Login
+          Sign Up
         </Button>
         <Divider>or</Divider>
         <Button
@@ -67,25 +75,17 @@ const Login = ({ open, onClose }) => {
         >
           Continue with Google
         </Button>
-        <Box
-          sx={{
-            marginTop: "20px",
-            textAlign: "center",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <Box style={{ marginTop: "20px", textAlign: "center" }}>
           <Typography variant="body2">
-            New to our website?{" "}
+            Already have an account?{" "}
             <Link
               href="#"
               onClick={() => {
-                navigate("/signup");
+                navigate("/login");
               }}
             >
-              Sign up
-            </Link>
+              Log in
+            </Link>{" "}
           </Typography>
         </Box>
       </DialogContent>
@@ -93,4 +93,4 @@ const Login = ({ open, onClose }) => {
   );
 };
 
-export default Login;
+export default Signup;

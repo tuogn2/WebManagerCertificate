@@ -11,13 +11,12 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { HEADER_COLOR, PRIMARY_TEXT_COLOR } from "../styles/styles";
+import { HEADER_COLOR } from "../styles/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import { InputAdornment, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const pages = [];
-``;
 const settings = [
   "My Courses",
   "Profile",
@@ -50,6 +49,9 @@ function Header() {
     }
     if (setting === "Setting") {
       navigate("/account-settings");
+    }
+    if (setting === "Logout") {
+      navigate("/signup");
     }
   };
 
