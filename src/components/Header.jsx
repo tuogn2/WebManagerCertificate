@@ -57,14 +57,15 @@ function Header() {
     <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box
-            flex={1}
-            display={"flex"}
-            sx={{ alignItems: "center" }}
-            onClick={() => navigate("/")}
-          >
-            <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-            <Typography>M-Certificate</Typography>
+          <Box flex={1}>
+            <Box
+              display={"flex"}
+              sx={{ width: "auto", alignItems: "center" }}
+              onClick={() => navigate("/")}
+            >
+              <AdbIcon sx={{ cursor: "pointer" }} />
+              <Typography sx={{ cursor: "pointer" }}>M-Certificate</Typography>
+            </Box>
           </Box>
 
           <Box flex={1}>

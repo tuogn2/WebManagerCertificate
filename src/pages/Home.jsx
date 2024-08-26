@@ -45,16 +45,16 @@ const Home = () => {
         </Toolbar>
       </AppBar>
       <main>
-        <Container maxWidth="xl" sx={{ display: "flex" }}>
+        <Container maxWidth="xl">
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Typography variant="h4" component="h1" gutterBottom>
+              <Typography variant="h4" component="h1" gutterBottom mt={15}>
                 Available Tests
               </Typography>
               {loading && <Typography>Loading...</Typography>}
               {error && <Typography color="error">{error}</Typography>}
               <Grid container spacing={2}>
-              {tests.map((test) => (
+                {tests.map((test) => (
                   <Grid item xs={12} sm={6} md={4} key={test._id}>
                     <Box
                       bgcolor="white"
