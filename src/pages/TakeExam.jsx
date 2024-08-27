@@ -12,9 +12,11 @@ import {
   RadioGroup,
   CssBaseline,
   AppBar,
+  Container,
 } from "@mui/material";
 import Header from "../components/Header";
 import { API_BASE_URL } from "../utils/constants";
+import Footer from "../components/Footer";
 
 const TakeExam = () => {
   const { id } = useParams();
@@ -106,17 +108,7 @@ const TakeExam = () => {
         <Header />
       </AppBar>
 
-      <Box
-        sx={{
-          flexGrow: 1,
-          bgcolor: "white",
-          p: 3,
-          borderRadius: 2,
-          boxShadow: 3,
-          mt: 4,
-          mb: 4,
-        }}
-      >
+      <Container maxWidth="lg" sx={{ mt: 20, mb: 20 }}>
         <Button
           variant="outlined"
           color="primary"
@@ -156,7 +148,8 @@ const TakeExam = () => {
         <Button variant="contained" color="primary" onClick={handleSubmit}>
           Submit
         </Button>
-      </Box>
+      </Container>
+      <Footer />
     </>
   );
 };
