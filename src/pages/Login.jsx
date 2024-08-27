@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from "react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
   DialogTitle,
@@ -12,15 +12,20 @@ import {
   Link,
   Box,
   InputAdornment,
-} from '@mui/material';
-import { Google as GoogleIcon, Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify'; // Import thư viện Toastify
-import { loginUser } from '../store/slices/authSlice';
+  Typography,
+} from "@mui/material";
+import {
+  Google as GoogleIcon,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify"; // Import thư viện Toastify
+import { loginUser } from "../store/slices/authSlice";
 
 const Login = ({ open, onClose }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,7 +33,7 @@ const Login = ({ open, onClose }) => {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate("/");
     }
   }, [user, navigate]);
 
@@ -40,8 +45,8 @@ const Login = ({ open, onClose }) => {
 
   // Cập nhật giá trị mặc định khi component được render
   useEffect(() => {
-    setEmail('johndoe@example.com');
-    setPassword('SecurePassword123');
+    setEmail("johndoe@example.com");
+    setPassword("SecurePassword123");
   }, []);
 
   const handleLogin = () => {
@@ -67,7 +72,7 @@ const Login = ({ open, onClose }) => {
         />
         <TextField
           label="Password"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           variant="outlined"
           fullWidth
           margin="normal"
@@ -91,22 +96,33 @@ const Login = ({ open, onClose }) => {
           color="primary"
           fullWidth
           onClick={handleLogin}
-          style={{ marginTop: '20px', marginBottom: '10px' }}
+          style={{ marginTop: "20px", marginBottom: "10px" }}
           disabled={loading}
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? "Logging in..." : "Login"}
         </Button>
         <Divider>or</Divider>
         <Button
           variant="outlined"
           fullWidth
           startIcon={<GoogleIcon />}
-          style={{ marginTop: '10px' }}
+          style={{ marginTop: "10px" }}
         >
           Continue with Google
         </Button>
-        <Box style={{ marginTop: '20px', textAlign: 'center' }}>
-          <Link href="#">New to our website? Sign up</Link>
+        <Box style={{ marginTop: "20px", textAlign: "center" }}>
+          <Typography>
+            New to our website?{" "}
+            <Link
+              href="#"
+              onClick={() => {
+                navigate("/signup");
+              }}
+            >
+              {" "}
+              Sign up
+            </Link>
+          </Typography>
         </Box>
       </DialogContent>
     </Dialog>
