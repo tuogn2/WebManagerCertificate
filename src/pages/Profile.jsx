@@ -215,8 +215,12 @@ const UserProfile = () => {
                         </Box>
                       </DialogContent>
                       <DialogActions>
-                        <Button onClick={handleModalClose} color="primary">
-                          Close
+                        <Button
+                          onClick={handleModalClose}
+                          color="primary"
+                          variant="contained"
+                        >
+                          Save and close
                         </Button>
                       </DialogActions>
                     </Dialog>
