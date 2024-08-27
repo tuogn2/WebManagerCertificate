@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import Header from "../components/Header";
 import { getAllTests } from "../store/slices/testSlice"; // Import hành động getAllTests
+import Footer from "../components/Footer";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -48,58 +49,57 @@ const Home = () => {
           <Header />
         </Toolbar>
       </AppBar>
-      <main>
-        <Container maxWidth="xl">
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
-              <Typography variant="h4" component="h1" gutterBottom mt={15}>
-                Available Tests
-              </Typography>
-              {loading && <Typography>Loading...</Typography>}
-              {error && <Typography color="error">{error}</Typography>}
-              <Grid container spacing={2}>
-                {tests.map((test) => (
-                  <Grid item xs={12} sm={6} md={3} key={test._id}>
-                    <Card
-                      sx={{
-                        borderRadius: "15px",
-                        boxShadow: "5px 4px 10px rgba(0,0,0,0.2)",
-                        transition: "transform 0.3s ease-in-out",
-                        "&:hover": {
-                          transform: "scale(1.05)",
-                        },
-                      }}
-                      onClick={() => handleTakeTest(test._id)}
-                    >
-                      <CardActionArea>
-                        <CardMedia
-                          component="img"
-                          height="200"
-                          image={test.image}
-                          alt={test.title}
-                          sx={{
-                            border: "15px solid #fff", // Add a border
-                            borderRadius: "20px",
-                          }}
-                        />
-                        <CardContent>
-                          <Typography
-                            variant="h5"
-                            color="textSecondary"
-                            component={"div"}
-                          >
-                            {test.organization.name}
-                          </Typography>
-                          <Typography variant="h6" component="div">
-                            {test.title}
-                          </Typography>
-                          <Typography variant="body1" color="primary">
-                            {test.price === 0 ? "Free" : `$${test.price}`}
-                          </Typography>
-                        </CardContent>
-                      </CardActionArea>
-                    </Card>
-                    {/* <Box
+      <Container maxWidth="xl">
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Typography variant="h4" component="h1" gutterBottom mt={15}>
+              Available Tests
+            </Typography>
+            {loading && <Typography>Loading...</Typography>}
+            {error && <Typography color="error">{error}</Typography>}
+            <Grid container spacing={2}>
+              {tests.map((test) => (
+                <Grid item xs={12} sm={6} md={3} key={test._id}>
+                  <Card
+                    sx={{
+                      borderRadius: "15px",
+                      boxShadow: "5px 4px 10px rgba(0,0,0,0.2)",
+                      transition: "transform 0.3s ease-in-out",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                      },
+                    }}
+                    onClick={() => handleTakeTest(test._id)}
+                  >
+                    <CardActionArea>
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={test.image}
+                        alt={test.title}
+                        sx={{
+                          border: "15px solid #fff", // Add a border
+                          borderRadius: "20px",
+                        }}
+                      />
+                      <CardContent>
+                        <Typography
+                          variant="h5"
+                          color="textSecondary"
+                          component={"div"}
+                        >
+                          {test.organization.name}
+                        </Typography>
+                        <Typography variant="h6" component="div">
+                          {test.title}
+                        </Typography>
+                        <Typography variant="body1" color="primary">
+                          {test.price === 0 ? "Free" : `$${test.price}`}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                  {/* <Box
                       bgcolor="white"
                       p={2}
                       borderRadius="8px"
@@ -142,13 +142,13 @@ const Home = () => {
                         </Box>
                       </Box>
                     </Box> */}
-                  </Grid>
-                ))}
-              </Grid>
+                </Grid>
+              ))}
             </Grid>
           </Grid>
-        </Container>
-      </main>
+        </Grid>
+      </Container>
+      <Footer />
     </>
   );
 };
