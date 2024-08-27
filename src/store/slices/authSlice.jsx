@@ -18,7 +18,15 @@ export const loginUser = createAsyncThunk(
       // Lưu token vào localStorage
       localStorage.setItem("token", response.data.token);
 
-      return response.data.user;
+      // Fetch user data using the token
+      const userResponse = await axios.get(`${API_BASE_URL}/auth/user`, {
+        headers: {
+          Authorization: `Bearer ${response.data.token}`,
+        },
+      });
+
+      // Return user data
+      return userResponse.data;
     } catch (error) {
       // Trả về thông báo lỗi nếu đăng nhập thất bại
       console.error(error);
