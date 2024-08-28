@@ -12,22 +12,35 @@ import {
   DialogTitle,
   Divider,
   FormControl,
+  FormHelperText,
   Grid,
   IconButton,
+  Input,
+  InputLabel,
   MenuItem,
   Paper,
   Select,
+  TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
-import Header from "./Header";
+import Header from "../components/Header";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
+import { useSelector } from "react-redux";
 
 const UserProfile = () => {
+  const user = useSelector((state) => state.auth.user);
+
+  if (!user) {
+    return <Typography variant="h6">No user data available</Typography>;
+  }
+
   const [openModal, setOpenModal] = useState(false);
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => setOpenModal(false);
+
+  const formattedBirthday = new Date(user.birthday).toISOString().split("T")[0];
 
   const [location, setLocation] = useState("");
   const [pronouns, setPronouns] = useState("");
@@ -71,7 +84,12 @@ const UserProfile = () => {
                     >
                       <EditIcon fontSize="small" />
                     </IconButton>
-                    <Dialog open={openModal} maxWidth="sm" fullWidth>
+                    <Dialog
+                      open={openModal}
+                      maxWidth="sm"
+                      fullWidth
+                      keepMounted={true}
+                    >
                       <DialogTitle>
                         Personal details
                         <IconButton
@@ -102,6 +120,7 @@ const UserProfile = () => {
                           <Avatar
                             sx={{ width: 100, height: 100, margin: "0 auto" }}
                             alt="Profile Picture"
+                            src={user.avt}
                           />
                           <Typography variant="subtitle1" sx={{ mt: 2 }}>
                             Profile Photo
@@ -119,26 +138,100 @@ const UserProfile = () => {
                           <Typography
                             variant="caption"
                             color="textSecondary"
-                            sx={{ mt: 2 }}
+                            sx={{ mt: 2, mb: 3 }}
                           >
                             Maximum size: 1MB. Supported formats: JPG, GIF, or
                             PNG.
                           </Typography>
+                          <FormControl sx={{ display: "flex" }}>
+                            <Typography
+                              component="label"
+                              variant="body1"
+                              fontWeight={"bold"}
+                              sx={{ alignSelf: "flex-start" }}
+                              gutterBottom
+                            >
+                              First and last name{" "}
+                              <Typography
+                                component="span"
+                                sx={{ color: "red" }}
+                              >
+                                *
+                              </Typography>
+                              <Typography
+                                component="span"
+                                sx={{
+                                  color: "grey.600",
+                                  fontStyle: "italic",
+                                  marginLeft: "4px",
+                                }}
+                              >
+                                (Required)
+                              </Typography>
+                            </Typography>
+
+                            <TextField type="text" value={user.name} />
+                            <Typography
+                              component="label"
+                              variant="body1"
+                              fontWeight={"bold"}
+                              sx={{ alignSelf: "flex-start" }}
+                              gutterBottom
+                            >
+                              Location
+                            </Typography>
+                            <TextField value={user.address} />
+                            <Typography
+                              component="label"
+                              variant="body1"
+                              fontWeight={"bold"}
+                              sx={{ alignSelf: "flex-start" }}
+                              gutterBottom
+                            >
+                              Birth date
+                            </Typography>
+                            <TextField type="date" value={formattedBirthday} />
+                            <Typography
+                              component="label"
+                              variant="body1"
+                              fontWeight={"bold"}
+                              sx={{ alignSelf: "flex-start" }}
+                              gutterBottom
+                            >
+                              Email
+                            </Typography>
+                            <TextField type="email" value={user.email} />
+                            <Typography
+                              component="label"
+                              variant="body1"
+                              fontWeight={"bold"}
+                              sx={{ alignSelf: "flex-start" }}
+                              gutterBottom
+                            >
+                              Phone number
+                            </Typography>
+                            <TextField type="tel" value={user.numberphone} />
+                          </FormControl>
                         </Box>
                       </DialogContent>
                       <DialogActions>
-                        <Button onClick={handleModalClose} color="primary">
-                          Close
+                        <Button
+                          onClick={handleModalClose}
+                          color="primary"
+                          variant="contained"
+                        >
+                          Save and close
                         </Button>
                       </DialogActions>
                     </Dialog>
                   </Box>
                   <Avatar
                     sx={{ width: 100, height: 100, margin: "0 auto" }}
+                    src={user.avt}
                     alt="Profile Picture"
                   />
                   <Typography variant="h6" sx={{ mt: 2 }}>
-                    User Name
+                    {user.name}
                   </Typography>
                   <Button variant="outlined" fullWidth sx={{ mt: 2 }}>
                     Share profile link

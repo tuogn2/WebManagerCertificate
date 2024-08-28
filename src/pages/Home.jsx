@@ -1,31 +1,46 @@
-// src/pages/Home.jsx
-import * as React from "react";
-import Header from "./Header";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   AppBar,
-  Avatar,
   Box,
   Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia, // Import Button từ MUI
   Container,
   CssBaseline,
   Grid,
-  ListItemButton,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import FolderIcon from "@mui/icons-material/Folder";
-import DescriptionIcon from "@mui/icons-material/Description";
-import { purple } from "@mui/material/colors";
-
-const settings = [
-  "My Documents",
-  "Give Access",
-  "Free Access",
-  "Change Institute",
-];
+import Header from "../components/Header";
+import { getAllTests } from "../store/slices/testSlice"; // Import hành động getAllTests
+import Footer from "../components/Footer";
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { tests, loading, error } = useSelector((state) => state.tests); // Lấy dữ liệu từ store
+  const user = useSelector((state) => state.auth.user); // Lấy người dùng từ Redux store
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login"); // Điều hướng đến trang đăng nhập nếu người dùng không tồn tại
+    } else {
+      dispatch(getAllTests()); // Gọi hành động getAllTests để lấy dữ liệu
+    }
+  }, [user, navigate, dispatch]);
+
+  if (!user) {
+    return null; // Hoặc hiển thị một loader nếu muốn
+  }
+
+  const handleTakeTest = (testId) => {
+    navigate(`/tests/${testId}`); // Điều hướng đến trang chi tiết test
+  };
+
   return (
     <>
       <CssBaseline />
@@ -34,61 +49,106 @@ const Home = () => {
           <Header />
         </Toolbar>
       </AppBar>
-      <main>
-        <div>
-          <Container maxWidth="xl" sx={{ display: "flex" }}>
-            <Grid container spacing={1}>
-              <Grid item xs={2}>
-                <Box bgcolor="white" display={"flex"} flexDirection={"column"}>
-                  <Typography variant="h5" mt={4} color="purple">
-                    My Profile
-                  </Typography>
-                  <Box
+      <Container maxWidth="xl">
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Typography variant="h4" component="h1" gutterBottom mt={15}>
+              Available Tests
+            </Typography>
+            {loading && <Typography>Loading...</Typography>}
+            {error && <Typography color="error">{error}</Typography>}
+            <Grid container spacing={2}>
+              {tests.map((test) => (
+                <Grid item xs={12} sm={6} md={3} key={test._id}>
+                  <Card
                     sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      mt: 2,
+                      borderRadius: "15px",
+                      boxShadow: "5px 4px 10px rgba(0,0,0,0.2)",
+                      transition: "transform 0.3s ease-in-out",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                      },
                     }}
+                    onClick={() => handleTakeTest(test._id)}
                   >
-                    <Avatar />
-                    <Typography variant="subtitle1">Name</Typography>
-                    <Typography variant="subtitle2">Email</Typography>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      color="secondary"
-                      sx={{ mt: 2 }}
+                    <CardActionArea>
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={test.image}
+                        alt={test.title}
+                        sx={{
+                          border: "15px solid #fff", // Add a border
+                          borderRadius: "20px",
+                        }}
+                      />
+                      <CardContent>
+                        <Typography
+                          variant="h5"
+                          color="textSecondary"
+                          component={"div"}
+                        >
+                          {test.organization.name}
+                        </Typography>
+                        <Typography variant="h6" component="div">
+                          {test.title}
+                        </Typography>
+                        <Typography variant="body1" color="primary">
+                          {test.price === 0 ? "Free" : `$${test.price}`}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                  {/* <Box
+                      bgcolor="white"
+                      p={2}
+                      borderRadius="8px"
+                      boxShadow={3}
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
                     >
-                      View Profile
-                    </Button>
-                  </Box>
-                  <List>
-                    {settings.map((text) => (
-                      <ListItemButton key={text}>
-                        <ListItemIcon>
-                          <FolderIcon style={{ color: purple[400] }} />
-                        </ListItemIcon>
-                        <ListItemText primary={text} />
-                      </ListItemButton>
-                    ))}
-                  </List>
-                </Box>
-              </Grid>
-              <Grid item xs={7}>
-                <Box bgcolor="lightgreen" p={2} height="100vh">
-                  Part 2
-                </Box>
-              </Grid>
-              <Grid item xs={3}>
-                <Box bgcolor="lightcoral" p={2} height="100vh">
-                  Part 3
-                </Box>
-              </Grid>
+                      {test.image && (
+                        <img
+                          src={test.image}
+                          alt={test.title}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            borderRadius: "8px",
+                          }}
+                        />
+                      )}
+                      <Box sx={{ mt: 2, width: "100%" }}>
+                        <Typography variant="h6" component="h2">
+                          {test.title}
+                        </Typography>
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          mt={1}
+                        >
+                          <Typography variant="body1" color="textSecondary">
+                            {test.price === 0 ? "Free" : `$${test.price}`}
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleTakeTest(test._id)}
+                          >
+                            Take Test
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Box> */}
+                </Grid>
+              ))}
             </Grid>
-          </Container>
-        </div>
-      </main>
+          </Grid>
+        </Grid>
+      </Container>
+      <Footer />
     </>
   );
 };

@@ -11,13 +11,13 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { HEADER_COLOR, PRIMARY_TEXT_COLOR } from "../styles/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import { InputAdornment, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "../store/slices/authSlice"; // Điều chỉnh theo đường dẫn thực tế
 
 const pages = [];
-``;
 const settings = [
   "My Courses",
   "Profile",
@@ -31,13 +31,10 @@ const settings = [
 function Header() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -47,24 +44,28 @@ function Header() {
   const handleMenuItemClick = (setting) => {
     if (setting === "Profile") {
       navigate("/my-profile");
-    }
-    if (setting === "Setting") {
+    } else if (setting === "Setting") {
       navigate("/account-settings");
+    } else if (setting === "Logout") {
+      console.log("Logout");
+      dispatch(logoutUser()); // Gọi action để logout
+      navigate("/login"); // Điều hướng đến trang đăng nhập
     }
   };
 
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: HEADER_COLOR }}>
+    <AppBar position="fixed">
       <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{}}>
-          <Box
-            flex={1}
-            display={"flex"}
-            sx={{ alignItems: "center" }}
-            onClick={() => navigate("/")}
-          >
-            <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-            <Typography>M-Certificate</Typography>
+        <Toolbar disableGutters>
+          <Box flex={1}>
+            <Box
+              display={"flex"}
+              sx={{ width: "auto", alignItems: "center" }}
+              onClick={() => navigate("/")}
+            >
+              <AdbIcon sx={{ cursor: "pointer" }} />
+              <Typography sx={{ cursor: "pointer" }}>M-Certificate</Typography>
+            </Box>
           </Box>
 
           <Box flex={1}>
@@ -97,7 +98,7 @@ function Header() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={() => navigate(`/${page.toLowerCase()}`)}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}
