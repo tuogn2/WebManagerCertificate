@@ -38,7 +38,8 @@ const Routes = () => {
       path: "/take-test/:id",
       element: <TakeExam />,
     },
-    { path: "/signup", element: <Signup /> },
+    { path: "/signup", 
+      element: <Signup /> },
   ]);
 };
 

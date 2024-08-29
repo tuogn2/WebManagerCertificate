@@ -97,7 +97,7 @@ const Login = ({ open, onClose }) => {
           fullWidth
           onClick={handleLogin}
           style={{ marginTop: "20px", marginBottom: "10px" }}
-          disabled={loading}
+          // disabled={loading}
         >
           {loading ? "Logging in..." : "Login"}
         </Button>

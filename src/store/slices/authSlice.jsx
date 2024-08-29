@@ -17,16 +17,20 @@ export const loginUser = createAsyncThunk(
 
       // Lưu token vào localStorage
       localStorage.setItem("token", response.data.token);
-
-      // Fetch user data using the token
-      const userResponse = await axios.get(`${API_BASE_URL}/auth/user`, {
-        headers: {
-          Authorization: `Bearer ${response.data.token}`,
-        },
-      });
+      // console.log(response.data);
+      // // Fetch user data using the token
+      // const userResponse = await axios.get(
+      //   `${API_BASE_URL}/auth/users/66b58d826daa0a6a3cc58a16`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${response.data.token}`,
+      //     },
+      //   }
+      // );
 
       // Return user data
-      return userResponse.data;
+      console.log(response.data.user);
+      return response.data.user;
     } catch (error) {
       // Trả về thông báo lỗi nếu đăng nhập thất bại
       console.error(error);

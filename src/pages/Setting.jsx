@@ -77,53 +77,43 @@ const AccountSettings = () => {
                   </ListItemIcon>
                   <ListItemButton>Communication</ListItemButton>
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon></ListItemIcon>
-                  <ListItemButton></ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon></ListItemIcon>
-                  <ListItemButton></ListItemButton>
-                </ListItem>
               </List>
             </Paper>
           </Grid>
           <Grid item xs={9}>
-            <Paper style={{ padding: "20px" }}>
-              <Typography variant="h4">Account</Typography>
-              <Box>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">Full name</Typography>
-                    <TextField></TextField>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h6">Email ddress</Typography>
-                    <TextField></TextField>
-                  </Grid>
-                </Grid>
-                <Button variant="outlined" sx={{ mt: "15px" }}>
-                  Save
-                </Button>
-              </Box>
-              <Divider sx={{ p: 2 }} />
+            <Paper style={{}}>
               <Typography variant="h4">Password</Typography>
-              <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                }}
+              >
                 <Grid container spacing={3}>
                   <Grid item xs={4}>
-                    <Typography variant="h6">Current password</Typography>
-                    <TextField></TextField>
+                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                      Current password
+                    </Typography>
+                    <TextField type="password"></TextField>
                   </Grid>
                   <Grid item xs={4}>
-                    <Typography variant="h6">New password</Typography>
-                    <TextField></TextField>
+                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                      New password
+                    </Typography>
+                    <TextField type="password"></TextField>
                   </Grid>
                   <Grid item xs={4}>
-                    <Typography variant="h6">Retype password</Typography>
-                    <TextField></TextField>
+                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                      Retype password
+                    </Typography>
+                    <TextField type="password"></TextField>
                   </Grid>
                 </Grid>
-                <Button variant="outlined" sx={{ mt: "15px" }}>
+                <Button
+                  variant="contained"
+                  sx={{ alignSelf: "center", mt: 5, mb: 5 }}
+                >
                   Change password
                 </Button>
               </Box>
