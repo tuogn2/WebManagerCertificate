@@ -45,8 +45,8 @@ const Login = ({ open, onClose }) => {
 
   // Cập nhật giá trị mặc định khi component được render
   useEffect(() => {
-    setEmail("johndoe@example.com");
-    setPassword("SecurePassword123");
+    setEmail("conguyetnaduongvulan11@gmail.com");
+    setPassword("123456789");
   }, []);
 
   const handleLogin = () => {
