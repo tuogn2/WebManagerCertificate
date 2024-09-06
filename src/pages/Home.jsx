@@ -15,7 +15,10 @@ import {
 } from "@mui/material";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { getAllCourses, getAllCourseBundles } from "../store/slices/courseSlice"; // Import thunks
+import {
+  getAllCourses,
+  getAllCourseBundles,
+} from "../store/slices/courseSlice"; // Import thunks
 import Loading from "../components/Loading";
 
 const Home = () => {
@@ -36,7 +39,7 @@ const Home = () => {
   }, [user, navigate, dispatch]);
 
   if (loading) {
-    return <Loading/>; // Loading state
+    return <Loading />; // Loading state
   }
 
   return (
@@ -57,7 +60,9 @@ const Home = () => {
               {courses.map((course) => (
                 <Grid item xs={12} sm={6} md={4} key={course._id}>
                   <Card>
-                    <CardActionArea onClick={() => navigate(`/course/${course._id}`)}>
+                    <CardActionArea
+                      onClick={() => navigate(`/course/${course._id}`)}
+                    >
                       <CardMedia
                         component="img"
                         height="140"
@@ -85,7 +90,9 @@ const Home = () => {
               {courseBundles.map((bundle) => (
                 <Grid item xs={12} sm={6} md={4} key={bundle._id}>
                   <Card>
-                    <CardActionArea onClick={() => navigate(`/bundle/${bundle._id}`)}>
+                    <CardActionArea
+                      onClick={() => navigate(`/bundle/${bundle._id}`)}
+                    >
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                           {bundle.title}

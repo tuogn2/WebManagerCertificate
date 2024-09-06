@@ -12,10 +12,22 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import SearchIcon from "@mui/icons-material/Search";
-import { InputAdornment, TextField } from "@mui/material";
+import {
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  ListSubheader,
+  Paper,
+  TextField,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../store/slices/authSlice"; // Điều chỉnh theo đường dẫn thực tế
+import { useState } from "react";
+import { useRef } from "react";
 
 const pages = [];
 const settings = [
@@ -29,9 +41,14 @@ const settings = [
 ];
 
 function Header() {
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  // Control search suggestions visibility
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const courses = useSelector((state) => state.courses.courses);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -50,6 +67,23 @@ function Header() {
       console.log("Logout");
       dispatch(logoutUser()); // Gọi action để logout
       navigate("/login"); // Điều hướng đến trang đăng nhập
+    }
+  };
+
+  const popularSearches = [
+    "Javascript for beginners",
+    "english for career development",
+    "Become a data analyst",
+  ];
+
+  const handleSearchFocus = () => {
+    setShowSuggestions(true);
+  };
+
+  const handleSearchBlur = (event) => {
+    // Check if the next focus target is within the suggestions list
+    if (!searchRef.current?.contains(event.relatedTarget)) {
+      setShowSuggestions(false);
     }
   };
 
@@ -72,12 +106,20 @@ function Header() {
             <TextField
               placeholder="What do you want to learn?"
               variant="outlined"
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
               fullWidth
               sx={{
                 "& .MuiOutlinedInput-root": {
                   borderRadius: 50,
                   color: "white",
                   "& fieldset": {
+                    borderColor: "white",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "white",
+                  },
+                  "&.Mui-focused fieldset": {
                     borderColor: "white",
                   },
                 },
@@ -93,6 +135,73 @@ function Header() {
               }}
             />
           </Box>
+
+          {/* Search Suggestions */}
+          {showSuggestions && (
+            <Paper
+              ref={searchRef}
+              sx={{
+                position: "absolute",
+                top: 62, // Adjust to match the height of your TextField
+                left: "30%",
+                right: "34%",
+                zIndex: 10,
+                borderRadius: "10px",
+                padding: "10px",
+                boxShadow: 3,
+              }}
+              onBlur={handleSearchBlur}
+              tabIndex={-1}
+            >
+              <List
+                subheader={
+                  <ListSubheader
+                    component="div"
+                    sx={{
+                      userSelect: "none",
+                      color: "black",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Most Popular Specializations
+                  </ListSubheader>
+                }
+              >
+                {courses.map((course) => (
+                  <ListItemButton
+                    alignItems="center"
+                    onClick={() => navigate(`/course/${course._id}`)}
+                  >
+                    <ListItemAvatar>
+                      <Avatar src={course.image} />
+                    </ListItemAvatar>
+                    <ListItemText primary={course.title} />
+                  </ListItemButton>
+                ))}
+                <List
+                  subheader={
+                    <ListSubheader
+                      component="div"
+                      sx={{
+                        userSelect: "none",
+                        color: "black",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Popular Right Now
+                    </ListSubheader>
+                  }
+                >
+                  {popularSearches.map((search, index) => (
+                    <ListItemButton button key={index} tabIndex={0}>
+                      <SearchIcon sx={{ mr: 2 }} />
+                      <ListItemText primary={search} />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </List>
+            </Paper>
+          )}
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
