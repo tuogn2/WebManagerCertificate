@@ -14,22 +14,8 @@ export const loginUser = createAsyncThunk(
         email,
         password,
       });
-
       // Lưu token vào localStorage
       localStorage.setItem("token", response.data.token);
-      // console.log(response.data);
-      // // Fetch user data using the token
-      // const userResponse = await axios.get(
-      //   `${API_BASE_URL}/auth/users/66b58d826daa0a6a3cc58a16`,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${response.data.token}`,
-      //     },
-      //   }
-      // );
-
-      // Return user data
-      console.log(response.data.user);
       return response.data.user;
     } catch (error) {
       // Trả về thông báo lỗi nếu đăng nhập thất bại
@@ -51,6 +37,31 @@ const authSlice = createSlice({
       state.user = null;
       localStorage.removeItem("token");
     },
+    addEnrollmentToUser: (state, action) => {
+      if (state.user) {
+        state.user.enrollments.push(action.payload);
+      }
+    },
+    updateEnrollment: (state, action) => {
+      if (state.user) {
+        state.user.enrollments = state.user.enrollments.map((enrollment) => {
+          if (enrollment._id === action.payload._id) {
+            return action.payload;
+          }
+          return enrollment;
+        });
+      }
+    },
+    completeEnrollment: (state, action) => {
+      if (state.user) {
+        state.user.enrollments = state.user.enrollments.map((enrollment) => {
+          if (enrollment._id === action.payload) {
+            return { ...enrollment, completed: true };
+          }
+          return enrollment;
+        });
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -69,5 +80,10 @@ const authSlice = createSlice({
   },
 });
 
-export const { logoutUser } = authSlice.actions;
+export const {
+  logoutUser,
+  addEnrollmentToUser,
+  updateEnrollment,
+  completeEnrollment,
+} = authSlice.actions;
 export default authSlice.reducer;
