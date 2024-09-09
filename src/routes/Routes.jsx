@@ -13,6 +13,7 @@ import CourseDetail from "../pages/CourseDetail";
 import LearnCourse from "../pages/LearnCourse";
 import BundleDetail from "../pages/BundleDetail";
 import AdminHome from "../pages/adminPages/AdminHome";
+import AddCoursePage from "../pages/adminPages/AddCoursePage";
 
 const Routes = () => {
   return useRoutes([
@@ -39,6 +40,7 @@ const Routes = () => {
     { path: "/course/:id", element: <CourseDetail /> },
     { path: "/course/:id/learn", element: <LearnCourse /> },
     { path: "/bundle/:id", element: <BundleDetail /> },
+    { path: "/add-course", element: <AddCoursePage /> },
   ]);
 };
 
