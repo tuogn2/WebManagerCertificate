@@ -12,10 +12,12 @@ import Signup from "../pages/Signup";
 import CourseDetail from "../pages/CourseDetail";
 import LearnCourse from "../pages/LearnCourse";
 import BundleDetail from "../pages/BundleDetail";
+import AdminHome from "../pages/adminPages/AdminHome";
 
 const Routes = () => {
   return useRoutes([
     { path: "/", element: <Home /> },
+    { path: "/admin-home", element: <AdminHome /> },
     {
       path: "*",
       element: <NotFound />,

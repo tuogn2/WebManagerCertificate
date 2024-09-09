@@ -1,4 +1,5 @@
 const HEADER_COLOR = "#5423B7";
+const PRIMARY_COLOR = "#1976D2";
 const SECOND_COLOR = true ? "#fff" : "#1a1a1a";
 const BACKGROUND_COLOR = true ? "#F3F4F8" : "";
 const PRIMARY_TEXT_COLOR = true ? "#1E1E1E" : "#fff";
@@ -20,6 +21,7 @@ const commonStyle = {
 export default commonStyle;
 export {
   HEADER_COLOR,
+  PRIMARY_COLOR,
   SECOND_COLOR,
   BACKGROUND_COLOR,
   PRIMARY_TEXT_COLOR,

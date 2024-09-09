@@ -32,9 +32,9 @@ const Login = ({ open, onClose }) => {
   const { user, loading, error } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
+    if (user && user.role === "admin") {
+      navigate("/admin-home");
+    } else if (user) navigate("/");
   }, [user, navigate]);
 
   useEffect(() => {
