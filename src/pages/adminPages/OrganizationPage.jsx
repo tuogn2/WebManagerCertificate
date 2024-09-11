@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  DialogContentText,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { API_BASE_URL } from "../../utils/constants";
@@ -57,7 +58,8 @@ export default function OrganizationPage() {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(null);
 
   useEffect(() => {
@@ -79,13 +81,13 @@ export default function OrganizationPage() {
     setValue(newValue);
   };
 
-  const handleClickOpen = (organization) => {
+  const handleClickOpenUpdate = (organization) => {
     setSelectedOrganization(organization);
-    setOpen(true);
+    setOpenUpdate(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseUpdate = () => {
+    setOpenUpdate(false);
     setSelectedOrganization(null);
   };
 
@@ -104,7 +106,37 @@ export default function OrganizationPage() {
         )
       );
       setLoading(false);
-      setOpen(false);
+      setOpenUpdate(false);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  // delete organization
+  const handleClickOpenDelete = (organization) => {
+    setSelectedOrganization(organization);
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+    setSelectedOrganization(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    // Call API to delete organization
+    try {
+      const response = await axios.delete(
+        `${API_BASE_URL}/organization/${selectedOrganization._id}`
+      );
+      // Assuming response.data contains the updated list of organizations
+      setOrganizations((prevOrganizations) =>
+        prevOrganizations.filter((org) => org._id !== selectedOrganization._id)
+      );
+      console.log(response.data);
+      setLoading(false);
+      setOpenDelete(false);
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -131,7 +163,7 @@ export default function OrganizationPage() {
         ) : (
           <List>
             {organizations.map((org) => (
-              <Paper key={org._id} sx={{ mb: 2 }}>
+              <Paper elevation={5} key={org._id} sx={{ mb: 2 }}>
                 <ListItem>
                   <Avatar src={org.avatar} sx={{ mr: 2 }} />
                   <ListItemText
@@ -142,11 +174,15 @@ export default function OrganizationPage() {
                     variant="outlined"
                     color="primary"
                     sx={{ mr: 3 }}
-                    onClick={() => handleClickOpen(org)}
+                    onClick={() => handleClickOpenUpdate(org)}
                   >
                     Update
                   </Button>
-                  <Button variant="outlined" color="error">
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => handleClickOpenDelete(org)}
+                  >
                     Delete
                   </Button>
                 </ListItem>
@@ -157,7 +193,7 @@ export default function OrganizationPage() {
       </TabPanel>
 
       {/* Update Organization Dialog */}
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={openUpdate} onClose={handleCloseUpdate}>
         <DialogTitle>Update Organization</DialogTitle>
         <DialogContent>
           <TextField
@@ -210,11 +246,37 @@ export default function OrganizationPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="error">
+          <Button onClick={handleCloseUpdate} color="error">
             Cancel
           </Button>
           <Button onClick={handleUpdate} color="primary">
             Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete dialog */}
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledbyy="confirm-dialog-title"
+        aria-describedby="confirm-dialog-description"
+      >
+        <DialogTitle id="confirm-dialog-title">
+          {"Delete Organization"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="confirm-dialog-description">
+            Are you sure you want to delete this organization? This action
+            cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Ok
           </Button>
         </DialogActions>
       </Dialog>

@@ -94,7 +94,20 @@ export default function SideBar({ onItemSelected }) {
           padding: 2,
           boxSizing: "border-box",
         }}
-      ></Box>
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<LogoutIcon />}
+          fullWidth
+          onClick={() => {
+            // Handle logout logic here
+            console.log("Logout clicked");
+          }}
+        >
+          Logout
+        </Button>
+      </Box>
     </Drawer>
   );
 }
