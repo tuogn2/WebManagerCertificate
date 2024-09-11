@@ -17,6 +17,8 @@ import {
   DialogContent,
   DialogActions,
   DialogContentText,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { API_BASE_URL } from "../../utils/constants";
@@ -62,24 +64,26 @@ export default function OrganizationPage() {
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(null);
 
-  useEffect(() => {
-    const fetchOrganizations = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/organization`);
-        setOrganizations(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError(error.message);
-        setLoading(false);
-      }
-    };
+  const fetchOrganizations = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/organization`);
+      setOrganizations(response.data);
+      setLoading(false);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchOrganizations();
-  }, []);
+  }, [organizations]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  // Update organization
 
   const handleClickOpenUpdate = (organization) => {
     setSelectedOrganization(organization);
@@ -140,6 +144,54 @@ export default function OrganizationPage() {
     } catch (error) {
       setError(error.message);
       setLoading(false);
+    }
+  };
+
+  // Add organization
+  const [organization, setOrganization] = useState({
+    name: "",
+    address: "",
+    email: "",
+    password: "",
+    avatar: "",
+  });
+  const [openSnackbar, setOpenSnackbar] = useState(false); // To show success message
+  const [errorSnackbar, setErrorSnackbar] = useState(false); // To show error message
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setOrganization({
+      ...organization,
+      [name]: value,
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Send data to the API using axios
+      const response = await axios.post(
+        `${API_BASE_URL}/organization`,
+        organization
+      );
+
+      // If successful, show success message
+      if (response.status === 201) {
+        setOpenSnackbar(true); // Open success message
+        setOrganization({
+          name: "",
+          address: "",
+          email: "",
+          password: "",
+          avatar: "",
+        }); // Reset the form
+      }
+    } catch (error) {
+      console.error("Error adding organization:", error);
+      setErrorSnackbar(true); // Open error message
     }
   };
 
@@ -275,7 +327,7 @@ export default function OrganizationPage() {
           <Button onClick={handleCloseDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+          <Button onClick={handleDeleteConfirm} color="error">
             Ok
           </Button>
         </DialogActions>
@@ -283,15 +335,74 @@ export default function OrganizationPage() {
 
       {/* Add Organization */}
       <TabPanel value={value} index={1}>
-        <Typography variant="h6">Add New Organization</Typography>
-        <TextField fullWidth label="Organization Name" margin="normal" />
-        <TextField fullWidth label="Address" margin="normal" />
-        <TextField fullWidth label="Email" margin="normal" />
-        <TextField fullWidth label="Avatar URL" margin="normal" />
-        <TextField fullWidth label="Password" type="password" margin="normal" />
-        <Button variant="contained" color="primary" sx={{ mt: 2 }}>
-          Add Organization
-        </Button>
+        <Paper elevation={3} sx={{ padding: 2 }}>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Organization Name"
+              name="name"
+              onChange={handleInputChange}
+              fullWidth
+              sx={{ marginBottom: 2 }}
+            />
+            <TextField
+              label="Address"
+              name="address"
+              onChange={handleInputChange}
+              fullWidth
+              sx={{ marginBottom: 2 }}
+            />
+            <TextField
+              label="Email"
+              name="email"
+              onChange={handleInputChange}
+              fullWidth
+              sx={{ marginBottom: 2 }}
+            />
+            <TextField
+              label="Password"
+              name="password"
+              onChange={handleInputChange}
+              type="password"
+              fullWidth
+              sx={{ marginBottom: 2 }}
+            />
+            <TextField
+              label="Avatar URL"
+              name="avatar"
+              onChange={handleInputChange}
+              fullWidth
+              sx={{ marginBottom: 2 }}
+            />
+
+            <Button variant="contained" color="primary" type="submit" fullWidth>
+              Add Organization
+            </Button>
+          </form>
+        </Paper>
+
+        {/* Success Snackbar */}
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert onClose={() => setOpenSnackbar(false)} severity="success">
+            Organization added successfully!
+          </Alert>
+        </Snackbar>
+
+        {/* Error Snackbar */}
+        <Snackbar
+          open={errorSnackbar}
+          autoHideDuration={3000}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          onClose={() => setErrorSnackbar(false)}
+        >
+          <Alert onClose={() => setErrorSnackbar(false)} severity="error">
+            Failed to add organization. Please try again.
+          </Alert>
+        </Snackbar>
       </TabPanel>
     </Box>
   );
