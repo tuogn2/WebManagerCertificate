@@ -1,20 +1,21 @@
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SideBar from "../../components/adminComponents/SideBar";
-import { AppBar, Box, CssBaseline, Toolbar, Typography } from "@mui/material";
+import { Box, CssBaseline, Typography } from "@mui/material";
 import AddCoursePage from "./AddCoursePage";
+import DashboardPage from "./DashboardPage";
+import OrganizationPage from "./OrganizationPage";
 
 const MainContent = ({ selectedItem }) => {
   // Render content based on the selected item
   switch (selectedItem) {
     case "Add course":
       return <AddCoursePage />;
-    case "Courses":
-      return <Typography variant="h4">Here are your courses.</Typography>;
+    case "Dashboard":
+      return <DashboardPage />;
     case "Settings":
       return <Typography variant="h4">Adjust your settings here.</Typography>;
-    case "Profile":
-      return <Typography variant="h4">This is your profile page.</Typography>;
+    case "Organizations":
+      return <OrganizationPage />;
     default:
       return (
         <Typography variant="h4">

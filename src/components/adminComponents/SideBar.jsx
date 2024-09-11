@@ -24,7 +24,7 @@ export default function SideBar({ onItemSelected }) {
   // Các mục trong thanh điều hướng
   const menuItems = [
     { text: "Dashboard", icon: <Dashboard /> },
-    { text: "Manage course", icon: <Book /> },
+    { text: "Organizations", icon: <Book /> },
     { text: "Add course", icon: <Add /> },
     { text: "Setting", icon: <Settings /> },
   ];
@@ -94,20 +94,7 @@ export default function SideBar({ onItemSelected }) {
           padding: 2,
           boxSizing: "border-box",
         }}
-      >
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<LogoutIcon />}
-          fullWidth
-          onClick={() => {
-            // Handle logout logic here
-            console.log("Logout clicked");
-          }}
-        >
-          Logout
-        </Button>
-      </Box>
+      ></Box>
     </Drawer>
   );
 }

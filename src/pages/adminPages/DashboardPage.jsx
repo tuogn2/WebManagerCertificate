@@ -7,6 +7,7 @@ import {
   Verified,
   MonetizationOn,
 } from "@mui/icons-material";
+import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 
 const DashboardPage = () => {
   // Dummy data
@@ -16,6 +17,7 @@ const DashboardPage = () => {
     activeUsers: 1200,
     certificatesIssued: 3000,
     totalRevenue: "$50,000",
+    joinedOrganizations: 10,
   };
 
   const StatCard = ({ title, value, icon, color }) => (
@@ -93,6 +95,12 @@ const DashboardPage = () => {
           title="Total Revenue"
           value={stats.totalRevenue}
           icon={<MonetizationOn fontSize="large" />}
+          color={["#e1eec3", "#f05053"]}
+        />
+        <StatCard
+          title="Joined Organizations"
+          value={stats.joinedOrganizations}
+          icon={<CorporateFareIcon fontSize="large" />}
           color={["#e1eec3", "#f05053"]}
         />
       </Grid>

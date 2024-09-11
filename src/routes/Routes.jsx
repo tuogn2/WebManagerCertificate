@@ -14,15 +14,17 @@ import LearnCourse from "../pages/LearnCourse";
 import BundleDetail from "../pages/BundleDetail";
 import AdminHome from "../pages/adminPages/AdminHome";
 import AddCoursePage from "../pages/adminPages/AddCoursePage";
+import DashboardPage from "../pages/adminPages/DashboardPage";
+import OrganizationPage from "../pages/adminPages/OrganizationPage";
 
 const Routes = () => {
   return useRoutes([
-    { path: "/", element: <Home /> },
-    { path: "/admin-home", element: <AdminHome /> },
     {
       path: "*",
       element: <NotFound />,
     },
+    // User routes
+    { path: "/", element: <Home /> },
     {
       path: "/my-profile",
       element: <Profile />,
@@ -40,7 +42,12 @@ const Routes = () => {
     { path: "/course/:id", element: <CourseDetail /> },
     { path: "/course/:id/learn", element: <LearnCourse /> },
     { path: "/bundle/:id", element: <BundleDetail /> },
+
+    // Admin routes
+    { path: "/admin-home", element: <AdminHome /> },
     { path: "/add-course", element: <AddCoursePage /> },
+    { path: "/dashboard", element: <DashboardPage /> },
+    { path: "/organizations", element: <OrganizationPage /> },
   ]);
 };
 
