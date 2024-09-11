@@ -4,12 +4,13 @@ import { Box, CssBaseline, Typography } from "@mui/material";
 import AddCoursePage from "./AddCoursePage";
 import DashboardPage from "./DashboardPage";
 import OrganizationPage from "./OrganizationPage";
+import UserPage from "./UserPage";
 
 const MainContent = ({ selectedItem }) => {
   // Render content based on the selected item
   switch (selectedItem) {
-    case "Add course":
-      return <AddCoursePage />;
+    case "Users":
+      return <UserPage />;
     case "Dashboard":
       return <DashboardPage />;
     case "Settings":

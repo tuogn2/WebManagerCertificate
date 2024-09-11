@@ -10,7 +10,7 @@ import {
   ListItemButton,
   Button,
 } from "@mui/material";
-import { Dashboard, Book, Add, Settings } from "@mui/icons-material";
+import { Dashboard, Book, Add, Settings, Person } from "@mui/icons-material";
 import { PRIMARY_COLOR } from "../../styles/styles";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -25,6 +25,7 @@ export default function SideBar({ onItemSelected }) {
   const menuItems = [
     { text: "Dashboard", icon: <Dashboard /> },
     { text: "Organizations", icon: <Book /> },
+    { text: "Users", icon: <Person /> },
     { text: "Add course", icon: <Add /> },
     { text: "Setting", icon: <Settings /> },
   ];
