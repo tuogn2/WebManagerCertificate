@@ -36,7 +36,7 @@ const menuItems = [
   { text: "Setting", icon: <Settings /> },
 ];
 
-export default function AdminHome() {
+export default function OrganizationHome() {
   const [selectedItem, setSelectedItem] = useState("Dashboard");
 
   return (
@@ -46,7 +46,7 @@ export default function AdminHome() {
         {/* Sidebar on the left */}
         <SideBar
           onItemSelected={setSelectedItem}
-          title={"ADMIN SITE"}
+          title={"ORGANIZATION SITE"}
           menuItems={menuItems}
         />
 

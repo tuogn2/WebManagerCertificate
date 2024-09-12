@@ -17,18 +17,11 @@ import LogoutIcon from "@mui/icons-material/Logout";
 // Kích thước của drawer
 const drawerWidth = 240;
 
-export default function SideBar({ onItemSelected }) {
+export default function SideBar({ onItemSelected, title, menuItems = [] }) {
   // State to keep track of the selected item
   const [activeItem, setActiveItem] = useState("Dashboard");
 
   // Các mục trong thanh điều hướng
-  const menuItems = [
-    { text: "Dashboard", icon: <Dashboard /> },
-    { text: "Organizations", icon: <Book /> },
-    { text: "Users", icon: <Person /> },
-    { text: "Add course", icon: <Add /> },
-    { text: "Setting", icon: <Settings /> },
-  ];
 
   // Chuyển tap và Hover listitembutton
   const handleItemClick = (text) => {
@@ -54,7 +47,7 @@ export default function SideBar({ onItemSelected }) {
     >
       {/* Header của thanh điều hướng */}
       <Box sx={{ p: 2, textAlign: "center" }}>
-        <Typography variant="h6">Admin Dashboard</Typography>
+        <Typography variant="h6">{title}</Typography>
       </Box>
 
       <Divider />
