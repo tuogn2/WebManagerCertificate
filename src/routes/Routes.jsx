@@ -13,9 +13,10 @@ import CourseDetail from "../pages/CourseDetail";
 import LearnCourse from "../pages/LearnCourse";
 import BundleDetail from "../pages/BundleDetail";
 import AdminHome from "../pages/adminPages/AdminHome";
-import AddCoursePage from "../pages/adminPages/AddCoursePage";
+import AddCoursePage from "../pages/organizationPages/AddCoursePage";
 import DashboardPage from "../pages/adminPages/DashboardPage";
 import OrganizationPage from "../pages/adminPages/OrganizationPage";
+import OrganizationHome from "../pages/organizationPages/OrganizationHome";
 
 const Routes = () => {
   return useRoutes([
@@ -48,6 +49,9 @@ const Routes = () => {
     { path: "/add-course", element: <AddCoursePage /> },
     { path: "/dashboard", element: <DashboardPage /> },
     { path: "/organizations", element: <OrganizationPage /> },
+
+    // Organization routes
+    { path: "/organization-home", element: <OrganizationHome /> },
   ]);
 };
 

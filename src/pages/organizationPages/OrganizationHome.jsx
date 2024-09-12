@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import SideBar from "../../components/adminComponents/SideBar";
 import { Box, CssBaseline, Typography } from "@mui/material";
-import AddCoursePage from "./AddCoursePage";
 import DashboardPage from "./DashboardPage";
-import OrganizationPage from "./OrganizationPage";
-import UserPage from "./UserPage";
-import SettingPage from "./SettingPage";
-import { Add, Book, Dashboard, Person, Settings } from "@mui/icons-material";
+import { Book, Dashboard, Settings } from "@mui/icons-material";
+import CoursePage from "./CoursePage";
 
 const MainContent = ({ selectedItem }) => {
   // Render content based on the selected item
@@ -17,8 +14,8 @@ const MainContent = ({ selectedItem }) => {
       return <DashboardPage />;
     case "Setting":
       return <SettingPage />;
-    case "Organizations":
-      return <OrganizationPage />;
+    case "Course":
+      return <CoursePage />;
     default:
       return (
         <Typography variant="h4">
@@ -30,9 +27,7 @@ const MainContent = ({ selectedItem }) => {
 
 const menuItems = [
   { text: "Dashboard", icon: <Dashboard /> },
-  { text: "Organizations", icon: <Book /> },
-  { text: "Users", icon: <Person /> },
-  { text: "Add course", icon: <Add /> },
+  { text: "Course", icon: <Book /> },
   { text: "Setting", icon: <Settings /> },
 ];
 

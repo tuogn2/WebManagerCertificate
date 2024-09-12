@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SideBar from "../../components/adminComponents/SideBar";
 import { Box, CssBaseline, Typography } from "@mui/material";
-import AddCoursePage from "./AddCoursePage";
+import AddCoursePage from "../organizationPages/AddCoursePage";
 import DashboardPage from "./DashboardPage";
 import OrganizationPage from "./OrganizationPage";
 import UserPage from "./UserPage";
@@ -32,7 +32,6 @@ const menuItems = [
   { text: "Dashboard", icon: <Dashboard /> },
   { text: "Organizations", icon: <Book /> },
   { text: "Users", icon: <Person /> },
-  { text: "Add course", icon: <Add /> },
   { text: "Setting", icon: <Settings /> },
 ];
 
