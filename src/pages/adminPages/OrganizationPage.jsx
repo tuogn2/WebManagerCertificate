@@ -373,6 +373,13 @@ export default function OrganizationPage() {
               fullWidth
               sx={{ marginBottom: 2 }}
             />
+            <TextField
+              label="Metamask Address"
+              name="metamaskAddress"
+              onChange={handleInputChange}
+              fullWidth
+              sx={{ marginBottom: 2 }}
+            />
 
             <Button variant="contained" color="primary" type="submit" fullWidth>
               Add Organization

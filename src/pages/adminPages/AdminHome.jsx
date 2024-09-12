@@ -5,6 +5,7 @@ import AddCoursePage from "./AddCoursePage";
 import DashboardPage from "./DashboardPage";
 import OrganizationPage from "./OrganizationPage";
 import UserPage from "./UserPage";
+import SettingPage from "./SettingPage";
 
 const MainContent = ({ selectedItem }) => {
   // Render content based on the selected item
@@ -13,8 +14,8 @@ const MainContent = ({ selectedItem }) => {
       return <UserPage />;
     case "Dashboard":
       return <DashboardPage />;
-    case "Settings":
-      return <Typography variant="h4">Adjust your settings here.</Typography>;
+    case "Setting":
+      return <SettingPage />;
     case "Organizations":
       return <OrganizationPage />;
     default:
