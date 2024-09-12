@@ -19,7 +19,7 @@ const BundleDetail = () => {
   const { id } = useParams(); // Get the id from the URL
   const bundles = useSelector((state) => state.courses.courseBundles); // Get the list of bundles from Redux state
   const { user } = useSelector((state) => state.auth); // Get the user from the Redux state
-
+  console.log("User:", user);
   // Find the bundle that matches the id from the URL params
   const bundle = bundles.find((bundle) => bundle._id === id);
 

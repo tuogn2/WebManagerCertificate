@@ -17,7 +17,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { getAllCourses, getAllCourseBundles } from "../store/slices/courseSlice"; // Import thunks
 import Loading from "../components/Loading";
-
+import getCertificatesByStudentId from "../utils/getCertificatesByStudentId";
 const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,6 +38,12 @@ const Home = () => {
   if (loading) {
     return <Loading/>; // Loading state
   }
+
+  getCertificatesByStudentId(user.id).then((response) => {
+    if (response.success) {
+      console.log(response.data);
+    }
+  });
 
   return (
     <>

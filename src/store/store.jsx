@@ -6,7 +6,6 @@ import { persistStore, persistReducer } from 'redux-persist';
 import { combineReducers } from 'redux';
 import authReducer from './slices/authSlice';
 import courseReducer from './slices/courseSlice';
-
 // Cấu hình persist
 const persistConfig = {
   key: 'root',

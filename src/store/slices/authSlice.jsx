@@ -51,7 +51,14 @@ const authSlice = createSlice({
           return enrollment;
         });
       }
+
     },
+    addWalletAddress: (state, action) => {
+      if (state.user) {
+        state.user.walletAddress = action.payload;
+      }
+    },
+
     completeEnrollment: (state, action) => {
       if (state.user) {
         state.user.enrollments = state.user.enrollments.map((enrollment) => {
@@ -79,5 +86,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logoutUser, addEnrollmentToUser,updateEnrollment ,completeEnrollment} = authSlice.actions;
+export const { logoutUser, addEnrollmentToUser,updateEnrollment ,completeEnrollment,addWalletAddress} = authSlice.actions;
 export default authSlice.reducer;
