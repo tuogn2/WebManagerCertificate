@@ -77,7 +77,7 @@ export default function OrganizationPage() {
 
   useEffect(() => {
     fetchOrganizations();
-  }, [organizations]);
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -181,6 +181,9 @@ export default function OrganizationPage() {
       // If successful, show success message
       if (response.status === 201) {
         setOpenSnackbar(true); // Open success message
+
+        // Fetch the updated list of organizations
+        fetchOrganizations();
         setOrganization({
           name: "",
           address: "",

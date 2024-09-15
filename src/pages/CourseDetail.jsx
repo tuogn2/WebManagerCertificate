@@ -12,22 +12,29 @@ import {
   Toolbar,
   CssBaseline,
   Grid,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants.jsx";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import NotFound from "./NotFound";
 import Loading from "../components/Loading.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { addEnrollmentToUser } from "../store/slices/authSlice";
+import payForCourse from '../utils/payForCourse';
 
 const CourseDetail = () => {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(""); // To hold success or error messages
   const navigate = useNavigate(); // Get the navigate function
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  
+  const [walletAddress, setWalletAddress] = useState(localStorage.getItem('walletAddress')); // Retrieve from localStorage
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -49,7 +56,7 @@ const CourseDetail = () => {
   }
 
   if (!course) {
-    return <Typography>Course not found</Typography>;
+    return <NotFound/>
   }
 
   const hasEnrolled = user.enrollments.some(
@@ -58,21 +65,41 @@ const CourseDetail = () => {
 
   const handleButtonClick = async () => {
     if (hasEnrolled) {
-      // Navigate to course learning page
+      // Nếu đã tham gia, chuyển hướng đến trang học tập
       navigate(`/course/${id}/learn`);
     } else {
       try {
-        const response = await axios.post(`${API_BASE_URL}/enrollment`, {
-          user: user.id,
-          course: course._id,
-        });
+         if (!walletAddress) {
+          // Nếu người dùng chưa có ví, thông báo yêu cầu tạo ví
+          setMessage("Please create a wallet to enroll in the course.");
+          return;
+        } 
+        // Gọi hàm payForCourse để xử lý thanh toán
+        const studentId = user.id; // ID của người dùng
+        const studentName = user.name; // Tên của người dùng (nếu có)
+        const amount = course.price === 0 ? 0.000000001 : (course.price / 100000).toFixed(18); // Ensure amount is a string with sufficient precision
+        const walletOr= '0xd804B089eD093060fc41f7387c5D194C9aF70bb1';
+        const organization = course.organization.name;
+        // Thực hiện thanh toán
+        const paymentResult = await payForCourse(studentId, course._id, studentName, amount,walletOr,organization);
 
-        console.log("Enrollment created successfully:", response.data);
-        dispatch(addEnrollmentToUser(response.data));
-        // Navigate to course learning page after enrollment
-        navigate(`/course/${id}/learn`);
+        if (paymentResult.success) {
+          // Nếu thanh toán thành công, gửi yêu cầu đăng ký khóa học
+          const response = await axios.post(`${API_BASE_URL}/enrollment`, {
+            user: studentId,
+            course: course._id,
+          });
+
+          console.log("Enrollment created successfully:", response.data);
+          dispatch(addEnrollmentToUser(response.data));
+          // Chuyển hướng đến trang học tập sau khi đăng ký thành công
+          navigate(`/course/${id}/learn`);
+        } else {
+          setMessage(paymentResult.message); // Display payment error message
+        }
       } catch (error) {
-        console.error("Failed to create enrollment:", error);
+        console.error("Failed to process payment or create enrollment:", error);
+        setMessage("Failed to process payment or create enrollment. Please try again.");
       }
     }
   };
@@ -180,6 +207,13 @@ const CourseDetail = () => {
         </Grid>
       </Container>
       <Footer />
+      {message && (
+        <Snackbar open={Boolean(message)} autoHideDuration={6000} onClose={() => setMessage('')}>
+          <Alert onClose={() => setMessage('')} severity="error" sx={{ width: '100%' }}>
+            {message}
+          </Alert>
+        </Snackbar>
+      )}
     </>
   );
 };

@@ -12,11 +12,11 @@ import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 const DashboardPage = () => {
   // Dummy data
   const stats = {
-    totalCourses: 150,
-    totalStudents: 5000,
-    activeUsers: 1200,
-    certificatesIssued: 3000,
-    totalRevenue: "$50,000",
+    totalCourses: 15,
+    totalStudents: 20,
+    activeUsers: 15,
+    certificatesIssued: 15,
+    totalRevenue: "0",
     joinedOrganizations: 10,
   };
 

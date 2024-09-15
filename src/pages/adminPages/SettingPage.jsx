@@ -15,6 +15,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PaymentIcon from "@mui/icons-material/Payment";
 import BackupIcon from "@mui/icons-material/Backup";
 import { PRIMARY_COLOR } from "../../styles/styles";
+import { useSelector } from "react-redux";
 
 export default function SettingPage() {
   const [adminDetails, setAdminDetails] = useState({
@@ -28,16 +29,14 @@ export default function SettingPage() {
     setAdminDetails((prev) => ({ ...prev, [name]: value }));
   };
 
+  const user = useSelector((state) => state.auth.user);
+
   const handleSaveChanges = () => {
     // Logic to save changes (API call or local updates)
   };
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h4" sx={{ mb: 4 }}>
-        Settings
-      </Typography>
-
       <Grid container spacing={3}>
         {/* Account Settings */}
         <Grid item xs={12} md={6}>
@@ -66,11 +65,29 @@ export default function SettingPage() {
               sx={{ mb: 2 }}
             />
             <TextField
-              label="Password"
-              name="password"
-              type="password"
+              label="Birthday"
+              name="birthday"
+              type="date"
               fullWidth
-              value={adminDetails.password}
+              value={adminDetails.birthday}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Phone Number"
+              name="phone"
+              type="tel"
+              fullWidth
+              value={adminDetails.numberphone}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Address"
+              name="address"
+              type="text"
+              fullWidth
+              value={adminDetails.address}
               onChange={handleChange}
               sx={{ mb: 2 }}
             />
@@ -83,54 +100,45 @@ export default function SettingPage() {
             </Button>
           </Paper>
         </Grid>
-
-        {/* Platform Settings */}
+        {/* Change Password */}
         <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
-              <PaymentIcon /> Platform Settings
+              Change Password
             </Typography>
-            <FormControlLabel
-              control={<Switch color="primary" />}
-              label="Enable Maintenance Mode"
+            <TextField
+              label="Old Password"
+              name="oldPassword"
+              type="password"
+              fullWidth
+              // value={passwordDetails.oldPassword}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
             />
-            <FormControlLabel
-              control={<Switch color="primary" />}
-              label="Email Notifications"
+            <TextField
+              label="New Password"
+              name="newPassword"
+              type="password"
+              fullWidth
+              // value={passwordDetails.newPassword}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
             />
-            <FormControlLabel
-              control={<Switch color="primary" />}
-              label="Push Notifications"
+            <TextField
+              label="Confirm New Password"
+              name="confirmNewPassword"
+              type="password"
+              fullWidth
+              // value={passwordDetails.confirmNewPassword}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
             />
-          </Paper>
-        </Grid>
-
-        {/* Security Settings */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              <SecurityIcon /> Security Settings
-            </Typography>
-            <Button variant="outlined" color="secondary">
-              Enable 2-Factor Authentication
-            </Button>
-            <Button variant="outlined" color="secondary" sx={{ mt: 2 }}>
-              View Activity Logs
-            </Button>
-          </Paper>
-        </Grid>
-
-        {/* Backup & Restore */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              <BackupIcon /> Backup & Restore
-            </Typography>
-            <Button variant="contained" color="primary">
-              Backup Data
-            </Button>
-            <Button variant="outlined" color="secondary" sx={{ mt: 2 }}>
-              Restore Data
+            <Button
+              variant="contained"
+              color="primary"
+              // onClick={handleChangePassword}
+            >
+              Change Password
             </Button>
           </Paper>
         </Grid>
