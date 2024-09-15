@@ -140,7 +140,6 @@ export default function CoursePage() {
                     alignItems="center"
                     sx={{ mb: 2 }}
                   >
-                    <Chip icon={<School />} label={course.organization.$oid} />
                     <Chip
                       icon={<People />}
                       label={`${course.participantsCount} Participants`}

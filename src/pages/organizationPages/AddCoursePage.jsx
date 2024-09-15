@@ -8,17 +8,22 @@ import {
   Grid,
   Paper,
   IconButton,
+  Input,
 } from "@mui/material";
 import { AddCircle, RemoveCircle } from "@mui/icons-material";
 import CssBaseline from "@mui/material/CssBaseline";
+import axios from "axios";
+import { API_BASE_URL } from "../../utils/constants";
+import { useRef } from "react";
 
 function AddCoursePage() {
+  const inputFileRef = useRef(null);
   const [course, setCourse] = useState({
     title: "",
     description: "",
-    organization: "",
     price: 0,
-    image: "",
+    image: null,
+    organization: "66e01ef93edd019a7fccbe71",
     documents: [{ title: "", content: "" }],
     finalQuiz: {
       title: "",
@@ -26,12 +31,22 @@ function AddCoursePage() {
       questions: [
         {
           questionText: "",
-          options: ["", "", "", ""],
+          options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
           correctAnswer: "",
         },
       ],
     },
   });
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setCourse({
+        ...course,
+        image: file, // Store the file object directly
+      });
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +68,15 @@ function AddCoursePage() {
     });
   };
 
+  const handleOptionChange = (questionIndex, optionIndex, value) => {
+    const newQuestions = [...course.finalQuiz.questions];
+    newQuestions[questionIndex].options[optionIndex].text = value;
+    setCourse({
+      ...course,
+      finalQuiz: { ...course.finalQuiz, questions: newQuestions },
+    });
+  };
+
   const handleAddDocument = () => {
     setCourse({
       ...course,
@@ -67,16 +91,83 @@ function AddCoursePage() {
         ...course.finalQuiz,
         questions: [
           ...course.finalQuiz.questions,
-          { questionText: "", options: ["", "", "", ""], correctAnswer: "" },
+          {
+            questionText: "",
+            options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
+            correctAnswer: "",
+          },
         ],
       },
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(course);
-    // Add logic to save the course data
+
+    try {
+      // Create a FormData object to include all the fields
+      const formData = new FormData();
+      formData.append("title", course.title);
+      formData.append("description", course.description);
+      formData.append("price", course.price);
+      formData.append("organization", course.organization);
+
+      // Append the image file to the FormData
+      if (course.image) {
+        formData.append("image", course.image);
+      }
+
+      // Append the documents and final quiz details (convert objects to JSON strings)
+      formData.append("documents", JSON.stringify(course.documents));
+      formData.append("finalQuiz", JSON.stringify(course.finalQuiz));
+
+      // Send the form data using axios
+      const response = await axios.post(`${API_BASE_URL}/course/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 201) {
+        console.log("Course submitted:", response.data);
+
+        // Clear the form
+        setCourse({
+          title: "",
+          description: "",
+          price: 0,
+          image: null,
+          organization: "66e01ef93edd019a7fccbe71",
+          documents: [{ title: "", content: "" }],
+          finalQuiz: {
+            title: "",
+            duration: 0,
+            questions: [
+              {
+                questionText: "",
+                options: [
+                  { text: "" },
+                  { text: "" },
+                  { text: "" },
+                  { text: "" },
+                ],
+                correctAnswer: "",
+              },
+            ],
+          },
+        });
+
+        // Clear the file input
+        if (inputFileRef.current) {
+          inputFileRef.current.value = null;
+        }
+
+        alert("Course submitted for admin review!");
+      }
+    } catch (error) {
+      console.error("Failed to submit course:", error);
+      alert("Failed to submit course. Please try again.");
+    }
   };
 
   return (
@@ -125,16 +216,6 @@ function AddCoursePage() {
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <TextField
-                label="Organization"
-                fullWidth
-                name="organization"
-                value={course.organization}
-                onChange={handleInputChange}
-                sx={{ marginBottom: 3 }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
                 label="Price"
                 fullWidth
                 name="price"
@@ -145,13 +226,19 @@ function AddCoursePage() {
               />
             </Grid>
           </Grid>
-          <TextField
+          {/* <TextField
             label="Image URL"
             fullWidth
             name="image"
             value={course.image}
             onChange={handleInputChange}
             sx={{ marginBottom: 3 }}
+          /> */}
+          <Input
+            type="file"
+            onChange={handleImageChange}
+            ref={inputFileRef}
+            sx={{ marginBottom: 2 }}
           />
         </Paper>
 
@@ -256,12 +343,10 @@ function AddCoursePage() {
                   key={optIndex}
                   label={`Option ${optIndex + 1}`}
                   fullWidth
-                  value={option}
-                  onChange={(e) => {
-                    const newOptions = [...question.options];
-                    newOptions[optIndex] = e.target.value;
-                    handleQuizChange(index, "options", newOptions);
-                  }}
+                  value={option.text}
+                  onChange={(e) =>
+                    handleOptionChange(index, optIndex, e.target.value)
+                  }
                   sx={{ marginBottom: 2 }}
                 />
               ))}
@@ -288,7 +373,7 @@ function AddCoursePage() {
 
         <Box sx={{ marginTop: 4 }}>
           <Button variant="contained" color="primary" type="submit">
-            Save Course
+            Submit Course
           </Button>
         </Box>
       </Box>
