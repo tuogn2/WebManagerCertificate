@@ -6,6 +6,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import { combineReducers } from "redux";
 import authReducer from "./slices/authSlice";
 import courseReducer from "./slices/courseSlice";
+import walletReducer from './slices/walletSlice';
 // Cấu hình persist
 const persistConfig = {
   key: "root",
@@ -16,6 +17,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   courses: courseReducer,
+  wallet: walletReducer,
 });
 
 // Tạo persisted reducer
