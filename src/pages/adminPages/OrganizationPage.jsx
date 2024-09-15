@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import {
   Box,
   Tabs,
@@ -19,6 +19,7 @@ import {
   DialogContentText,
   Snackbar,
   Alert,
+  Input,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { API_BASE_URL } from "../../utils/constants";
@@ -56,6 +57,7 @@ function a11yProps(index) {
 
 export default function OrganizationPage() {
   const [value, setValue] = useState(0);
+  const inputFileRef = createRef(null); // Reference to the file input element
 
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -153,7 +155,7 @@ export default function OrganizationPage() {
     address: "",
     email: "",
     password: "",
-    avatar: "",
+    avatar: null,
   });
   const [openSnackbar, setOpenSnackbar] = useState(false); // To show success message
   const [errorSnackbar, setErrorSnackbar] = useState(false); // To show error message
@@ -167,30 +169,61 @@ export default function OrganizationPage() {
     });
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setOrganization({
+        ...organization,
+        avatar: file, // Store the file object directly
+      });
+    }
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      // Create a FormData object
+      const formData = new FormData();
+      formData.append("name", organization.name);
+      formData.append("address", organization.address);
+      formData.append("email", organization.email);
+      formData.append("password", organization.password);
+      if (organization.avatar) {
+        formData.append("avatar", organization.avatar); // Append the image file
+      }
+
       // Send data to the API using axios
       const response = await axios.post(
         `${API_BASE_URL}/organization`,
-        organization
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
+          },
+        }
       );
 
       // If successful, show success message
       if (response.status === 201) {
-        setOpenSnackbar(true); // Open success message
+        setOpenSnackbar(true);
 
         // Fetch the updated list of organizations
         fetchOrganizations();
+
+        // Clear the form fields
         setOrganization({
           name: "",
           address: "",
           email: "",
           password: "",
-          avatar: "",
-        }); // Reset the form
+          avatar: null,
+        });
+
+        if (inputFileRef.current) {
+          inputFileRef.current.value = null;
+        }
       }
     } catch (error) {
       console.error("Error adding organization:", error);
@@ -287,18 +320,6 @@ export default function OrganizationPage() {
               })
             }
           />
-          <TextField
-            fullWidth
-            label="Avatar URL"
-            margin="normal"
-            value={selectedOrganization?.avatar || ""}
-            onChange={(e) =>
-              setSelectedOrganization({
-                ...selectedOrganization,
-                avatar: e.target.value,
-              })
-            }
-          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseUpdate} color="error">
@@ -343,6 +364,7 @@ export default function OrganizationPage() {
             <TextField
               label="Organization Name"
               name="name"
+              value={organization.name}
               onChange={handleInputChange}
               fullWidth
               sx={{ marginBottom: 2 }}
@@ -350,6 +372,7 @@ export default function OrganizationPage() {
             <TextField
               label="Address"
               name="address"
+              value={organization.address}
               onChange={handleInputChange}
               fullWidth
               sx={{ marginBottom: 2 }}
@@ -357,6 +380,7 @@ export default function OrganizationPage() {
             <TextField
               label="Email"
               name="email"
+              value={organization.email}
               onChange={handleInputChange}
               fullWidth
               sx={{ marginBottom: 2 }}
@@ -364,16 +388,16 @@ export default function OrganizationPage() {
             <TextField
               label="Password"
               name="password"
+              value={organization.password}
               onChange={handleInputChange}
               type="password"
               fullWidth
               sx={{ marginBottom: 2 }}
             />
-            <TextField
-              label="Avatar URL"
-              name="avatar"
-              onChange={handleInputChange}
-              fullWidth
+            <Input
+              type="file"
+              onChange={handleImageChange}
+              ref={inputFileRef}
               sx={{ marginBottom: 2 }}
             />
             <TextField
