@@ -37,7 +37,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const pages = [];
 const settings = [
-  "My Courses",
+  "My Learning",
   "Profile",
   "My Purchases",
   "Setting",
@@ -82,6 +82,8 @@ function Header() {
       navigate("/my-profile");
     } else if (setting === "Setting") {
       navigate("/account-settings");
+    } else if (setting === "My Learning") {
+      navigate("/my-learning");
     } else if (setting === "Logout") {
       dispatch(logoutUser());
       localStorage.removeItem("walletAddress");

@@ -17,6 +17,7 @@ import AddCoursePage from "../pages/organizationPages/AddCoursePage";
 import DashboardPage from "../pages/adminPages/DashboardPage";
 import OrganizationPage from "../pages/adminPages/OrganizationPage";
 import OrganizationHome from "../pages/organizationPages/OrganizationHome";
+import MyLearning from "../pages/MyLearning";
 
 const Routes = () => {
   return useRoutes([
@@ -30,6 +31,7 @@ const Routes = () => {
       path: "/my-profile",
       element: <Profile />,
     },
+    { path: "my-learning", element: <MyLearning /> },
     {
       path: "/account-settings",
       element: <Setting />,
