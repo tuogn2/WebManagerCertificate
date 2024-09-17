@@ -63,6 +63,7 @@ function Header() {
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
   const balance = useSelector((state) => state.wallet.balance);
+  const { avt } = useSelector((state) => state.auth.user);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -187,7 +188,6 @@ function Header() {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
-
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1,  }}>
       <Container maxWidth="xl">
@@ -330,7 +330,11 @@ function Header() {
             )}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar />
+              <Avatar 
+              sx={{marginLeft: '10px'}}
+                  src={avt} 
+                  alt={'avt'} 
+                  />
               </IconButton>
             </Tooltip>
             <Menu
