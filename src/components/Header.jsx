@@ -47,6 +47,7 @@ const settings = [
 ];
 
 function Header() {
+  const user = useSelector((state) => state.auth.user);
   // <<<<<<< HEAD
   // Control search suggestions visibility
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -346,7 +347,7 @@ function Header() {
             )}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar />
+                <Avatar src={user.avt} />
               </IconButton>
             </Tooltip>
             <Menu
