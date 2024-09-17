@@ -21,14 +21,13 @@ import {
   LinearProgress,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import { useSelector } from "react-redux";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const MyLearning = () => {
   const [tabValue, setTabValue] = React.useState(0);
@@ -37,7 +36,6 @@ const MyLearning = () => {
   const open = Boolean(anchorEl);
   const [enrollments, setEnrollment] = useState([]);
   const user = useSelector((state) => state.auth.user);
-  const loading = useSelector((state) => state.courses.loading);
 
   useEffect(() => {
     fetchEnrolledCourses();
@@ -207,17 +205,30 @@ const MyLearning = () => {
         </Box>
         <Container maxWidth={"lg"}>
           <Paper>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              aria-label="Learning Tabs"
+            <Box
+              sx={{
+                position: "sticky",
+                top: 64,
+                zIndex: 1000,
+                backgroundColor: "white",
+              }}
             >
-              <Tab label="All courses" />
-              <Tab label="My Lists" />
-              <Tab label="Wishlist" />
-              <Tab label="Archived" />
-              <Tab label="Learning tools" />
-            </Tabs>
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                aria-label="Learning Tabs"
+                indicatorColor="primary" // Optional: add color to the active tab
+                textColor="primary"
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                <Tab label="All courses" />
+                <Tab label="My Lists" />
+                <Tab label="Wishlist" />
+                <Tab label="Archived" />
+                <Tab label="Learning tools" />
+              </Tabs>
+            </Box>
 
             {/* Render Content Based on Selected Tab */}
             {renderTabContent()}

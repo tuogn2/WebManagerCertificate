@@ -84,6 +84,8 @@ function Header() {
       navigate("/account-settings");
     } else if (setting === "My Learning") {
       navigate("/my-learning");
+    } else if (setting === "Accomplishments") {
+      navigate("/accomplishments");
     } else if (setting === "Logout") {
       dispatch(logoutUser());
       localStorage.removeItem("walletAddress");

@@ -18,6 +18,7 @@ import DashboardPage from "../pages/adminPages/DashboardPage";
 import OrganizationPage from "../pages/adminPages/OrganizationPage";
 import OrganizationHome from "../pages/organizationPages/OrganizationHome";
 import MyLearning from "../pages/MyLearning";
+import Accomplishments from "../pages/Accomplisments";
 
 const Routes = () => {
   return useRoutes([
@@ -32,6 +33,7 @@ const Routes = () => {
       element: <Profile />,
     },
     { path: "my-learning", element: <MyLearning /> },
+    { path: "accomplishments", element: <Accomplishments /> },
     {
       path: "/account-settings",
       element: <Setting />,
