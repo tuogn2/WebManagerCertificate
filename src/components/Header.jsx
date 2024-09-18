@@ -39,16 +39,20 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const settings = [
-  'My Courses',
-  'Profile',
-  'My Purchases',
-  'Setting',
-  'Accomplishments',
-  'Help Center',
-  'Logout',
+  "My Learning",
+  "Profile",
+  "My Purchases",
+  "Setting",
+  "Accomplishments",
+  "Help Center",
+  "Logout",
 ];
 
 function Header() {
+  const user = useSelector((state) => state.auth.user);
+  // <<<<<<< HEAD
+  // Control search suggestions visibility
+  
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -74,11 +78,16 @@ function Header() {
   };
 
   const handleMenuItemClick = (setting) => {
-    if (setting === 'Profile') {
-      navigate('/my-profile');
-    } else if (setting === 'Setting') {
-      navigate('/account-settings');
-    } else if (setting === 'Logout') {
+
+    if (setting === "Profile") {
+      navigate("/my-profile");
+    } else if (setting === "Setting") {
+      navigate("/account-settings");
+    } else if (setting === "My Learning") {
+      navigate("/my-learning");
+    } else if (setting === "Accomplishments") {
+      navigate("/accomplishments");
+    } else if (setting === "Logout") {
       dispatch(logoutUser());
       dispatch(clearWallet());
       navigate('/login');
@@ -335,6 +344,7 @@ function Header() {
                   src={avt} 
                   alt={'avt'} 
                   />
+
               </IconButton>
             </Tooltip>
             <Menu

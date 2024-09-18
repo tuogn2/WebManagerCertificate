@@ -57,6 +57,9 @@ const authSlice = createSlice({
         state.user.walletAddress = action.payload;
       }
     },
+    updateUser: (state, action) => {
+      state.user = action.payload;
+    },
 
     completeEnrollment: (state, action) => {
       if (state.user) {
@@ -92,5 +95,6 @@ export const {
   updateEnrollment,
   completeEnrollment,
   addWalletAddress,
+  updateUser,
 } = authSlice.actions;
 export default authSlice.reducer;
