@@ -13,22 +13,48 @@ import {
 } from "@mui/material";
 import { Google as GoogleIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios
+import { API_BASE_URL } from "../utils/constants";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../store/slices/authSlice";
 
 const Signup = ({ open, onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-
+  const [error, setError] = useState(null); // Add state for error handling
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleSignup = async () => {
+    try {
+      // Perform API request
+      const response = await axios.post(`${API_BASE_URL}/auth/signup`, {
+        email,
+        name: fullName,
+        password,
+      });
 
-  const handleLogin = () => {
-    console.log("Email:", email, "Password:", password);
+      // Handle successful signup
+      console.log("Signup successful:", response.data);
+      // Redirect or perform any action upon successful signup
+      dispatch(updateUser(response.data.user));
+      navigate('/');
+    } catch (error) {
+      // Handle errors
+      console.error("Signup error:", error);
+      setError(error.response?.data?.message || "An error occurred");
+    }
   };
 
   return (
     <Dialog open={true} onClose={onClose}>
       <DialogTitle textAlign={"center"}>Sign up</DialogTitle>
       <DialogContent>
+        {error && (
+          <Typography color="error" variant="body2" align="center">
+            {error}
+          </Typography>
+        )}
         <TextField
           label="Full name"
           type="text"
@@ -61,7 +87,7 @@ const Signup = ({ open, onClose }) => {
           variant="contained"
           color="primary"
           fullWidth
-          onClick={handleLogin}
+          onClick={handleSignup} // Call handleSignup instead of handleLogin
           style={{ marginTop: "20px", marginBottom: "10px" }}
         >
           Sign Up
