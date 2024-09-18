@@ -71,7 +71,6 @@ const UserProfile = () => {
         ...user,
         avt: file,
       });
-      console.log(user);
       setAvatarURL(URL.createObjectURL(file));
     }
   };
@@ -103,9 +102,9 @@ const UserProfile = () => {
       console.log(formData.get("email"));
       console.log(formData.get("numberphone"));
       console.log(formData.get("avt"));
-
+      const id = oldUser.id === undefined ? oldUser._id : oldUser.id;
       const response = await axios.put(
-        `${API_BASE_URL}/users/change-infor/${oldUser._id}`, // Replace with your actual API endpoint
+        `${API_BASE_URL}/users/change-infor/${id}`, // Replace with your actual API endpoint
         formData,
         {
           headers: {
