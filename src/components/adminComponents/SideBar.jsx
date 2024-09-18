@@ -13,6 +13,10 @@ import {
 import { Dashboard, Book, Add, Settings, Person } from "@mui/icons-material";
 import { PRIMARY_COLOR } from "../../styles/styles";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useDispatch } from 'react-redux';
+import { logoutUser} from '../../store/slices/authSlice'  
+import {clearWallet } from '../../store/slices/walletSlice'  
+import { useNavigate } from 'react-router-dom';
 
 // Kích thước của drawer
 const drawerWidth = 240;
@@ -20,6 +24,9 @@ const drawerWidth = 240;
 export default function SideBar({ onItemSelected, title, menuItems = [] }) {
   // State to keep track of the selected item
   const [activeItem, setActiveItem] = useState("Dashboard");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   // Các mục trong thanh điều hướng
 
@@ -28,7 +35,6 @@ export default function SideBar({ onItemSelected, title, menuItems = [] }) {
     setActiveItem(text); // Set active item
     onItemSelected(text); // Call parent handler for navigation
   };
-
   return (
     <Drawer
       sx={{
@@ -96,7 +102,9 @@ export default function SideBar({ onItemSelected, title, menuItems = [] }) {
           fullWidth
           onClick={() => {
             // Handle logout logic here
-            console.log("Logout clicked");
+            dispatch(logoutUser());
+            dispatch(clearWallet());
+            navigate('/login');
           }}
         >
           Logout

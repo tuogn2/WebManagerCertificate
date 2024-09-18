@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Dialog,
@@ -20,8 +19,11 @@ import {
   VisibilityOff,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify"; // Import thư viện Toastify
-import { loginUser } from "../store/slices/authSlice";
+import { toast } from "react-toastify";
+import { loginUser, updateUser } from "../store/slices/authSlice";
+import { auth, provider, signInWithPopup } from "../firebase"; // Updated import
+import { API_BASE_URL } from "../utils/constants";
+import axios from "axios";
 
 const Login = ({ open, onClose }) => {
   const [email, setEmail] = useState("");
@@ -34,17 +36,17 @@ const Login = ({ open, onClose }) => {
   useEffect(() => {
     if (user && user.role === "admin") {
       navigate("/admin-home");
-    } else if (user && user.role ==='customer') navigate("/");
-    else if (user && user.role ==='organization') navigate("/organization-home");
+    } else if (user && user.role === 'customer') navigate("/");
+    else if (user && user.role === 'organization') navigate("/organization-home");
   }, [user, navigate]);
 
   useEffect(() => {
     if (error) {
-      toast.error(error); // Hiển thị toast lỗi
+      toast.error(error);
     }
   }, [error]);
 
-  // Cập nhật giá trị mặc định khi component được render
+  // Set default values
   useEffect(() => {
     setEmail("conguyetnaduongvulan11@gmail.com");
     setPassword("123456789");
@@ -53,6 +55,39 @@ const Login = ({ open, onClose }) => {
   const handleLogin = () => {
     dispatch(loginUser({ email, password }));
   };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("Logged in with Google:", user);
+  
+      // Gọi API để xử lý đăng nhập Google
+      const response = await axios.post(`${API_BASE_URL}/auth/login-with-google`, {
+        email: user.email,
+        name: user.displayName,
+        avt: user.photoURL,
+      });
+  
+      console.log("Google login response:", response.data);
+  
+      if (response.data && response.data.token) {
+        // Lưu thông tin người dùng và token
+        dispatch(updateUser(response.data.user));
+        localStorage.setItem("token", response.data.token);
+        
+        // Điều hướng sang trang tương ứng dựa trên vai trò của người dùng
+        navigate("/"); // Thay đổi tùy vào logic của bạn
+        toast.success("Google login successful");
+      } else {
+        throw new Error("Login failed: No token received");
+      }
+    } catch (error) {
+      console.error("Error logging in with Google:", error);
+      toast.error("Failed to login with Google");
+    }
+  };
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -108,6 +143,7 @@ const Login = ({ open, onClose }) => {
           fullWidth
           startIcon={<GoogleIcon />}
           style={{ marginTop: "10px" }}
+          onClick={handleGoogleLogin}
         >
           Continue with Google
         </Button>
@@ -116,9 +152,7 @@ const Login = ({ open, onClose }) => {
             New to our website?{" "}
             <Link
               href="#"
-              onClick={() => {
-                navigate("/signup");
-              }}
+              onClick={() => navigate("/signup")}
             >
               {" "}
               Sign up

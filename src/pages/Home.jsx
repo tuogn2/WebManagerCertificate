@@ -46,7 +46,7 @@ const Home = () => {
     if (response.success) {
       console.log(response.data);
     }
-  });
+  }); 
 
   return (
     <>
