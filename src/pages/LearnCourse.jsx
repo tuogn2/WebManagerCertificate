@@ -173,7 +173,6 @@ const LearnCourse = () => {
       // Check if the score is greater than or equal to 70
       if (newQuizResult.score >= 70) {
         // Create a certificate
-        console.log(courseData)
         try {
           const certificateData = {
             user: user.id,

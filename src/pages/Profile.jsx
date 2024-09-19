@@ -284,13 +284,16 @@ const UserProfile = () => {
                               <TextField
                                 type="date"
                                 value={
-                                  new Date(user.birthday)
-                                    .toISOString()
-                                    .split("T")[0]
-                                }
+                                  user.birthday
+                                    ? new Date(user.birthday)
+                                        .toISOString()
+                                        .split("T")[0]
+                                    : ""
+                                } // Kiểm tra giá trị birthday
                                 name="birthday"
                                 onChange={handleInputChange}
                               />
+
                               <Typography
                                 component="label"
                                 variant="body1"

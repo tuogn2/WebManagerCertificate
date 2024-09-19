@@ -32,11 +32,17 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Web3 from "web3";
 import { useRef, useState } from "react";
+import {
+  setWalletAddress,
+  setBalance,
+  clearWallet,
+} from "../store/slices/walletSlice";
+
+import { API_BASE_URL } from "../utils/constants.jsx";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const pages = [];
 const settings = [
   "My Learning",
   "Profile",
@@ -51,25 +57,22 @@ function Header() {
   const user = useSelector((state) => state.auth.user);
   // <<<<<<< HEAD
   // Control search suggestions visibility
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchRef = useRef(null);
-  // =======
+
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [balance, setBalance] = React.useState(
-    localStorage.getItem("balance") || null
-  );
   const [loading, setLoading] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
   const [snackbarSeverity, setSnackbarSeverity] = React.useState("info");
-  const [walletAddress, setWalletAddress] = React.useState(
-    localStorage.getItem("walletAddress") || null
-  );
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchError, setSearchError] = useState(null);
+  const searchRef = useRef(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const courses = useSelector((state) => state.courses.courses);
+  const walletAddress = useSelector((state) => state.wallet.address);
+  const balance = useSelector((state) => state.wallet.balance);
+  const { avt } = useSelector((state) => state.auth.user);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -90,31 +93,50 @@ function Header() {
       navigate("/accomplishments");
     } else if (setting === "Logout") {
       dispatch(logoutUser());
-      localStorage.removeItem("walletAddress");
-      localStorage.removeItem("balance");
+      dispatch(clearWallet());
       navigate("/login");
     }
   };
 
-  // <<<<<<< HEAD
   const popularSearches = [
     "Javascript for beginners",
-    "english for career development",
+    "English for career development",
     "Become a data analyst",
   ];
+
+  const handleSearchChange = async (event) => {
+    const query = event.target.value;
+    if (query.trim()) {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/course/search?query=${encodeURIComponent(query)}`
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setSearchResults(data);
+        setSearchError(null);
+      } catch (error) {
+        console.error("Error searching courses:", error);
+        setSearchError("Error fetching search results");
+        setSearchResults([]);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
 
   const handleSearchFocus = () => {
     setShowSuggestions(true);
   };
 
   const handleSearchBlur = (event) => {
-    // Check if the next focus target is within the suggestions list
     if (!searchRef.current?.contains(event.relatedTarget)) {
       setShowSuggestions(false);
     }
   };
 
-  // =======
   const connectMetaMask = async () => {
     if (typeof window.ethereum === "undefined") {
       setSnackbarMessage(
@@ -132,8 +154,7 @@ function Header() {
         method: "eth_requestAccounts",
       });
       const accountAddress = accounts[0];
-      setWalletAddress(accountAddress);
-      localStorage.setItem("walletAddress", accountAddress);
+      dispatch(setWalletAddress(accountAddress));
       setSnackbarMessage("Kết nối MetaMask thành công.");
       setSnackbarSeverity("success");
       setOpenSnackbar(true);
@@ -154,18 +175,16 @@ function Header() {
       const web3 = new Web3(window.ethereum);
       const balanceInWei = await web3.eth.getBalance(accountAddress);
       const balanceInEth = web3.utils.fromWei(balanceInWei, "ether");
-      setBalance(balanceInEth);
-      localStorage.setItem("balance", balanceInEth);
+      dispatch(setBalance(balanceInEth));
     } catch (error) {
       console.error("Không thể lấy số dư MetaMask:", error);
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleAccountsChanged = (accounts) => {
       const newAccount = accounts[0];
-      setWalletAddress(newAccount);
-      localStorage.setItem("walletAddress", newAccount);
+      dispatch(setWalletAddress(newAccount));
     };
 
     if (window.ethereum) {
@@ -180,9 +199,9 @@ function Header() {
         );
       }
     };
-  }, []);
+  }, [dispatch]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (walletAddress) {
       fetchBalance(walletAddress);
     }
@@ -191,9 +210,11 @@ function Header() {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
-
   return (
-    <AppBar position="fixed">
+    <AppBar
+      position="fixed"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box flex={1}>
@@ -217,12 +238,13 @@ function Header() {
             </Box>
           </Box>
 
-          <Box flex={1}>
+          <Box sx={{ flex: 2, position: "relative" }}>
             <TextField
               placeholder="What do you want to learn?"
               variant="outlined"
               onFocus={handleSearchFocus}
               onBlur={handleSearchBlur}
+              onChange={handleSearchChange}
               fullWidth
               sx={{
                 "& .MuiOutlinedInput-root": {
@@ -249,50 +271,22 @@ function Header() {
                 ),
               }}
             />
-          </Box>
-
-          {/* Search Suggestions */}
-          {showSuggestions && (
-            <Paper
-              ref={searchRef}
-              sx={{
-                position: "absolute",
-                top: 62, // Adjust to match the height of your TextField
-                left: "30%",
-                right: "34%",
-                zIndex: 10,
-                borderRadius: "10px",
-                padding: "10px",
-                boxShadow: 3,
-              }}
-              onBlur={handleSearchBlur}
-              tabIndex={-1}
-            >
-              <List
-                subheader={
-                  <ListSubheader
-                    component="div"
-                    sx={{
-                      userSelect: "none",
-                      color: "black",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Most Popular Specializations
-                  </ListSubheader>
-                }
+            {showSuggestions && (
+              <Paper
+                ref={searchRef}
+                sx={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  zIndex: 10,
+                  borderRadius: "10px",
+                  padding: "10px",
+                  boxShadow: 3,
+                }}
+                onBlur={handleSearchBlur}
+                tabIndex={-1}
               >
-                {courses.map((course) => (
-                  <ListItemButton
-                    alignItems="center"
-                    onClick={() => navigate(`/course/${course._id}`)}
-                  >
-                    <ListItemAvatar>
-                      <Avatar src={course.image} />
-                    </ListItemAvatar>
-                    <ListItemText primary={course.title} />
-                  </ListItemButton>
-                ))}
                 <List
                   subheader={
                     <ListSubheader
@@ -303,46 +297,63 @@ function Header() {
                         fontWeight: "bold",
                       }}
                     >
-                      Popular Right Now
+                      {searchError
+                        ? "Error fetching search results"
+                        : "Search Results"}
                     </ListSubheader>
                   }
                 >
-                  {popularSearches.map((search, index) => (
-                    <ListItemButton button key={index} tabIndex={0}>
-                      <SearchIcon sx={{ mr: 2 }} />
-                      <ListItemText primary={search} />
-                    </ListItemButton>
-                  ))}
+                  {searchError ? (
+                    <ListItem>
+                      <ListItemText primary={searchError} />
+                    </ListItem>
+                  ) : (
+                    searchResults.map((course) => (
+                      <ListItemButton
+                        key={course._id}
+                        alignItems="center"
+                        onClick={() => navigate(`/course/${course._id}`)}
+                      >
+                        <ListItemAvatar>
+                          <Avatar src={course.image} />
+                        </ListItemAvatar>
+                        <ListItemText primary={course.title} />
+                      </ListItemButton>
+                    ))
+                  )}
+                  <List
+                    subheader={
+                      <ListSubheader
+                        component="div"
+                        sx={{
+                          userSelect: "none",
+                          color: "black",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Popular Right Now
+                      </ListSubheader>
+                    }
+                  >
+                    {popularSearches.map((search, index) => (
+                      <ListItemButton button key={index} tabIndex={0}>
+                        <SearchIcon sx={{ mr: 2 }} />
+                        <ListItemText primary={search} />
+                      </ListItemButton>
+                    ))}
+                  </List>
                 </List>
-              </List>
-            </Paper>
-          )}
+              </Paper>
+            )}
+          </Box>
 
-          {/* <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={() => navigate(`/${page.toLowerCase()}`)}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box> */}
-
-          <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
             {walletAddress ? (
               <>
-                <Typography
-                  variant="body1"
-                  sx={{ color: "white", marginRight: "5px" }}
-                >
+                <Typography variant="body1" sx={{ color: "white", mr: 1 }}>
                   {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                 </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ color: "white", marginRight: 2 }}
-                >
+                <Typography variant="body1" sx={{ color: "white", mr: 2 }}>
                   {balance ? `${balance} ETH` : "Đang tải..."}
                 </Typography>
               </>
@@ -358,7 +369,7 @@ function Header() {
             )}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar src={user.avt} />
+                <Avatar sx={{ marginLeft: "10px" }} src={avt} alt={"avt"} />
               </IconButton>
             </Tooltip>
             <Menu

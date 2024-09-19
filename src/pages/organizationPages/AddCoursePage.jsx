@@ -103,35 +103,33 @@ function AddCoursePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      // Create a FormData object to include all the fields
       const formData = new FormData();
       formData.append("title", course.title);
       formData.append("description", course.description);
       formData.append("price", course.price);
       formData.append("organization", course.organization);
-
-      // Append the image file to the FormData
+  
+      // Append image if present
       if (course.image) {
         formData.append("image", course.image);
       }
-
-      // Append the documents and final quiz details (convert objects to JSON strings)
+  
+      // Convert documents and finalQuiz to JSON strings
       formData.append("documents", JSON.stringify(course.documents));
-      formData.append("finalQuiz", JSON.stringify(course.finalQuiz));
-
-      // Send the form data using axios
+      formData.append("finalQuiz", JSON.stringify(course.finalQuiz)); // Use JSON.stringify
+  
       const response = await axios.post(`${API_BASE_URL}/course/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
+  
       if (response.status === 201) {
         console.log("Course submitted:", response.data);
-
-        // Clear the form
+        alert("Course submitted for admin review!");
+        // Clear the form after submission
         setCourse({
           title: "",
           description: "",
@@ -145,30 +143,22 @@ function AddCoursePage() {
             questions: [
               {
                 questionText: "",
-                options: [
-                  { text: "" },
-                  { text: "" },
-                  { text: "" },
-                  { text: "" },
-                ],
+                options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
                 correctAnswer: "",
               },
             ],
           },
         });
-
-        // Clear the file input
         if (inputFileRef.current) {
           inputFileRef.current.value = null;
         }
-
-        alert("Course submitted for admin review!");
       }
     } catch (error) {
       console.error("Failed to submit course:", error);
       alert("Failed to submit course. Please try again.");
     }
   };
+  
 
   return (
     <>

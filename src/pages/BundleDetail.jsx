@@ -39,7 +39,6 @@ const BundleDetail = () => {
     );
     return enrollment;
   };
-
   return (
     <>
       <CssBaseline />

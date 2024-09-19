@@ -33,9 +33,7 @@ const CourseDetail = () => {
   const navigate = useNavigate(); // Get the navigate function
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  
-  const [walletAddress, setWalletAddress] = useState(localStorage.getItem('walletAddress')); // Retrieve from localStorage
-
+  const walletAddress = useSelector((state) => state.wallet.address); // Get walletAddress from Redux
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -56,7 +54,7 @@ const CourseDetail = () => {
   }
 
   if (!course) {
-    return <NotFound/>
+    return <NotFound />;
   }
 
   const hasEnrolled = user.enrollments.some(
@@ -65,26 +63,27 @@ const CourseDetail = () => {
 
   const handleButtonClick = async () => {
     if (hasEnrolled) {
-      // Nếu đã tham gia, chuyển hướng đến trang học tập
+      // If already enrolled, navigate to the course learning page
       navigate(`/course/${id}/learn`);
     } else {
+      
       try {
-         if (!walletAddress) {
-          // Nếu người dùng chưa có ví, thông báo yêu cầu tạo ví
+        if (!walletAddress) {
+          // If the user does not have a wallet, display a message
           setMessage("Please create a wallet to enroll in the course.");
           return;
-        } 
-        // Gọi hàm payForCourse để xử lý thanh toán
-        const studentId = user.id; // ID của người dùng
-        const studentName = user.name; // Tên của người dùng (nếu có)
+        }
+        // Call payForCourse to handle payment
+        const studentId = user.id; // User ID
+        const studentName = user.name; // User Name (if available)
         const amount = course.price === 0 ? 0.000000001 : (course.price / 100000).toFixed(18); // Ensure amount is a string with sufficient precision
-        const walletOr= '0xd804B089eD093060fc41f7387c5D194C9aF70bb1';
+        const walletOr = '0xd804B089eD093060fc41f7387c5D194C9aF70bb1';
         const organization = course.organization.name;
-        // Thực hiện thanh toán
-        const paymentResult = await payForCourse(studentId, course._id, studentName, amount,walletOr,organization);
+        // Perform payment
+        const paymentResult = await payForCourse(studentId, course._id, studentName, amount, walletOr, organization);
 
         if (paymentResult.success) {
-          // Nếu thanh toán thành công, gửi yêu cầu đăng ký khóa học
+          // If payment is successful, create enrollment
           const response = await axios.post(`${API_BASE_URL}/enrollment`, {
             user: studentId,
             course: course._id,
@@ -92,7 +91,7 @@ const CourseDetail = () => {
 
           console.log("Enrollment created successfully:", response.data);
           dispatch(addEnrollmentToUser(response.data));
-          // Chuyển hướng đến trang học tập sau khi đăng ký thành công
+          // Navigate to the course learning page after successful enrollment
           navigate(`/course/${id}/learn`);
         } else {
           setMessage(paymentResult.message); // Display payment error message
