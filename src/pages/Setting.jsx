@@ -1,55 +1,208 @@
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Box,
   Button,
   Container,
-  createTheme,
   CssBaseline,
   Divider,
   Grid,
+  Link,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Paper,
   TextField,
-  ThemeProvider,
   Toolbar,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { Route, Routes, useNavigate, useRoutes } from "react-router-dom";
+import LockIcon from "@mui/icons-material/Lock";
+import PaymentIcon from "@mui/icons-material/Payment";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../components/Header";
-import PersonIcon from "@mui/icons-material/Person";
-import EmailIcon from "@mui/icons-material/Email";
+import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { API_BASE_URL } from "../utils/constants";
+import ForgotPassword from "./ForgotPassword";
 
-const sections = [
-  { name: "Account", path: "/account" },
-  { name: "Communication Preferences", path: "/communication-preferences" },
-];
-
-const Account = () => (
-  <Box>
-    <Typography variant="h5">Account Settings</Typography>
-    <Typography>Manage your account details here.</Typography>
-  </Box>
-);
-
-const CommunicationPreferences = () => (
-  <Box>
-    <Typography variant="h5">Communication Preferences</Typography>
-    <Typography>Set your communication preferences here.</Typography>
-  </Box>
-);
-
-const AccountSettings = () => {
+const Setting = () => {
   const navigate = useNavigate();
-  const [selectedSection, setSelectedSection] = useState("/account");
+  const user = useSelector((state) => state.auth.user);
 
-  const handleListItemClick = (path) => {
-    setSelectedSection(path);
-    navigate(path);
+  // Password handler
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [retypePassword, setRetypePassword] = useState("");
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isPasswordMatch, setIsPasswordMatch] = useState(false);
+
+  // Regex for password validation (minimum 8 characters, at least one uppercase, one lowercase, and one number)
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+  useEffect(() => {
+    // Check if the new password is valid using the regex
+    setIsPasswordValid(passwordRegex.test(newPassword));
+
+    // Check if the new password and retype password match
+    setIsPasswordMatch(newPassword === retypePassword);
+  }, [newPassword, retypePassword]);
+
+  const [selectedSection, setSelectedSection] = useState(
+    "Password and Security"
+  );
+
+  // Function to handle password change
+  const changePasswordHandler = async () => {
+    if (!isPasswordValid || !isPasswordMatch) {
+      alert("Password is invalid or does not match.");
+      return;
+    }
+    const token = localStorage.getItem("token");
+
+    const payload = {
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    try {
+      const response = await axios.put(
+        `${API_BASE_URL}/users/change-password/${user._id === undefined ? user.id : user._id}`,
+        payload,
+        { headers: headers }
+      );
+
+      if (response.status === 200) {
+        alert("Password changed successfully");
+      } else {
+        alert("Failed to change password");
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error.response.data.message);
+    }
+  };
+
+  const handleListItemClick = (section) => {
+    setSelectedSection(section);
+  };
+
+  // Define the ForgotPassword function
+  const ForgotPassword = (email) => {
+    return `/forgot-password?email=${encodeURIComponent(email)}`;
+  };
+
+  // Component to render the content based on the selected section
+  const renderContent = () => {
+    switch (selectedSection) {
+      case "Password and Security":
+        return (
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h5" sx={{ mb: 2, color: "Highlight" }}>
+              Password
+            </Typography>
+            <TextField
+              fullWidth
+              label="Current Password"
+              type="password"
+              sx={{ mb: 2 }}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+            <TextField
+              fullWidth
+              label="New Password"
+              type="password"
+              sx={{ mb: 2 }}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              error={!isPasswordValid && newPassword !== ""}
+              helperText={
+                !isPasswordValid && newPassword !== ""
+                  ? "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number."
+                  : ""
+              }
+            />
+            <TextField
+              fullWidth
+              label="Retype New Password"
+              type="password"
+              sx={{ mb: 2 }}
+              value={retypePassword}
+              onChange={(e) => setRetypePassword(e.target.value)}
+              error={!isPasswordMatch && retypePassword !== ""}
+              helperText={
+                !isPasswordMatch && retypePassword !== ""
+                  ? "Passwords do not match."
+                  : ""
+              }
+            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!isPasswordValid || !isPasswordMatch}
+                onClick={changePasswordHandler}
+              >
+                Change Password
+              </Button>
+              <Typography variant="body2" sx={{ mt: 2 }}>
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={() => navigate(ForgotPassword(user.email))}
+                >
+                  Forgot Password?
+                </Link>
+              </Typography>
+            </Box>
+            <Typography variant="h5" sx={{ color: "Highlight", mt: 2, mb: 2 }}>
+              Security
+            </Typography>
+          </Box>
+        );
+      case "Billing and Payments":
+        return (
+          <Box>
+            <Typography variant="h6">Billing and Payments</Typography>
+            <Typography variant="body2" color="textSecondary">
+              View your billing history and manage payment methods.
+            </Typography>
+            {/* Add billing and payments details here */}
+          </Box>
+        );
+      case "Close Account":
+        return (
+          <Box sx={{ p: 3 }}>
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="body1" color="error">
+              <Typography sx={{ fontWeight: 800 }}> Warning:</Typography> If you
+              close your account, you will be unsubscribed from all of your
+              courses and will lose access to your account and data associated
+              with your account forever, even if you choose to create a new
+              account using the same email address in the future.
+            </Typography>
+            <Button variant="contained" color="error" sx={{ mt: 2 }}>
+              Delete Account
+            </Button>
+          </Box>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -60,76 +213,162 @@ const AccountSettings = () => {
           <Header />
         </Toolbar>
       </AppBar>
+
       <Container maxWidth="xl">
-        <Grid container spacing={2} p={10}>
-          <Grid item xs={3}>
-            <Paper variant="outlined">
-              <List>
-                <ListItem>
-                  <ListItemIcon>
-                    <PersonIcon />
-                  </ListItemIcon>
-                  <ListItemButton>Account</ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <EmailIcon />
-                  </ListItemIcon>
-                  <ListItemButton>Communication</ListItemButton>
-                </ListItem>
-              </List>
-            </Paper>
+        <Box mt={3}>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              color: "Highlight",
+              textTransform: "uppercase",
+              letterSpacing: 1.5,
+            }}
+          >
+            Settings
+          </Typography>
+        </Box>
+        <Container maxWidth={"lg"} sx={{ mt: 2 }}>
+          <Grid container spacing={10}>
+            {/* Left Section: Settings List */}
+            <Grid item xs={12} md={4}>
+              <Paper elevation={5}>
+                <Divider sx={{ mb: 2 }} />
+                <List component="nav">
+                  <ListItemButton
+                    onClick={() => handleListItemClick("Password and Security")}
+                    sx={{
+                      backgroundColor:
+                        selectedSection === "Password and Security"
+                          ? "Highlight"
+                          : "transparent",
+                      "&:hover": {
+                        backgroundColor: "Highlight",
+                        color: "white",
+                        "& .MuiSvgIcon-root": {
+                          color: "white",
+                        },
+                        "& .MuiListItemText-root": {
+                          color: "white",
+                        },
+                      },
+                    }}
+                  >
+                    <ListItemIcon>
+                      <LockIcon
+                        sx={{
+                          color:
+                            selectedSection === "Password and Security"
+                              ? "WHITE"
+                              : "inherit",
+                        }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Password and Security"
+                      sx={{
+                        color:
+                          selectedSection === "Password and Security"
+                            ? "WHITE"
+                            : "BLACK",
+                      }}
+                    />
+                  </ListItemButton>
+                  <ListItemButton
+                    onClick={() => handleListItemClick("Billing and Payments")}
+                    sx={{
+                      backgroundColor:
+                        selectedSection === "Billing and Payments"
+                          ? "Highlight"
+                          : "transparent",
+                      "&:hover": {
+                        backgroundColor: "Highlight",
+                        color: "white",
+                        "& .MuiSvgIcon-root": {
+                          color: "white",
+                        },
+                        "& .MuiListItemText-root": {
+                          color: "white",
+                        },
+                      },
+                    }}
+                  >
+                    <ListItemIcon>
+                      <PaymentIcon
+                        sx={{
+                          color:
+                            selectedSection === "Billing and Payments"
+                              ? "WHITE"
+                              : "inherit",
+                        }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Billing and Payments"
+                      sx={{
+                        color:
+                          selectedSection === "Billing and Payments"
+                            ? "WHITE"
+                            : "BLACK",
+                      }}
+                    />
+                  </ListItemButton>
+                  <ListItemButton
+                    onClick={() => handleListItemClick("Close Account")}
+                    sx={{
+                      backgroundColor:
+                        selectedSection === "Close Account"
+                          ? "Highlight"
+                          : "transparent",
+                      "&:hover": {
+                        backgroundColor: "Highlight",
+                        color: "white",
+                        "& .MuiSvgIcon-root": {
+                          color: "white",
+                        },
+                        "& .MuiListItemText-root": {
+                          color: "white",
+                        },
+                      },
+                    }}
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon
+                        sx={{
+                          color:
+                            selectedSection === "Close Account"
+                              ? "WHITE"
+                              : "inherit",
+                        }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Close Account"
+                      sx={{
+                        color:
+                          selectedSection === "Close Account"
+                            ? "WHITE"
+                            : "BLACK",
+                      }}
+                    />
+                  </ListItemButton>
+                </List>
+              </Paper>
+            </Grid>
+
+            {/* Right Section: Settings Content */}
+            <Grid item xs={12} md={8}>
+              <Paper elevation={5} sx={{ p: 3, minHeight: "300px" }}>
+                {renderContent()}
+              </Paper>
+            </Grid>
           </Grid>
-          <Grid item xs={9}>
-            <Paper style={{}}>
-              <Typography variant="h4">Password</Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                }}
-              >
-                <Grid container spacing={3}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      Current password
-                    </Typography>
-                    <TextField type="password"></TextField>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      New password
-                    </Typography>
-                    <TextField type="password"></TextField>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      Retype password
-                    </Typography>
-                    <TextField type="password"></TextField>
-                  </Grid>
-                </Grid>
-                <Button
-                  variant="contained"
-                  sx={{ alignSelf: "center", mt: 5, mb: 5 }}
-                >
-                  Change password
-                </Button>
-              </Box>
-              {/* <Routes>
-                <Route path="/account" element={<Account />} />
-                <Route
-                  path="/communication-preferences"
-                  element={<CommunicationPreferences />}
-                />
-              </Routes> */}
-            </Paper>
-          </Grid>
-        </Grid>
+        </Container>
       </Container>
+      <Footer />
     </>
   );
 };
 
-export default AccountSettings;
+export default Setting;

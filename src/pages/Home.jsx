@@ -41,7 +41,7 @@ const Home = () => {
   if (loading) {
     return <Loading />; // Loading state
   }
-
+  console.log(user.id);
   getCertificatesByStudentId(user.id).then((response) => {
     if (response.success) {
       console.log(response.data);
@@ -56,6 +56,7 @@ const Home = () => {
           <Header />
         </Toolbar>
       </AppBar>
+
       <Container maxWidth="xl">
         <Grid container spacing={1}>
           <Grid item xs={12}>

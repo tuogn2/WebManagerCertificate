@@ -57,7 +57,7 @@ const MyLearning = () => {
   const fetchEnrolledCourses = async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/enrollment/user/${user.id}`
+        `${API_BASE_URL}/enrollment/user/${user._id}`
       );
       console.log(user.id);
 

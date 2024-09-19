@@ -2,22 +2,16 @@ import React from "react";
 import {
   Box,
   Typography,
-  Tabs,
-  Tab,
   Card,
   CardContent,
   CardMedia,
   Grid,
   IconButton,
-  Menu,
-  MenuItem,
   CssBaseline,
   AppBar,
   Toolbar,
   Container,
-  CardActionArea,
   Divider,
-  Paper,
   LinearProgress,
   Tooltip,
 } from "@mui/material";
@@ -46,7 +40,7 @@ const Accomplishments = () => {
         let allCertificates = response.data;
         setCertificates(
           allCertificates.filter(
-            (certificate) => certificate.user._id === user.id
+            (certificate) => certificate.user._id === user._id
           )
         );
         setLoading(false);
