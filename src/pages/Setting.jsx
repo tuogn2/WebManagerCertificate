@@ -40,7 +40,8 @@ const Setting = () => {
   const [isPasswordMatch, setIsPasswordMatch] = useState(false);
 
   // Regex for password validation (minimum 8 characters, at least one uppercase, one lowercase, and one number)
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   useEffect(() => {
     // Check if the new password is valid using the regex

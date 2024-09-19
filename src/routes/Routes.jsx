@@ -20,6 +20,7 @@ import OrganizationHome from "../pages/organizationPages/OrganizationHome";
 import MyLearning from "../pages/MyLearning";
 import Accomplishments from "../pages/Accomplisments";
 import ForgotPassword from "../pages/ForgotPassword";
+import ChangePassword from "../pages/ChangePassword";
 
 const Routes = () => {
   return useRoutes([
@@ -44,6 +45,7 @@ const Routes = () => {
       element: <Login />,
     },
     { path: "/forgot-password", element: <ForgotPassword /> },
+    { path: "/change-password", element: <ChangePassword /> },
 
     { path: "/signup", element: <Signup /> },
     { path: "/course/:id", element: <CourseDetail /> },

@@ -11,32 +11,16 @@ import {
   IconButton,
   CssBaseline,
 } from "@mui/material";
-import { Email, Image } from "@mui/icons-material";
+import { Close, Email } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
-import logo from "src/assets/logo.png";
-
-const ChangePassword = () => {
-  return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, highlight 30%, blue 90%)",
-      }}
-    >
-      <Text>HEHEH</Text>
-    </Container>
-  );
-};
+import logo from "../assets/logo.png";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   //   const email = queryParams.get("email");
@@ -89,6 +73,7 @@ const ForgotPassword = () => {
     if (enteredCode == verificationCode) {
       setNotification("Verification code is correct!");
       // Redirect to the reset password page
+      navigate("/change-password");
     } else {
       setNotification("Verification code is incorrect. Please try again.");
     }
@@ -96,7 +81,6 @@ const ForgotPassword = () => {
 
   return (
     <>
-      {" "}
       <CssBaseline />
       <Container
         maxWidth="sm"
@@ -114,16 +98,27 @@ const ForgotPassword = () => {
           sx={{ p: 4, borderRadius: 4, textAlign: "center" }}
         >
           {/* Back Button */}
-          <IconButton sx={{ position: "absolute", top: 16, left: 16 }}>
+          <IconButton
+            sx={{ position: "absolute", top: 16, left: 16 }}
+            onClick={() => navigate("/account-settings")}
+          >
             <ArrowBackIcon />
+          </IconButton>
+
+          {/* Back Button */}
+          <IconButton
+            sx={{ position: "absolute", top: 16, right: 16 }}
+            onClick={() => navigate("/")}
+          >
+            <Close />
           </IconButton>
 
           {/* Logo */}
           <Box mb={2}>
-            <Image
+            <img
               src={logo} // Replace with your logo URL
               alt="Logo"
-              style={{ borderRadius: "50%" }}
+              style={{ borderRadius: "5%", width: 50, height: 50 }}
             />
           </Box>
 
@@ -201,7 +196,7 @@ const ForgotPassword = () => {
               "&:hover": { backgroundColor: "#00b0b6" },
             }}
           >
-            Đặt lại mật khẩu
+            Verify Code
           </Button>
 
           {/* Notification */}
