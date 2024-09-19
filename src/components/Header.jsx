@@ -24,6 +24,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../store/slices/authSlice";
@@ -201,7 +202,17 @@ function Header() {
               sx={{ width: "auto", alignItems: "center" }}
               onClick={() => navigate("/")}
             >
-              <AdbIcon sx={{ cursor: "pointer" }} />
+              <img
+                src={logo}
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: "50%",
+                  paddingRight: 5,
+                  cursor: "pointer",
+                }}
+                onClick={() => navigate("/")}
+              />
               <Typography sx={{ cursor: "pointer" }}>M-Certificate</Typography>
             </Box>
           </Box>
