@@ -133,8 +133,8 @@ export default function OrganizationPage() {
   const handleDeleteConfirm = async () => {
     // Call API to delete organization
     try {
-      const response = await axios.delete(
-        `${API_BASE_URL}/organization/${selectedOrganization._id}`
+      const response = await axios.put(
+        `${API_BASE_URL}/organization/${selectedOrganization._id}/activate`
       );
       // Assuming response.data contains the updated list of organizations
       setOrganizations((prevOrganizations) =>
@@ -183,42 +183,50 @@ export default function OrganizationPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Kiểm tra xem các trường bắt buộc có được điền không
+    if (!organization.walletAddress || !organization.email) {
+      setErrorSnackbar(true); // Hiển thị thông báo lỗi
+      return;
+    }
+
     try {
-      // Create a FormData object
+      // Tạo một đối tượng FormData
       const formData = new FormData();
       formData.append("name", organization.name);
       formData.append("address", organization.address);
       formData.append("email", organization.email);
       formData.append("password", organization.password);
       if (organization.avatar) {
-        formData.append("avatar", organization.avatar); // Append the image file
+        formData.append("avatar", organization.avatar); // Thêm tệp hình ảnh
       }
+      formData.append("walletaddress", organization.walletAddress); // Thêm địa chỉ ví
 
-      // Send data to the API using axios
+      // Gửi dữ liệu đến API bằng axios
       const response = await axios.post(
         `${API_BASE_URL}/organization`,
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
+            "Content-Type": "multipart/form-data", // Đặt kiểu nội dung là multipart/form-data
           },
         }
       );
 
-      // If successful, show success message
+      // Nếu thành công, hiển thị thông báo thành công
       if (response.status === 201) {
         setOpenSnackbar(true);
 
-        // Fetch the updated list of organizations
+        // Lấy danh sách tổ chức đã cập nhật
         fetchOrganizations();
 
-        // Clear the form fields
+        // Xóa các trường của form
         setOrganization({
           name: "",
           address: "",
           email: "",
           password: "",
           avatar: null,
+          walletAddress: "", // Đặt lại địa chỉ ví
         });
 
         if (inputFileRef.current) {
@@ -227,7 +235,7 @@ export default function OrganizationPage() {
       }
     } catch (error) {
       console.error("Error adding organization:", error);
-      setErrorSnackbar(true); // Open error message
+      setErrorSnackbar(true); // Mở thông báo lỗi
     }
   };
 
@@ -243,7 +251,6 @@ export default function OrganizationPage() {
           <Tab label="Add Organization" {...a11yProps(1)} />
         </Tabs>
       </Box>
-
       {/* View Organization */}
       <TabPanel value={value} index={0}>
         {loading ? (
@@ -279,11 +286,17 @@ export default function OrganizationPage() {
           </List>
         )}
       </TabPanel>
-
       {/* Update Organization Dialog */}
       <Dialog open={openUpdate} onClose={handleCloseUpdate}>
         <DialogTitle>Update Organization</DialogTitle>
         <DialogContent>
+        <TextField
+            fullWidth
+            label="Email"
+            margin="normal"
+            value={selectedOrganization?.email || ""}
+            disabled // Disable this field
+          />
           <TextField
             fullWidth
             label="Organization Name"
@@ -308,15 +321,16 @@ export default function OrganizationPage() {
               })
             }
           />
+         
           <TextField
             fullWidth
-            label="Email"
+            label="Wallet Address"
             margin="normal"
-            value={selectedOrganization?.email || ""}
+            value={selectedOrganization?.walletaddress || ""}
             onChange={(e) =>
               setSelectedOrganization({
                 ...selectedOrganization,
-                email: e.target.value,
+                walletaddress: e.target.value,
               })
             }
           />
@@ -330,7 +344,6 @@ export default function OrganizationPage() {
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Delete dialog */}
       <Dialog
         open={openDelete}
@@ -356,7 +369,6 @@ export default function OrganizationPage() {
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Add Organization */}
       <TabPanel value={value} index={1}>
         <Paper elevation={3} sx={{ padding: 2 }}>
@@ -380,6 +392,7 @@ export default function OrganizationPage() {
             <TextField
               label="Email"
               name="email"
+              required
               value={organization.email}
               onChange={handleInputChange}
               fullWidth
@@ -401,11 +414,13 @@ export default function OrganizationPage() {
               sx={{ marginBottom: 2 }}
             />
             <TextField
-              label="Metamask Address"
-              name="metamaskAddress"
+              label="Wallet Address"
+              name="walletAddress"
+              value={organization.walletAddress}
               onChange={handleInputChange}
               fullWidth
               sx={{ marginBottom: 2 }}
+              required // Thêm thuộc tính required để nhấn mạnh rằng trường này là bắt buộc
             />
 
             <Button variant="contained" color="primary" type="submit" fullWidth>
@@ -413,7 +428,18 @@ export default function OrganizationPage() {
             </Button>
           </form>
         </Paper>
-
+        {/* wallet email require */}
+        <Snackbar
+          open={errorSnackbar}
+          autoHideDuration={3000}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          onClose={() => setErrorSnackbar(false)}
+        >
+          <Alert onClose={() => setErrorSnackbar(false)} severity="error">
+            Wallet Address and Email are required fields. Please fill them out
+            and try again.
+          </Alert>
+        </Snackbar>
         {/* Success Snackbar */}
         <Snackbar
           open={openSnackbar}
