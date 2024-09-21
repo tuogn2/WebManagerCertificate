@@ -23,7 +23,7 @@ import NotFound from "./NotFound";
 import Loading from "../components/Loading.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { addEnrollmentToUser } from "../store/slices/authSlice";
-import payForCourse from '../utils/payForCourse';
+import payForCourse from "../utils/payForCourse";
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -56,17 +56,17 @@ const CourseDetail = () => {
   if (!course) {
     return <NotFound />;
   }
+  console.log(user);
 
-  const hasEnrolled = user.enrollments.some(
-    (enrollment) => enrollment.course.toString() === course._id
-  );
+  const hasEnrolled = user.enrollments.some((enrollment) => {
+    return enrollment.course.toString() === course._id;
+  });
 
   const handleButtonClick = async () => {
     if (hasEnrolled) {
       // If already enrolled, navigate to the course learning page
       navigate(`/course/${id}/learn`);
     } else {
-      
       try {
         if (!walletAddress) {
           // If the user does not have a wallet, display a message
@@ -74,13 +74,25 @@ const CourseDetail = () => {
           return;
         }
         // Call payForCourse to handle payment
-        const studentId = user.id; // User ID
+        const studentId = user._id; // User ID
         const studentName = user.name; // User Name (if available)
-        const amount = course.price === 0 ? 0.000000001 : (course.price / 100000).toFixed(18); // Ensure amount is a string with sufficient precision
-        const walletOr = '0xd804B089eD093060fc41f7387c5D194C9aF70bb1';
+        const amount =
+          course.price === 0
+            ? 0.000000001
+            : (course.price / 100000).toFixed(18); // Ensure amount is a string with sufficient precision
+        const walletOr =
+          course.organization.walletaddress ||
+          "0x6087050c4069ab730d872e625E035A8fd8DeD600";
         const organization = course.organization.name;
         // Perform payment
-        const paymentResult = await payForCourse(studentId, course._id, studentName, amount, walletOr, organization);
+        const paymentResult = await payForCourse(
+          studentId,
+          course._id,
+          studentName,
+          amount,
+          walletOr,
+          organization
+        );
 
         if (paymentResult.success) {
           // If payment is successful, create enrollment
@@ -98,7 +110,9 @@ const CourseDetail = () => {
         }
       } catch (error) {
         console.error("Failed to process payment or create enrollment:", error);
-        setMessage("Failed to process payment or create enrollment. Please try again.");
+        setMessage(
+          "Failed to process payment or create enrollment. Please try again."
+        );
       }
     }
   };
@@ -207,8 +221,16 @@ const CourseDetail = () => {
       </Container>
       <Footer />
       {message && (
-        <Snackbar open={Boolean(message)} autoHideDuration={6000} onClose={() => setMessage('')}>
-          <Alert onClose={() => setMessage('')} severity="error" sx={{ width: '100%' }}>
+        <Snackbar
+          open={Boolean(message)}
+          autoHideDuration={6000}
+          onClose={() => setMessage("")}
+        >
+          <Alert
+            onClose={() => setMessage("")}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
             {message}
           </Alert>
         </Snackbar>

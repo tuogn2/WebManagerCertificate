@@ -26,9 +26,11 @@ import NotFound from "./NotFound";
 import Header from "../components/Header";
 import { API_BASE_URL } from "../utils/constants.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { updateEnrollment , completeEnrollment } from "../store/slices/authSlice";
+import {
+  updateEnrollment,
+  completeEnrollment,
+} from "../store/slices/authSlice";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Import the back icon
-
 
 const LearnCourse = () => {
   const { id } = useParams();
@@ -60,7 +62,7 @@ const LearnCourse = () => {
     const fetchQuizResults = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/quiz/result/user/${user.id}/course/${id}`
+          `${API_BASE_URL}/quiz/result/user/${user._id || user.id}/course/${id}`
         );
         // Assuming response.data is an array of results
         const sortedResults = response.data.sort((a, b) => b.score - a.score); // Sort results by score in descending order
@@ -74,7 +76,7 @@ const LearnCourse = () => {
 
     fetchCourseData();
     fetchQuizResults();
-  }, [id, user.id]);
+  }, [id, user._id]);
 
   const hasEnrolled = user.enrollments.find(
     (enrollment) => enrollment.course.toString() === id
@@ -140,7 +142,7 @@ const LearnCourse = () => {
       return;
     }
     const submissionData = {
-      userId: user.id,
+      userId: user._id,
       courseId: id,
       answers: Object.keys(quizAnswers).map((questionId) => {
         const question = courseData.finalQuiz.questions.find(
@@ -175,12 +177,12 @@ const LearnCourse = () => {
         // Create a certificate
         try {
           const certificateData = {
-            user: user.id,
+            user: user._id || user.id, // Assuming user contains the userId
             organization: courseData.organization._id, // Assuming courseData contains the organizationId
             course: id,
             score: newQuizResult.score,
           };
-          console.log(certificateData)
+          console.log(certificateData);
           const certificateResponse = await axios.post(
             `${API_BASE_URL}/certificates`,
             certificateData

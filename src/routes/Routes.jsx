@@ -36,6 +36,7 @@ const Routes = () => {
     { path: "/signup", element: <Signup /> },
     { path: "/course/:id", element: <CourseDetail /> },
     { path: "/bundle/:id", element: <BundleDetail /> },
+    { path: "/change-password", element: <ChangePassword /> },
 
     {
       path: "/course/:id/learn",
@@ -54,6 +55,11 @@ const Routes = () => {
       path: "/my-learning",
       element: <ProtectedRoute allowedRoles={["customer"]} />, // Only customers
       children: [{ path: "", element: <MyLearning /> }],
+    },
+    {
+      path: "/forgot-password",
+
+      children: [{ path: "", element: <ForgotPassword /> }],
     },
     {
       path: "/accomplishments",

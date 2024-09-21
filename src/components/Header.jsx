@@ -39,6 +39,7 @@ import {
 } from "../store/slices/walletSlice";
 
 import { API_BASE_URL } from "../utils/constants.jsx";
+import { useEffect } from "react";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -46,7 +47,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const settings = [
   "My Learning",
   "Profile",
-  "My Purchases",
   "Setting",
   "Accomplishments",
   "Help Center",

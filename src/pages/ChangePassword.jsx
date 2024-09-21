@@ -16,6 +16,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import logo from "../assets/logo.png";
 import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../store/slices/authSlice";
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -50,7 +51,8 @@ const ChangePassword = () => {
     }
   }, [newPassword, retypePassword]);
 
-  const handleChangePassword = async () => {
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
     try {
       const response = await axios.put(
         `${API_BASE_URL}/users/forgotpassword/${user._id === undefined ? user.id : user._id}`,
@@ -59,6 +61,7 @@ const ChangePassword = () => {
         }
       );
       if (response.status === 200) {
+        console.log("Password changed successfully:", response.data);
         setNotification("Password changed successfully!");
         dispatch(logoutUser());
         localStorage.removeItem("walletAddress");
@@ -66,9 +69,11 @@ const ChangePassword = () => {
         navigate("/login");
       } else {
         setNotification("Error changing password. Please try again.");
+        console.error("Error changing password:", error);
       }
     } catch (error) {
       setNotification("Error changing password. Please try again.");
+      console.error("Error changing password:", error);
     }
   };
 
@@ -115,43 +120,47 @@ const ChangePassword = () => {
             Enter your new password to access your courses and certificates.
           </Typography>
 
-          {/* New password Input */}
-          <TextField
-            fullWidth
-            placeholder="New password"
-            variant="outlined"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
+          {/* Password Fields */}
+          <form onSubmit={handleChangePassword}>
+            {/* New password Input */}
+            <TextField
+              fullWidth
+              placeholder="New password"
+              variant="outlined"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
 
-          {/* Retype new password */}
-          <TextField
-            label="Retype new password"
-            variant="outlined"
-            type="password"
-            fullWidth
-            value={retypePassword}
-            onChange={(e) => setRetypePassword(e.target.value)}
-            sx={{ mt: 2 }}
-          />
+            {/* Retype new password */}
+            <TextField
+              label="Retype new password"
+              variant="outlined"
+              type="password"
+              fullWidth
+              value={retypePassword}
+              onChange={(e) => setRetypePassword(e.target.value)}
+              sx={{ mt: 2 }}
+            />
 
-          <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 2 }} />
 
-          <Button
-            variant="contained"
-            color="success"
-            fullWidth
-            onClick={handleChangePassword}
-            disabled={!isResetButtonEnabled}
-            sx={{
-              borderRadius: 20,
-              backgroundColor: "#00c4cc",
-              "&:hover": { backgroundColor: "#00b0b6" },
-            }}
-          >
-            Change Password
-          </Button>
+            <Button
+              variant="contained"
+              color="success"
+              fullWidth
+              // onClick={handleChangePassword}
+              disabled={!isResetButtonEnabled}
+              type="submit"
+              sx={{
+                borderRadius: 20,
+                backgroundColor: "#00c4cc",
+                "&:hover": { backgroundColor: "#00b0b6" },
+              }}
+            >
+              Change Password
+            </Button>
+          </form>
 
           {/* Notification */}
           {notification && (

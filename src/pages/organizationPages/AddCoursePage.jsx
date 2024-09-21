@@ -15,15 +15,17 @@ import CssBaseline from "@mui/material/CssBaseline";
 import axios from "axios";
 import { API_BASE_URL } from "../../utils/constants";
 import { useRef } from "react";
+import { useSelector } from "react-redux";
 
 function AddCoursePage() {
   const inputFileRef = useRef(null);
+  const { user } = useSelector((state) => state.auth);
   const [course, setCourse] = useState({
     title: "",
     description: "",
     price: 0,
     image: null,
-    organization: "66e01ef93edd019a7fccbe71",
+    organization: user.id == undefined ? user._id : user.id,
     documents: [{ title: "", content: "" }],
     finalQuiz: {
       title: "",
@@ -103,29 +105,29 @@ function AddCoursePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const formData = new FormData();
       formData.append("title", course.title);
       formData.append("description", course.description);
       formData.append("price", course.price);
       formData.append("organization", course.organization);
-  
+
       // Append image if present
       if (course.image) {
         formData.append("image", course.image);
       }
-  
+
       // Convert documents and finalQuiz to JSON strings
       formData.append("documents", JSON.stringify(course.documents));
       formData.append("finalQuiz", JSON.stringify(course.finalQuiz)); // Use JSON.stringify
-  
+
       const response = await axios.post(`${API_BASE_URL}/course/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       if (response.status === 201) {
         console.log("Course submitted:", response.data);
         alert("Course submitted for admin review!");
@@ -143,7 +145,12 @@ function AddCoursePage() {
             questions: [
               {
                 questionText: "",
-                options: [{ text: "" }, { text: "" }, { text: "" }, { text: "" }],
+                options: [
+                  { text: "" },
+                  { text: "" },
+                  { text: "" },
+                  { text: "" },
+                ],
                 correctAnswer: "",
               },
             ],
@@ -158,7 +165,6 @@ function AddCoursePage() {
       alert("Failed to submit course. Please try again.");
     }
   };
-  
 
   return (
     <>

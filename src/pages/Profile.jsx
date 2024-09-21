@@ -20,6 +20,14 @@ import {
   Typography,
   Paper,
   styled,
+  Snackbar,
+  Alert,
+  FormControlLabel,
+  List,
+  ListItem,
+  Checkbox,
+  ListItemAvatar,
+  ListItemText,
 } from "@mui/material";
 import Header from "../components/Header";
 import EditIcon from "@mui/icons-material/Edit";
@@ -35,6 +43,12 @@ const UserProfile = () => {
   const [user, setUser] = useState(oldUser);
   const [avatarURL, setAvatarURL] = useState(null);
   const fileInputRef = useRef(null);
+  console.log(user);
+
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   useEffect(() => {
     // Clean up the object URL when the component unmounts or the avatar changes
@@ -117,12 +131,27 @@ const UserProfile = () => {
       if (response.status === 200) {
         console.log("Profile updated successfully:", response.data);
         dispatch(updateUser(response.data));
-        alert("Profile updated successfully!");
+
+        // Update snackbar state and open it
+        setSnackbarMessage("User updated successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true); // Add this to open the snackbar
         setOpenModal(false);
       }
     } catch (error) {
       console.error("Error updating user:", error);
+      setSnackbarMessage("Failed to update user.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
+  };
+
+  // Snackbar close
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   // Handle form submission
@@ -135,6 +164,60 @@ const UserProfile = () => {
   const HiddenInput = styled("input")({
     display: "none",
   });
+
+  // List of certificates
+  const [certificates, setCertificates] = useState([]);
+  const [selectedCertificates, setSelectedCertificates] = useState([]);
+  const [openCertificateDialog, setOpenCertificateDialog] = useState(false);
+  const [displayCertificates, setDisplayCertificates] = useState([]);
+
+  const fetchCertificates = async () => {
+    axios
+      .get(`${API_BASE_URL}/certificates/student/${user._id || user.id}`)
+      .then((response) => {
+        let allCertificates = response.data;
+        console.log(allCertificates);
+        setCertificates(allCertificates);
+      })
+      .catch((error) => {
+        console.error("Error fetching certificates: ", error);
+      });
+  };
+
+  // Handle opening the dialog
+  const handleOpenCertificatesDialog = () => {
+    setOpenCertificateDialog(true);
+  };
+
+  // Handle closing the dialog
+  const handleCloseCertificatesDialog = () => {
+    setOpenCertificateDialog(false);
+  };
+
+  // Handle selecting/deselecting certificates
+  const handleCertificateToggle = (certificateId) => {
+    setSelectedCertificates((prevSelected) => {
+      if (prevSelected.includes(certificateId)) {
+        return prevSelected.filter((id) => id !== certificateId);
+      } else {
+        return [...prevSelected, certificateId];
+      }
+    });
+  };
+
+  // Handle saving the selected certificates
+  const handleSaveCertificates = () => {
+    const selectedCerts = certificates.filter((cert) =>
+      selectedCertificates.includes(cert._id)
+    );
+    setDisplayCertificates(selectedCerts);
+    setOpenCertificateDialog(false);
+  };
+
+  const handleAddCredentials = () => {
+    fetchCertificates();
+    handleOpenCertificatesDialog();
+  };
 
   return (
     <>
@@ -347,7 +430,12 @@ const UserProfile = () => {
                   <Typography variant="h6" sx={{ mt: 2 }}>
                     {oldUser.name}
                   </Typography>
-                  <Button variant="outlined" fullWidth sx={{ mt: 2 }}>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    onClick={{}}
+                  >
                     Share profile link
                   </Button>
                   <Button variant="text" fullWidth sx={{ mt: 1 }}>
@@ -392,15 +480,109 @@ const UserProfile = () => {
               <Paper sx={{ p: 2 }}>
                 <Typography variant="h6">Education</Typography>
                 <Divider sx={{ mt: 1, mb: 2 }} />
-                <Box>
-                  <Typography variant="subtitle1">Credentials</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Add your education and credentials here.
-                  </Typography>
-                  <Button variant="outlined" sx={{ mt: 1 }}>
-                    + Add credentials
-                  </Button>
-                </Box>
+                <Grid container spacing={2}>
+                  {/* Left side (Current Education Section) */}
+                  <Grid item xs={12} md={6}>
+                    <Box>
+                      <Typography variant="subtitle1">Credentials</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Add your education and credentials here.
+                      </Typography>
+                      <Button
+                        variant="outlined"
+                        sx={{ mt: 1 }}
+                        onClick={handleAddCredentials}
+                      >
+                        + Add credentials
+                      </Button>
+                    </Box>
+                  </Grid>
+
+                  {/* Right side (Certificates Display with Image) */}
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="subtitle1">
+                      Selected Certificates
+                    </Typography>
+                    <List>
+                      {certificates
+                        .filter((cert) =>
+                          selectedCertificates.includes(cert._id)
+                        )
+                        .map((cert) => (
+                          <ListItem key={cert._id}>
+                            <ListItemText primary={cert.course.title} />
+                            <img
+                              src={cert.imageURL}
+                              alt={cert.course.title}
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                marginRight: "16px",
+                                borderRadius: "4px",
+                              }} // Adjust size and styles as needed
+                            />
+                          </ListItem>
+                        ))}
+                    </List>
+                  </Grid>
+                </Grid>
+
+                {/* Dialog for Selecting Certificates */}
+                <Dialog
+                  open={openCertificateDialog}
+                  onClose={handleCloseCertificatesDialog}
+                  fullWidth
+                  maxWidth="sm"
+                >
+                  <DialogTitle>Select Your Certifications</DialogTitle>
+                  <DialogContent dividers>
+                    <List>
+                      {certificates.map((cert) => (
+                        <ListItem key={cert._id}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={selectedCertificates.includes(
+                                  cert._id
+                                )}
+                                onChange={() =>
+                                  handleCertificateToggle(cert._id)
+                                }
+                              />
+                            }
+                            label={cert.course.title}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseCertificatesDialog}>
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSaveCertificates}
+                      variant="contained"
+                    >
+                      Save
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+                {/* Snackbar */}
+                <Snackbar
+                  open={snackbarOpen}
+                  autoHideDuration={4000}
+                  onClose={handleCloseSnackbar}
+                  anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                >
+                  <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbarSeverity}
+                    sx={{ width: "100%" }}
+                  >
+                    {snackbarMessage}
+                  </Alert>
+                </Snackbar>
               </Paper>
             </Grid>
           </Grid>

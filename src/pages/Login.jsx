@@ -36,8 +36,9 @@ const Login = ({ open, onClose }) => {
   useEffect(() => {
     if (user && user.role === "admin") {
       navigate("/admin-home");
-    } else if (user && user.role === 'customer') navigate("/");
-    else if (user && user.role === 'organization') navigate("/organization-home");
+    } else if (user && user.role === "customer") navigate("/");
+    else if (user && user.role === "organization")
+      navigate("/organization-home");
   }, [user, navigate]);
 
   useEffect(() => {
@@ -48,8 +49,8 @@ const Login = ({ open, onClose }) => {
 
   // Set default values
   useEffect(() => {
-    setEmail("conguyetnaduongvulan11@gmail.com");
-    setPassword("123456789");
+    setEmail("tranhuy12072003@gmail.com");
+    setPassword("Anhbakhia3@");
   }, []);
 
   const handleLogin = () => {
@@ -61,21 +62,24 @@ const Login = ({ open, onClose }) => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log("Logged in with Google:", user);
-  
+
       // Gọi API để xử lý đăng nhập Google
-      const response = await axios.post(`${API_BASE_URL}/auth/login-with-google`, {
-        email: user.email,
-        name: user.displayName,
-        avt: user.photoURL,
-      });
-  
+      const response = await axios.post(
+        `${API_BASE_URL}/auth/login-with-google`,
+        {
+          email: user.email,
+          name: user.displayName,
+          avt: user.photoURL,
+        }
+      );
+
       console.log("Google login response:", response.data);
-  
+
       if (response.data && response.data.token) {
         // Lưu thông tin người dùng và token
         dispatch(updateUser(response.data.user));
         localStorage.setItem("token", response.data.token);
-        
+
         // Điều hướng sang trang tương ứng dựa trên vai trò của người dùng
         navigate("/"); // Thay đổi tùy vào logic của bạn
         toast.success("Google login successful");
@@ -87,7 +91,6 @@ const Login = ({ open, onClose }) => {
       toast.error("Failed to login with Google");
     }
   };
-  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -150,10 +153,7 @@ const Login = ({ open, onClose }) => {
         <Box style={{ marginTop: "20px", textAlign: "center" }}>
           <Typography>
             New to our website?{" "}
-            <Link
-              href="#"
-              onClick={() => navigate("/signup")}
-            >
+            <Link href="#" onClick={() => navigate("/signup")}>
               {" "}
               Sign up
             </Link>

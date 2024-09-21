@@ -18,7 +18,7 @@ import {
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios, { all } from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import { useSelector } from "react-redux";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
@@ -35,14 +35,11 @@ const Accomplishments = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${API_BASE_URL}/certificates`)
+      .get(`${API_BASE_URL}/certificates/student/${user._id || user.id}`)
       .then((response) => {
         let allCertificates = response.data;
-        setCertificates(
-          allCertificates.filter(
-            (certificate) => certificate.user._id === user._id
-          )
-        );
+        console.log(allCertificates);
+        setCertificates(allCertificates);
         setLoading(false);
       })
       .catch((error) => {

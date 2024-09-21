@@ -57,9 +57,9 @@ const MyLearning = () => {
   const fetchEnrolledCourses = async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/enrollment/user/${user._id}`
+        `${API_BASE_URL}/enrollment/user/${user._id || user.id}`
       );
-      console.log(user.id);
+      console.log(user._id);
 
       setEnrollment(response.data);
     } catch (error) {
@@ -223,9 +223,9 @@ const MyLearning = () => {
                 scrollButtons="auto"
               >
                 <Tab label="All courses" />
-                <Tab label="My Lists" />
+                {/* <Tab label="My Lists" /> */}
                 <Tab label="Wishlist" />
-                <Tab label="Archived" />
+                {/* <Tab label="Archived" /> */}
                 <Tab label="Learning tools" />
               </Tabs>
             </Box>
