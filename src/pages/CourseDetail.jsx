@@ -56,7 +56,6 @@ const CourseDetail = () => {
   if (!course) {
     return <NotFound />;
   }
-  console.log(user);
 
   const hasEnrolled = user.enrollments.some((enrollment) => {
     return enrollment.course.toString() === course._id;

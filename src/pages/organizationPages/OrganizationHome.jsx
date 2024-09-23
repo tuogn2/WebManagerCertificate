@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import SideBar from "../../components/adminComponents/SideBar";
 import { Box, CssBaseline, Typography } from "@mui/material";
 import DashboardPage from "./DashboardPage";
-import { Book, Dashboard, Settings } from "@mui/icons-material";
+import { Book, Dashboard, LibraryBooks, Settings } from "@mui/icons-material";
 import CoursePage from "./CoursePage";
-
+import SettingPage from "./SettingPage";
+import CourseBundles from "./CourseBundles";
 const MainContent = ({ selectedItem }) => {
   // Render content based on the selected item
   switch (selectedItem) {
@@ -16,6 +17,8 @@ const MainContent = ({ selectedItem }) => {
       return <SettingPage />;
     case "Course":
       return <CoursePage />;
+    case "Course Bundles":
+      return <CourseBundles />;
     default:
       return (
         <Typography variant="h4">
@@ -29,6 +32,7 @@ const menuItems = [
   { text: "Dashboard", icon: <Dashboard /> },
   { text: "Course", icon: <Book /> },
   { text: "Setting", icon: <Settings /> },
+  { text: "Course Bundles", icon: <LibraryBooks /> },
 ];
 
 export default function OrganizationHome() {

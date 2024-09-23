@@ -15,6 +15,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { API_BASE_URL } from "../../utils/constants";
+import CourseDetailsModal from "../../components/CourseDetailsModal";
 
 const ConfirmCourse = () => {
   const [courses, setCourses] = useState([]);
@@ -82,20 +83,49 @@ const ConfirmCourse = () => {
             <Typography>No courses pending approval</Typography>
           ) : (
             courses.map((course) => (
-              <Grid item xs={12} md={4} key={course._id}>
+              <Grid item xs={12} sm={6} md={4} lg={5} key={course._id}>
                 <Paper
                   sx={{
                     p: 4,
-                    width: "400px",
+                    width: "100%", // Full width of the grid item
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "start",
+                    justifyContent: "space-between", // Add space between title/description and buttons
+                    minHeight: "200px", // Ensure a minimum height
+                    borderRadius: "8px", // Rounded corners for the card
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", // Light shadow for better appearance
+                    overflow: "hidden", // Prevent overflow of content
                   }}
                 >
-                  <Typography variant="h6">{course.title}</Typography>
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap", // Prevent title from breaking into multiple lines
+                      overflow: "hidden",
+                      textOverflow: "ellipsis", // Truncate long titles with ellipsis (...)
+                      width: "100%",
+                    }}
+                  >
+                    {course.title}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 3, // Limit to 3 lines of text
+                      overflow: "hidden", // Hide overflowing text
+                      textOverflow: "ellipsis", // Show ellipsis for truncated text
+                      mt: 1, // Margin top
+                    }}
+                  >
                     {course.description}
                   </Typography>
+
                   <Box
                     sx={{
                       display: "flex",
@@ -159,77 +189,11 @@ const ConfirmCourse = () => {
           }}
         >
           {selectedCourse && (
-            <>
-              <Typography variant="h6" gutterBottom>
-                Course Details
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <Typography variant="h6">
-                Title: {selectedCourse.title}
-              </Typography>
-              <Typography variant="body1">
-                Description: {selectedCourse.description}
-              </Typography>
-              <Typography variant="body1">
-                Price: ${selectedCourse.price}
-              </Typography>
-              <Typography variant="body1">
-                Organization: {selectedCourse.organization.name}
-              </Typography>
-
-              <Typography variant="h6" sx={{ mt: 3 }}>
-                Documents
-              </Typography>
-              <List>
-                {selectedCourse.documents.map((doc) => (
-                  <ListItem key={doc._id}>
-                    <ListItemText primary={doc.title} secondary={doc.content} />
-                  </ListItem>
-                ))}
-              </List>
-
-              <Typography variant="h6" sx={{ mt: 3 }}>
-                Final Quiz
-              </Typography>
-              {selectedCourse.finalQuiz && (
-                <Stack spacing={2}>
-                  <Typography variant="body1">
-                    Title: {selectedCourse.finalQuiz.title}
-                  </Typography>
-                  {selectedCourse.finalQuiz.questions.map((question) => (
-                    <Box
-                      key={question._id}
-                      sx={{ border: "1px solid", borderRadius: 1, p: 2, mb: 2 }}
-                    >
-                      <Typography variant="body1">
-                        {question.questionText}
-                      </Typography>
-                      {question.options.map((option) => (
-                        <Typography
-                          key={option._id}
-                          variant="body2"
-                          sx={{ ml: 2 }}
-                        >
-                          - {option.text}
-                        </Typography>
-                      ))}
-                      <Typography variant="body2" sx={{ mt: 1 }}>
-                        Correct Answer: {question.correctAnswer}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Stack>
-              )}
-
-              <Button
-                variant="outlined"
-                color="primary"
-                sx={{ mt: 2 }}
-                onClick={handleCloseModal}
-              >
-                Close
-              </Button>
-            </>
+            <CourseDetailsModal
+              modalOpen={modalOpen}
+              handleCloseModal={handleCloseModal}
+              selectedCourse={selectedCourse}
+            />
           )}
         </Box>
       </Modal>

@@ -50,7 +50,7 @@ const Login = ({ open, onClose }) => {
   // Set default values
   useEffect(() => {
     setEmail("tranhuy12072003@gmail.com");
-    setPassword("Anhbakhia3@");
+    setPassword("123456789");
   }, []);
 
   const handleLogin = () => {

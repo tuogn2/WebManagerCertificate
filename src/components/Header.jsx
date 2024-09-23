@@ -73,7 +73,6 @@ function Header() {
   const walletAddress = useSelector((state) => state.wallet.address);
   const balance = useSelector((state) => state.wallet.balance);
   const { avt } = useSelector((state) => state.auth.user);
-
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };

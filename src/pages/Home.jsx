@@ -41,12 +41,8 @@ const Home = () => {
   if (loading) {
     return <Loading />; // Loading state
   }
-  console.log(user._id);
-  getCertificatesByStudentId(user._id).then((response) => {
-    if (response.success) {
-      console.log(response.data);
-    }
-  });
+  
+  
 
   return (
     <>
