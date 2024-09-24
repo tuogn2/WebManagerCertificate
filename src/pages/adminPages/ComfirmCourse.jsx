@@ -9,10 +9,10 @@ import {
   Paper,
   Typography,
   Modal,
-  Stack,
-  List,
-  ListItem,
-  ListItemText,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { API_BASE_URL } from "../../utils/constants";
 import CourseDetailsModal from "../../components/CourseDetailsModal";
@@ -23,6 +23,8 @@ const ConfirmCourse = () => {
   const [error, setError] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [courseToReject, setCourseToReject] = useState(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -30,7 +32,11 @@ const ConfirmCourse = () => {
         const response = await axios.get(`${API_BASE_URL}/course/inactive`);
         setCourses(response.data);
       } catch (error) {
-        setError("Failed to fetch courses");
+        if (error.response && error.response.status === 404) {
+          setCourses([]);
+        } else {
+          setError("Failed to fetch courses");
+        }
         console.error("Error fetching courses:", error);
       } finally {
         setLoading(false);
@@ -53,18 +59,32 @@ const ConfirmCourse = () => {
   const handleApprove = async (courseId) => {
     try {
       await axios.put(`${API_BASE_URL}/course/${courseId}/activate`);
-      setCourses(courses.filter((course) => course._id !== courseId)); // Update the list
+      setCourses(courses.filter((course) => course._id !== courseId));
     } catch (error) {
       console.error("Error approving course:", error);
     }
   };
 
-  const handleReject = async (courseId) => {
+  const handleRejectOpen = (courseId) => {
+    setCourseToReject(courseId);
+    setDialogOpen(true);
+  };
+
+  const handleRejectClose = () => {
+    setDialogOpen(false);
+    setCourseToReject(null);
+  };
+
+  const handleReject = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/course/${courseId}`);
-      setCourses(courses.filter((course) => course._id !== courseId)); // Update the list
+      if (courseToReject) {
+        await axios.delete(`${API_BASE_URL}/course/${courseToReject}`);
+        setCourses(courses.filter((course) => course._id !== courseToReject));
+      }
     } catch (error) {
       console.error("Error rejecting course:", error);
+    } finally {
+      handleRejectClose();
     }
   };
 
@@ -80,32 +100,47 @@ const ConfirmCourse = () => {
         <Divider sx={{ mb: 3 }} />
         <Grid container spacing={3}>
           {courses.length === 0 ? (
-            <Typography>No courses pending approval</Typography>
+            <Typography>No inactive courses found</Typography>
           ) : (
             courses.map((course) => (
               <Grid item xs={12} sm={6} md={4} lg={5} key={course._id}>
                 <Paper
                   sx={{
                     p: 4,
-                    width: "100%", // Full width of the grid item
+                    width: "100%",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "start",
-                    justifyContent: "space-between", // Add space between title/description and buttons
-                    minHeight: "200px", // Ensure a minimum height
-                    borderRadius: "8px", // Rounded corners for the card
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", // Light shadow for better appearance
-                    overflow: "hidden", // Prevent overflow of content
+                    justifyContent: "space-between",
+                    minHeight: "300px", // Set a fixed height
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
                   }}
                 >
+                  {course.image && (
+                    <Box
+                      component="img"
+                      src={course.image}
+                      alt={course.title}
+                      sx={{
+                        width: "100%",
+                        height: "auto",
+                        maxHeight: "150px",
+                        objectFit: "cover",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  )}
                   <Typography
                     variant="h6"
                     sx={{
                       fontWeight: "bold",
-                      whiteSpace: "nowrap", // Prevent title from breaking into multiple lines
+                      whiteSpace: "nowrap",
                       overflow: "hidden",
-                      textOverflow: "ellipsis", // Truncate long titles with ellipsis (...)
+                      textOverflow: "ellipsis",
                       width: "100%",
+                      mt: 1,
                     }}
                   >
                     {course.title}
@@ -117,10 +152,10 @@ const ConfirmCourse = () => {
                     sx={{
                       display: "-webkit-box",
                       WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: 3, // Limit to 3 lines of text
-                      overflow: "hidden", // Hide overflowing text
-                      textOverflow: "ellipsis", // Show ellipsis for truncated text
-                      mt: 1, // Margin top
+                      WebkitLineClamp: 3,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      mt: 1,
                     }}
                   >
                     {course.description}
@@ -131,7 +166,7 @@ const ConfirmCourse = () => {
                       display: "flex",
                       flexDirection: "row",
                       mt: 2,
-                      gap: 1, // Add space between buttons
+                      gap: 1,
                     }}
                   >
                     <Button
@@ -151,7 +186,7 @@ const ConfirmCourse = () => {
                     <Button
                       variant="outlined"
                       color="secondary"
-                      onClick={() => handleReject(course._id)}
+                      onClick={() => handleRejectOpen(course._id)}
                     >
                       Reject
                     </Button>
@@ -177,8 +212,8 @@ const ConfirmCourse = () => {
         <Box
           sx={{
             p: 4,
-            width: "80vw", // Explicitly set width
-            maxWidth: "700px", // Ensure maxWidth is respected
+            width: "80vw",
+            maxWidth: "700px",
             maxHeight: "80vh",
             overflowY: "auto",
             bgcolor: "background.paper",
@@ -197,6 +232,26 @@ const ConfirmCourse = () => {
           )}
         </Box>
       </Modal>
+
+      {/* Confirmation Dialog for Rejecting Course */}
+      <Dialog
+        open={dialogOpen}
+        onClose={handleRejectClose}
+        aria-labelledby="confirm-reject-dialog"
+      >
+        <DialogTitle id="confirm-reject-dialog">Confirm Rejection</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to reject this course?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRejectClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleReject} color="secondary">
+            Reject
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
