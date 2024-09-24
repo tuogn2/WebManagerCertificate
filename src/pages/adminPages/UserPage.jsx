@@ -14,6 +14,7 @@ import {
   TextField,
   IconButton,
   Avatar,
+  Pagination,
 } from "@mui/material";
 import { Add, Edit, Delete } from "@mui/icons-material";
 import { API_BASE_URL } from "../../utils/constants";
@@ -24,18 +25,25 @@ const UserPage = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/users`);  
-        setUsers(response.data); // Giả sử API trả về danh sách người dùng ở response.data
+        const response = await axios.get(`${API_BASE_URL}/users`, {
+          params: { page: currentPage, limit: 6, search: searchQuery },
+        });
+        setUsers(response.data.users); // Assuming API returns users in response.data.users
+        setTotalPages(response.data.totalPages); // Assuming API returns total pages
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
     fetchUsers();
-  }, []);
+  }, [currentPage, searchQuery]); // Re-fetch users when page or search query changes
+
   const handleDialogOpen = (user = null) => {
     setSelectedUser(user);
     setIsEditing(!!user);
@@ -47,21 +55,37 @@ const UserPage = () => {
     setSelectedUser(null);
   };
 
-  const handleDeleteUser = (userId) => {
-    setUsers(users.filter((user) => user._id !== userId));
+  const handleDeleteUser = async (userId) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/users/${userId}`); // Assume you have a DELETE endpoint
+      setUsers(users.filter((user) => user._id !== userId));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
-  const handleSaveUser = () => {
-    if (isEditing) {
-      setUsers(
-        users.map((user) =>
-          user._id === selectedUser._id ? selectedUser : user
-        )
-      );
-    } else {
-      setUsers([...users, selectedUser]);
+  const handleSaveUser = async () => {
+    try {
+      if (isEditing) {
+        await axios.put(`${API_BASE_URL}/users/${selectedUser._id}`, selectedUser); // Assume you have a PUT endpoint
+        setUsers(
+          users.map((user) =>
+            user._id === selectedUser._id ? selectedUser : user
+          )
+        );
+      } else {
+        const response = await axios.post(`${API_BASE_URL}/users`, selectedUser); // Assume you have a POST endpoint
+        setUsers([...users, response.data]); // Add newly created user
+      }
+      handleDialogClose();
+    } catch (error) {
+      console.error("Error saving user:", error);
     }
-    handleDialogClose();
+  };
+
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+    setCurrentPage(1); // Reset to the first page when searching
   };
 
   return (
@@ -69,6 +93,16 @@ const UserPage = () => {
       <Typography variant="h4" gutterBottom>
         User Management
       </Typography>
+
+      {/* Search Field */}
+      <TextField
+        label="Search Users"
+        variant="outlined"
+        fullWidth
+        value={searchQuery}
+        onChange={handleSearch}
+        sx={{ mb: 3 }}
+      />
 
       {/* Add User Button */}
       <Box display="flex" justifyContent="flex-end" sx={{ mb: 3 }}>
@@ -132,6 +166,16 @@ const UserPage = () => {
           </Grid>
         ))}
       </Grid>
+
+      {/* Pagination */}
+      <Box display="flex" justifyContent="center" sx={{ mt: 4 }}>
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={(event, value) => setCurrentPage(value)}
+          color="primary"
+        />
+      </Box>
 
       {/* Add/Edit User Dialog */}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
