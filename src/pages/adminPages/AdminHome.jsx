@@ -6,7 +6,7 @@ import DashboardPage from "./DashboardPage";
 import OrganizationPage from "./OrganizationPage";
 import UserPage from "./UserPage";
 import SettingPage from "./SettingPage";
-import { Add, Book, Dashboard, Person, Settings } from "@mui/icons-material";
+import { Add, Book, CheckCircleOutline, Dashboard, Person, Settings } from "@mui/icons-material";
 import ComfirmCourse from "./ComfirmCourse";
 
 const MainContent = ({ selectedItem }) => {
@@ -20,7 +20,7 @@ const MainContent = ({ selectedItem }) => {
       return <SettingPage />;
     case "Organizations":
       return <OrganizationPage />;
-    case "ComfirmCourse":
+    case "Comfirm Course":
         return <ComfirmCourse />;
     default:
       return (
@@ -35,8 +35,8 @@ const menuItems = [
   { text: "Dashboard", icon: <Dashboard /> },
   { text: "Organizations", icon: <Book /> },
   { text: "Users", icon: <Person /> },
+  { text: "Comfirm Course", icon: <CheckCircleOutline /> },
   { text: "Setting", icon: <Settings /> },
-  { text: "ComfirmCourse", icon: <Settings /> },
 ];
 
 export default function AdminHome() {

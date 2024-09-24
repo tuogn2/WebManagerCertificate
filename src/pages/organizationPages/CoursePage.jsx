@@ -81,18 +81,33 @@ export default function CoursePage() {
       const response = await axios.get(
         `${API_BASE_URL}/course/organization/${user.id || user._id}`,
         {
-          params: { page, limit: 6 }, // Add pagination parameters
+          params: { page, limit: 6 }, // Thêm tham số phân trang
         }
       );
+      
+      // Kiểm tra nếu không có khóa học
+      if (response.data.message === "No courses found for this organization") {
+        setCourses([]); // Cập nhật courses là mảng rỗng nếu không tìm thấy khóa học
+        setTotalPages(0); // Đặt tổng số trang về 0
+        return; // Không tiếp tục thực hiện các thao tác khác
+      }
+  
       setCourses(response.data.courses);
-      setTotalPages(response.data.totalPages); // Update total pages
+      setTotalPages(response.data.totalPages); // Cập nhật tổng số trang
     } catch (error) {
-      console.error("Error fetching courses!", error);
-      toast.error("Failed to fetch courses.");
+      // Kiểm tra nếu lỗi không phải là 'No courses found'
+      if (
+        error.response &&
+        error.response.data.message !== "No courses found for this organization"
+      ) {
+        console.error("Error fetching courses!", error);
+        toast.error("Failed to fetch courses.");
+      }
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleSearch = async () => {
     if (!searchTerm) {
