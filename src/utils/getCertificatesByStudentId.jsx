@@ -15,7 +15,6 @@ const getCertificatesByStudentId = async (studentId) => {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
 
     const accounts = await web3.eth.getAccounts();
-    console.log(accounts);
     const account = accounts[0];
 
     if (!account) {

@@ -19,6 +19,8 @@ import {
   FormControlLabel,
   Snackbar,
   Alert,
+  CircularProgress,
+  Backdrop,
 } from "@mui/material";
 import axios from "axios";
 import Loading from "../components/Loading";
@@ -46,6 +48,8 @@ const LearnCourse = () => {
   const [quizResults, setQuizResults] = useState([]); // To store quiz results
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -79,7 +83,11 @@ const LearnCourse = () => {
   }, [id, user._id]);
 
   const hasEnrolled = user.enrollments.find(
-    (enrollment) => enrollment.course.toString() === id
+    (enrollment) =>{
+      if(!enrollment.course)
+        return false
+     return (enrollment) => enrollment.course.toString() === id
+    }
   );
 
   useEffect(() => {
@@ -136,11 +144,13 @@ const LearnCourse = () => {
   };
 
   const handleSubmitQuiz = async () => {
+    
     if (!hasEnrolled) {
       setSnackbarMessage("You are not enrolled in this course.");
       setOpenSnackbar(true);
       return;
     }
+    setIsSubmitting(true)
     const submissionData = {
       userId: user._id,
       courseId: id,
@@ -190,6 +200,7 @@ const LearnCourse = () => {
           dispatch(completeEnrollment(hasEnrolled._id));
           setSnackbarMessage("Congratulations! You've earned a certificate.");
           setOpenSnackbar(true);
+          setIsSubmitting(false)
         } catch (certificateError) {
           console.error("Error creating certificate:", certificateError);
           setSnackbarMessage(
@@ -463,6 +474,9 @@ const LearnCourse = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      <Backdrop open={isSubmitting}>
+  <CircularProgress />
+</Backdrop>
     </>
   );
 };

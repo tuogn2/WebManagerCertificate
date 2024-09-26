@@ -3,10 +3,21 @@ import axios from "axios";
 import { API_BASE_URL } from "../../utils/constants.jsx";
 
 // Thunk to fetch courses
+// export const getAllCourses = createAsyncThunk(
+//   "courses/getAllCourses",
+//   async () => {
+//     const response = await axios.get(`${API_BASE_URL}/course`); // Replace with your actual API endpoint
+//     return response.data;
+//   }
+// );
+
+// Modify your thunk in courseSlice
 export const getAllCourses = createAsyncThunk(
   "courses/getAllCourses",
-  async () => {
-    const response = await axios.get(`${API_BASE_URL}/course`); // Replace with your actual API endpoint
+  async (limit = 6, { getState }) => {
+    const { courses } = getState().courses;
+    const offset = courses.length; // Calculate the offset based on current courses length
+    const response = await axios.get(`${API_BASE_URL}/course?limit=${limit}&offset=${offset}`);
     return response.data;
   }
 );

@@ -21,6 +21,7 @@ import ForgotPassword from "../pages/ForgotPassword";
 import ChangePassword from "../pages/ChangePassword";
 
 import ProtectedRoute from "../components/ProtectedRoute"; // Import ProtectedRoute
+import SearchPage from "../pages/SearchPage";
 const Routes = () => {
   return useRoutes([
     {
@@ -32,6 +33,7 @@ const Routes = () => {
 
     // Public routes (accessible to all)
     { path: "/", element: <Home /> },
+    { path: "/search", element: <SearchPage /> },
     { path: "/login", element: <Login /> },
     { path: "/signup", element: <Signup /> },
     { path: "/course/:id", element: <CourseDetail /> },

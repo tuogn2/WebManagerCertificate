@@ -40,6 +40,7 @@ import {
 
 import { API_BASE_URL } from "../utils/constants.jsx";
 import { useEffect } from "react";
+import Search from "./Search.jsx";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -54,25 +55,23 @@ const settings = [
 ];
 
 function Header() {
-  const user = useSelector((state) => state.auth.user);
-  // <<<<<<< HEAD
-  // Control search suggestions visibility
+  const { user } = useSelector((state) => state.auth);
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
   const [snackbarSeverity, setSnackbarSeverity] = React.useState("info");
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchError, setSearchError] = useState(null);
-  const searchRef = useRef(null);
+  // const [showSuggestions, setShowSuggestions] = useState(false);
+  // const [searchResults, setSearchResults] = useState([]);
+  // const [searchError, setSearchError] = useState(null);
+  // const searchRef = useRef(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
   const balance = useSelector((state) => state.wallet.balance);
-  const { avt } = useSelector((state) => state.auth.user);
+ 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -97,44 +96,44 @@ function Header() {
     }
   };
 
-  const popularSearches = [
-    "Javascript for beginners",
-    "English for career development",
-    "Become a data analyst",
-  ];
+  // const popularSearches = [
+  //   "Javascript for beginners",
+  //   "English for career development",
+  //   "Become a data analyst",
+  // ];
 
-  const handleSearchChange = async (event) => {
-    const query = event.target.value;
-    if (query.trim()) {
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/course/search?query=${encodeURIComponent(query)}`
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setSearchResults(data);
-        setSearchError(null);
-      } catch (error) {
-        console.error("Error searching courses:", error);
-        setSearchError("Error fetching search results");
-        setSearchResults([]);
-      }
-    } else {
-      setSearchResults([]);
-    }
-  };
+  // const handleSearchChange = async (event) => {
+  //   const query = event.target.value;
+  //   if (query.trim()) {
+  //     try {
+  //       const response = await fetch(
+  //         `${API_BASE_URL}/course/search?query=${encodeURIComponent(query)}`
+  //       );
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       const data = await response.json();
+  //       setSearchResults(data);
+  //       setSearchError(null);
+  //     } catch (error) {
+  //       console.error("Error searching courses:", error);
+  //       setSearchError("Error fetching search results");
+  //       setSearchResults([]);
+  //     }
+  //   } else {
+  //     setSearchResults([]);
+  //   }
+  // };
 
-  const handleSearchFocus = () => {
-    setShowSuggestions(true);
-  };
+  // const handleSearchFocus = () => {
+  //   setShowSuggestions(true);
+  // };
 
-  const handleSearchBlur = (event) => {
-    if (!searchRef.current?.contains(event.relatedTarget)) {
-      setShowSuggestions(false);
-    }
-  };
+  // const handleSearchBlur = (event) => {
+  //   if (!searchRef.current?.contains(event.relatedTarget)) {
+  //     setShowSuggestions(false);
+  //   }
+  // };
 
   const connectMetaMask = async () => {
     if (typeof window.ethereum === "undefined") {
@@ -238,164 +237,71 @@ function Header() {
           </Box>
 
           <Box sx={{ flex: 2, position: "relative" }}>
-            <TextField
-              placeholder="What do you want to learn?"
-              variant="outlined"
-              onFocus={handleSearchFocus}
-              onBlur={handleSearchBlur}
-              onChange={handleSearchChange}
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 50,
-                  color: "white",
-                  "& fieldset": {
-                    borderColor: "white",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "white",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "white",
-                  },
-                },
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton color="info">
-                      <SearchIcon style={{ color: "#fff" }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            {showSuggestions && (
-              <Paper
-                ref={searchRef}
-                sx={{
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  right: 0,
-                  zIndex: 10,
-                  borderRadius: "10px",
-                  padding: "10px",
-                  boxShadow: 3,
-                }}
-                onBlur={handleSearchBlur}
-                tabIndex={-1}
-              >
-                <List
-                  subheader={
-                    <ListSubheader
-                      component="div"
-                      sx={{
-                        userSelect: "none",
-                        color: "black",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {searchError
-                        ? "Error fetching search results"
-                        : "Search Results"}
-                    </ListSubheader>
-                  }
-                >
-                  {searchError ? (
-                    <ListItem>
-                      <ListItemText primary={searchError} />
-                    </ListItem>
-                  ) : (
-                    searchResults.map((course) => (
-                      <ListItemButton
-                        key={course._id}
-                        alignItems="center"
-                        onClick={() => navigate(`/course/${course._id}`)}
-                      >
-                        <ListItemAvatar>
-                          <Avatar src={course.image} />
-                        </ListItemAvatar>
-                        <ListItemText primary={course.title} />
-                      </ListItemButton>
-                    ))
-                  )}
-                  <List
-                    subheader={
-                      <ListSubheader
-                        component="div"
-                        sx={{
-                          userSelect: "none",
-                          color: "black",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        Popular Right Now
-                      </ListSubheader>
-                    }
-                  >
-                    {popularSearches.map((search, index) => (
-                      <ListItemButton button key={index} tabIndex={0}>
-                        <SearchIcon sx={{ mr: 2 }} />
-                        <ListItemText primary={search} />
-                      </ListItemButton>
-                    ))}
-                  </List>
-                </List>
-              </Paper>
-            )}
+            <Search />
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-            {walletAddress ? (
+            {user ? (
               <>
-                <Typography variant="body1" sx={{ color: "white", mr: 1 }}>
-                  {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "white", mr: 2 }}>
-                  {balance ? `${balance} ETH` : "Đang tải..."}
-                </Typography>
+                {walletAddress ? (
+                  <>
+                    <Typography variant="body1" sx={{ color: "white", mr: 1 }}>
+                      {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: "white", mr: 2 }}>
+                      {balance ? `${balance} ETH` : "Đang tải..."}
+                    </Typography>
+                  </>
+                ) : (
+                  <Button
+                    variant="outlined"
+                    color="inherit"
+                    onClick={connectMetaMask}
+                    disabled={loading}
+                  >
+                    {loading ? "Connecting..." : "Connect MetaMask"}
+                  </Button>
+                )}
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar sx={{ marginLeft: "10px" }} src={user?.avt} alt={"avt"} />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {settings.map((setting) => (
+                    <MenuItem
+                      key={setting}
+                      onClick={() => handleMenuItemClick(setting)}
+                    >
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
               </>
             ) : (
               <Button
                 variant="outlined"
                 color="inherit"
-                onClick={connectMetaMask}
-                disabled={loading}
+                onClick={() => navigate("/login")}
               >
-                {loading ? "Connecting..." : "Connect MetaMask"}
+                Login
               </Button>
             )}
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar sx={{ marginLeft: "10px" }} src={avt} alt={"avt"} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem
-                  key={setting}
-                  onClick={() => handleMenuItemClick(setting)}
-                >
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
           </Box>
         </Toolbar>
       </Container>

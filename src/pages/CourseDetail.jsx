@@ -14,6 +14,7 @@ import {
   Grid,
   Snackbar,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants.jsx";
@@ -29,11 +30,13 @@ const CourseDetail = () => {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState(""); // To hold success or error messages
-  const navigate = useNavigate(); // Get the navigate function
+  const [message, setMessage] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false); // New state for processing
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const walletAddress = useSelector((state) => state.wallet.address); // Get walletAddress from Redux
+  const walletAddress = useSelector((state) => state.wallet.address);
+
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -57,33 +60,39 @@ const CourseDetail = () => {
     return <NotFound />;
   }
 
-  const hasEnrolled = user.enrollments.some((enrollment) => {
+  const hasEnrolled = user?.enrollments.some((enrollment) => {
+    if (!enrollment.course) return false;
     return enrollment.course.toString() === course._id;
   });
 
   const handleButtonClick = async () => {
+    if (!user) {
+      setMessage("You must be logged in to enroll in a course.");
+      navigate("/login");
+      return;
+    }
+
     if (hasEnrolled) {
-      // If already enrolled, navigate to the course learning page
       navigate(`/course/${id}/learn`);
     } else {
       try {
         if (!walletAddress) {
-          // If the user does not have a wallet, display a message
           setMessage("Please create a wallet to enroll in the course.");
           return;
         }
-        // Call payForCourse to handle payment
-        const studentId = user._id; // User ID
-        const studentName = user.name; // User Name (if available)
+
+        setIsProcessing(true); // Start processing
+        const studentId = user._id; 
+        const studentName = user.name; 
         const amount =
           course.price === 0
             ? 0.000000001
-            : (course.price / 100000).toFixed(18); // Ensure amount is a string with sufficient precision
+            : (course.price / 100000).toFixed(18); 
         const walletOr =
           course.organization.walletaddress ||
           "0x6087050c4069ab730d872e625E035A8fd8DeD600";
         const organization = course.organization.name;
-        // Perform payment
+
         const paymentResult = await payForCourse(
           studentId,
           course._id,
@@ -94,7 +103,6 @@ const CourseDetail = () => {
         );
 
         if (paymentResult.success) {
-          // If payment is successful, create enrollment
           const response = await axios.post(`${API_BASE_URL}/enrollment`, {
             user: studentId,
             course: course._id,
@@ -102,16 +110,15 @@ const CourseDetail = () => {
 
           console.log("Enrollment created successfully:", response.data);
           dispatch(addEnrollmentToUser(response.data));
-          // Navigate to the course learning page after successful enrollment
           navigate(`/course/${id}/learn`);
         } else {
-          setMessage(paymentResult.message); // Display payment error message
+          setMessage(paymentResult.message);
         }
       } catch (error) {
         console.error("Failed to process payment or create enrollment:", error);
-        setMessage(
-          "Failed to process payment or create enrollment. Please try again."
-        );
+        setMessage("Failed to process payment or create enrollment. Please try again.");
+      } finally {
+        setIsProcessing(false); // End processing
       }
     }
   };
@@ -165,8 +172,9 @@ const CourseDetail = () => {
                     color={hasEnrolled ? "secondary" : "primary"}
                     sx={{ mt: 2 }}
                     onClick={handleButtonClick}
+                    disabled={isProcessing} // Disable button while processing
                   >
-                    {hasEnrolled ? "Go to Course" : "Join Course"}
+                    {isProcessing ? <CircularProgress size={24} color="inherit" /> : (hasEnrolled ? "Go to Course" : "Join Course")}
                   </Button>
                 </Box>
               </CardContent>

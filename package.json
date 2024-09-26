@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.0.0",
-    "@emotion/styled": "^11.0.0",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@fontsource/roboto": "^5.0.14",
     "@mui/icons-material": "^5.16.6",
     "@mui/material": "^5.16.7",
@@ -19,6 +19,7 @@
     "@mui/system": "^6.1.1",
     "@reduxjs/toolkit": "^2.2.7",
     "@toolpad/core": "^0.5.2",
+    "antd": "^5.21.1",
     "axios": "^1.7.4",
     "bootstrap": "^5.3.3",
     "firebase": "^10.13.1",

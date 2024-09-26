@@ -15,7 +15,6 @@ const payForCourse = async (studentId, courseId, studentName, amount, organizati
     await window.ethereum.request({ method: 'eth_requestAccounts' });
 
     const accounts = await web3.eth.getAccounts();
-    console.log(accounts);
 
     if (accounts.length === 0) {
       throw new Error('Không tìm thấy tài khoản. Vui lòng đăng nhập vào MetaMask.');

@@ -59,9 +59,11 @@ const MyLearning = () => {
       const response = await axios.get(
         `${API_BASE_URL}/enrollment/user/${user._id || user.id}`
       );
-      console.log(user._id);
-
-      setEnrollment(response.data);
+      const filteredEnrollments = response.data.filter(
+        (enrollment) => enrollment.bundle === undefined
+      );
+      
+      setEnrollment(filteredEnrollments);
     } catch (error) {
       console.error("Error fetching courses: ", error);
     }
@@ -96,7 +98,7 @@ const MyLearning = () => {
                         <CardMedia
                           component="img"
                           height="140"
-                          image={enrollment.course.image}
+                          image={enrollment?.course?.image}
                           alt="Course Image"
                           sx={{ borderRadius: "4px 4px 0 0" }}
                         />
@@ -122,14 +124,14 @@ const MyLearning = () => {
 
                       <CardContent sx={{ padding: 2 }}>
                         <Typography variant="h6" gutterBottom>
-                          {enrollment.course.title}
+                          {enrollment?.course?.title}
                         </Typography>
                         <Typography
                           variant="body2"
                           color="textSecondary"
                           sx={{ mb: 1 }}
                         >
-                          {enrollment.course.description}
+                          {enrollment?.course?.description}
                         </Typography>
                         <Menu
                           anchorEl={anchorEl}

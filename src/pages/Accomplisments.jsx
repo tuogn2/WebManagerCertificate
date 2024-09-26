@@ -128,7 +128,8 @@ const Accomplishments = () => {
                   />
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
-                      {certificate.course.title}
+                      {certificate?.course ? certificate.course.title : certificate.bundle.title}
+                     
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                       Issued on:{" "}
