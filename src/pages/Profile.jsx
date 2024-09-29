@@ -43,21 +43,45 @@ const UserProfile = () => {
   const [user, setUser] = useState(oldUser);
   const [avatarURL, setAvatarURL] = useState(null);
   const fileInputRef = useRef(null);
-  console.log(user);
+
+  const [certificates, setCertificates] = useState([]);
 
   // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  const [visibleCount, setVisibleCount] = useState(4); // Initial number of certificates to display
+
+  // Function to handle showing more certificates
+  const handleSeeMore = () => {
+    setVisibleCount((prevCount) => prevCount + 4); // Increase by 4 more certificates
+  };
+
   useEffect(() => {
     // Clean up the object URL when the component unmounts or the avatar changes
     return () => {
+      fetchCertificates();
       if (avatarURL) {
         URL.revokeObjectURL(avatarURL);
       }
     };
   }, [avatarURL]);
+
+  const fetchCertificates = async () => {
+    axios
+      .get(`${API_BASE_URL}/certificates/student/${user._id || user.id}`)
+      .then((response) => {
+        let allCertificates = response.data;
+        console.log(allCertificates);
+        setCertificates(allCertificates);
+      })
+      .catch((error) => {
+        console.error("Error fetching certificates: ", error);
+      });
+  };
+
+  console.log("List certificates: ", certificates);
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
@@ -165,59 +189,42 @@ const UserProfile = () => {
     display: "none",
   });
 
-  // List of certificates
-  const [certificates, setCertificates] = useState([]);
-  const [selectedCertificates, setSelectedCertificates] = useState([]);
-  const [openCertificateDialog, setOpenCertificateDialog] = useState(false);
-  const [displayCertificates, setDisplayCertificates] = useState([]);
-
-  const fetchCertificates = async () => {
-    axios
-      .get(`${API_BASE_URL}/certificates/student/${user._id || user.id}`)
-      .then((response) => {
-        let allCertificates = response.data;
-        console.log(allCertificates);
-        setCertificates(allCertificates);
-      })
-      .catch((error) => {
-        console.error("Error fetching certificates: ", error);
-      });
-  };
-
   // Handle opening the dialog
-  const handleOpenCertificatesDialog = () => {
-    setOpenCertificateDialog(true);
-  };
+  // const handleOpenCertificatesDialog = () => {
+  //   setOpenCertificateDialog(true);
+  // };
 
   // Handle closing the dialog
-  const handleCloseCertificatesDialog = () => {
-    setOpenCertificateDialog(false);
-  };
+  // const handleCloseCertificatesDialog = () => {
+  //   setOpenCertificateDialog(false);
+  // };
 
   // Handle selecting/deselecting certificates
-  const handleCertificateToggle = (certificateId) => {
-    setSelectedCertificates((prevSelected) => {
-      if (prevSelected.includes(certificateId)) {
-        return prevSelected.filter((id) => id !== certificateId);
-      } else {
-        return [...prevSelected, certificateId];
-      }
-    });
-  };
+  // const handleCertificateToggle = (certificateId) => {
+  //   setSelectedCertificates((prevSelected) => {
+  //     if (prevSelected.includes(certificateId)) {
+  //       return prevSelected.filter((id) => id !== certificateId);
+  //     } else {
+  //       return [...prevSelected, certificateId];
+  //     }
+  //   });
+  // };
 
   // Handle saving the selected certificates
-  const handleSaveCertificates = () => {
-    const selectedCerts = certificates.filter((cert) =>
-      selectedCertificates.includes(cert._id)
-    );
-    setDisplayCertificates(selectedCerts);
-    setOpenCertificateDialog(false);
-  };
+  // const handleSaveCertificates = () => {
+  //   const selectedCerts = certificates.filter((cert) =>
+  //     selectedCertificates.includes(cert._id)
+  //   );
+  //   setDisplayCertificates(selectedCerts);
+  //   setOpenCertificateDialog(false);
+  // };
 
-  const handleAddCredentials = () => {
-    fetchCertificates();
-    handleOpenCertificatesDialog();
-  };
+  // const handleAddCredentials = () => {
+  //   fetchCertificates();
+  //   handleOpenCertificatesDialog();
+  // };
+
+  console.log(oldUser.birthday, oldUser.numberphone);
 
   return (
     <>
@@ -367,11 +374,11 @@ const UserProfile = () => {
                               <TextField
                                 type="date"
                                 value={
-                                  user.birthday
-                                    ? new Date(user.birthday)
+                                  user.birthday === undefined
+                                    ? ""
+                                    : new Date(user.birthday)
                                         .toISOString()
                                         .split("T")[0]
-                                    : ""
                                 } // Kiểm tra giá trị birthday
                                 name="birthday"
                                 onChange={handleInputChange}
@@ -390,6 +397,7 @@ const UserProfile = () => {
                                 type="email"
                                 value={user.email}
                                 name="email"
+                                disabled
                                 onChange={handleInputChange}
                               />
                               <Typography
@@ -448,10 +456,9 @@ const UserProfile = () => {
             {/* Main Content */}
             <Grid item xs={12} md={9}>
               {/* Experience Section */}
-              <Paper sx={{ p: 2, mb: 3 }}>
+              {/* <Paper sx={{ p: 2, mb: 3 }}>
                 <Typography variant="h6">Experience</Typography>
                 <Divider sx={{ mt: 1, mb: 2 }} />
-                {/* Projects */}
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="subtitle1">Projects</Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -462,7 +469,6 @@ const UserProfile = () => {
                     Browse Projects
                   </Button>
                 </Box>
-                {/* Work History */}
                 <Box>
                   <Typography variant="subtitle1">Work history</Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -474,14 +480,60 @@ const UserProfile = () => {
                     + Add work experience
                   </Button>
                 </Box>
-              </Paper>
+              </Paper> */}
 
               {/* Education Section */}
               <Paper sx={{ p: 2 }}>
-                <Typography variant="h6">Education</Typography>
+                <Typography variant="h6">Course attendance history</Typography>
                 <Divider sx={{ mt: 1, mb: 2 }} />
-                <Grid container spacing={2}>
-                  {/* Left side (Current Education Section) */}
+
+                <List>
+                  {certificates.slice(0, visibleCount).map((cert) => (
+                    <ListItem key={cert._id}>
+                      {/* Display Certificate Image */}
+                      <ListItemAvatar>
+                        <Avatar
+                          variant="square"
+                          src={cert.imageUrl}
+                          alt={
+                            cert?.course?.title
+                              ? cert?.course.title
+                              : cert?.bundle.title
+                          }
+                          sx={{ width: 100, height: 100 }} // Adjust size as needed
+                        />
+                      </ListItemAvatar>
+
+                      {/* Display Certificate Text */}
+                      <ListItemText
+                        primary={
+                          cert?.course?.title
+                            ? cert?.course.title
+                            : cert?.bundle.title
+                        }
+                        secondary={
+                          cert?.course?.description
+                            ? cert?.course.description
+                            : cert?.bundle.description ||
+                              "No description provided"
+                        }
+                      />
+                    </ListItem>
+                  ))}
+
+                  {/* Show "See More" button if there are more certificates to display */}
+                  {visibleCount < certificates.length && (
+                    <Button
+                      variant="outlined"
+                      onClick={handleSeeMore}
+                      sx={{ mt: 2 }}
+                    >
+                      See More
+                    </Button>
+                  )}
+                </List>
+
+                {/* <Grid container spacing={2}>
                   <Grid item xs={12} md={6}>
                     <Box>
                       <Typography variant="subtitle1">Credentials</Typography>
@@ -498,7 +550,6 @@ const UserProfile = () => {
                     </Box>
                   </Grid>
 
-                  {/* Right side (Certificates Display with Image) */}
                   <Grid item xs={12} md={6}>
                     <Typography variant="subtitle1">
                       Selected Certificates
@@ -519,7 +570,7 @@ const UserProfile = () => {
                                 height: "50px",
                                 marginRight: "16px",
                                 borderRadius: "4px",
-                              }} // Adjust size and styles as needed
+                              }} 
                             />
                           </ListItem>
                         ))}
@@ -527,7 +578,6 @@ const UserProfile = () => {
                   </Grid>
                 </Grid>
 
-                {/* Dialog for Selecting Certificates */}
                 <Dialog
                   open={openCertificateDialog}
                   onClose={handleCloseCertificatesDialog}
@@ -567,7 +617,7 @@ const UserProfile = () => {
                       Save
                     </Button>
                   </DialogActions>
-                </Dialog>
+                </Dialog> */}
                 {/* Snackbar */}
                 <Snackbar
                   open={snackbarOpen}

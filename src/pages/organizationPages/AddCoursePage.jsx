@@ -122,7 +122,6 @@ function AddCoursePage() {
       formData.append("documents", JSON.stringify(course.documents));
       formData.append("finalQuiz", JSON.stringify(course.finalQuiz)); // Use JSON.stringify
 
-      
       const response = await axios.post(`${API_BASE_URL}/course/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -138,7 +137,7 @@ function AddCoursePage() {
           description: "",
           price: 0,
           image: null,
-          organization:  user._id || user.id ,
+          organization: user._id || user.id,
           documents: [{ title: "", content: "" }],
           finalQuiz: {
             title: "",
@@ -166,6 +165,8 @@ function AddCoursePage() {
       alert("Failed to submit course. Please try again.");
     }
   };
+
+  console.log("Course state:", course);
 
   return (
     <>

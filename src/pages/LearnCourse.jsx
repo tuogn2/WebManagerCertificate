@@ -19,8 +19,6 @@ import {
   FormControlLabel,
   Snackbar,
   Alert,
-  CircularProgress,
-  Backdrop,
 } from "@mui/material";
 import axios from "axios";
 import Loading from "../components/Loading";
@@ -49,8 +47,6 @@ const LearnCourse = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
@@ -62,11 +58,10 @@ const LearnCourse = () => {
         setLoading(false);
       }
     };
-
     const fetchQuizResults = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/quiz/result/user/${user._id || user.id}/course/${id}`
+          `${API_BASE_URL}/quiz/result/user/${user._id}/course/${id}`
         );
         // Assuming response.data is an array of results
         const sortedResults = response.data.sort((a, b) => b.score - a.score); // Sort results by score in descending order
@@ -80,15 +75,12 @@ const LearnCourse = () => {
 
     fetchCourseData();
     fetchQuizResults();
-  }, [id, user._id]);
+  }, [id, user.id]);
 
-  const hasEnrolled = user.enrollments.find(
-    (enrollment) =>{
-      if(!enrollment.course)
-        return false
-     return (enrollment) => enrollment.course.toString() === id
-    }
-  );
+  const hasEnrolled = user.enrollments.find((enrollment) => {
+    if (!enrollment.course) return false;
+    return enrollment.course.toString() === id;
+  });
 
   useEffect(() => {
     if (hasEnrolled) {
@@ -144,13 +136,11 @@ const LearnCourse = () => {
   };
 
   const handleSubmitQuiz = async () => {
-    
     if (!hasEnrolled) {
       setSnackbarMessage("You are not enrolled in this course.");
       setOpenSnackbar(true);
       return;
     }
-    setIsSubmitting(true)
     const submissionData = {
       userId: user._id,
       courseId: id,
@@ -187,7 +177,7 @@ const LearnCourse = () => {
         // Create a certificate
         try {
           const certificateData = {
-            user: user._id || user.id, // Assuming user contains the userId
+            user: user._id,
             organization: courseData.organization._id, // Assuming courseData contains the organizationId
             course: id,
             score: newQuizResult.score,
@@ -200,7 +190,6 @@ const LearnCourse = () => {
           dispatch(completeEnrollment(hasEnrolled._id));
           setSnackbarMessage("Congratulations! You've earned a certificate.");
           setOpenSnackbar(true);
-          setIsSubmitting(false)
         } catch (certificateError) {
           console.error("Error creating certificate:", certificateError);
           setSnackbarMessage(
@@ -234,7 +223,6 @@ const LearnCourse = () => {
   if (error || !courseData) {
     return <NotFound />;
   }
-
   return (
     <>
       <CssBaseline />
@@ -474,9 +462,6 @@ const LearnCourse = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      <Backdrop open={isSubmitting}>
-  <CircularProgress />
-</Backdrop>
     </>
   );
 };

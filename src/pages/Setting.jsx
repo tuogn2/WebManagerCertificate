@@ -23,13 +23,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import ForgotPassword from "./ForgotPassword";
+import { logoutUser } from "../store/slices/authSlice";
 
 const Setting = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
   // Password handler
@@ -93,6 +95,19 @@ const Setting = () => {
 
   const handleListItemClick = (section) => {
     setSelectedSection(section);
+  };
+
+  // Function to handle account deletion
+  const handleCloseAccount = async () => {
+    const data = await axios.delete(`${API_BASE_URL}/users/${user._id}`);
+    if (data.status === 200) {
+      alert("Account deleted successfully");
+      dispatch(logoutUser());
+      dispatch(clearWallet());
+      navigate("/login");
+    } else {
+      alert("Failed to delete account");
+    }
   };
 
   // Define the ForgotPassword function
@@ -170,9 +185,9 @@ const Setting = () => {
                 </Link>
               </Typography>
             </Box>
-            <Typography variant="h5" sx={{ color: "Highlight", mt: 2, mb: 2 }}>
+            {/* <Typography variant="h5" sx={{ color: "Highlight", mt: 2, mb: 2 }}>
               Security
-            </Typography>
+            </Typography> */}
           </Box>
         );
       case "Billing and Payments":
@@ -196,7 +211,12 @@ const Setting = () => {
               with your account forever, even if you choose to create a new
               account using the same email address in the future.
             </Typography>
-            <Button variant="contained" color="error" sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              color="error"
+              sx={{ mt: 2 }}
+              onClick={handleCloseAccount}
+            >
               Delete Account
             </Button>
           </Box>
@@ -276,7 +296,7 @@ const Setting = () => {
                       }}
                     />
                   </ListItemButton>
-                  <ListItemButton
+                  {/* <ListItemButton
                     onClick={() => handleListItemClick("Billing and Payments")}
                     sx={{
                       backgroundColor:
@@ -314,7 +334,7 @@ const Setting = () => {
                             : "BLACK",
                       }}
                     />
-                  </ListItemButton>
+                  </ListItemButton> */}
                   <ListItemButton
                     onClick={() => handleListItemClick("Close Account")}
                     sx={{

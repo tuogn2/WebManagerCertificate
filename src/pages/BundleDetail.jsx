@@ -34,9 +34,11 @@ const BundleDetail = () => {
   useEffect(() => {
     const fetchBundle = async () => {
       try {
-        console.log(id)
-        const response = await axios.get(`${API_BASE_URL}/coursebundles/getid/${id}`);
-         console.log(response.data)
+        console.log(id);
+        const response = await axios.get(
+          `${API_BASE_URL}/coursebundles/getid/${id}`
+        );
+        console.log(response.data);
         setBundle(response.data); // Set the fetched bundle
       } catch (error) {
         console.error("Error fetching bundle:", error);
@@ -48,7 +50,6 @@ const BundleDetail = () => {
 
     fetchBundle();
   }, [id]);
-
   const hasCertificate = user?.certificates?.some(
     (certificate) => certificate?.bundle === id
   );
@@ -140,7 +141,7 @@ const BundleDetail = () => {
       setLoading(false);
     }
   };
-console.log(bundle)
+  console.log(bundle);
   return (
     <>
       <CssBaseline />
@@ -198,8 +199,8 @@ console.log(bundle)
                 {hasCertificate
                   ? "You have already received the certificate"
                   : canGetCertificate()
-                  ? "Get Certificate"
-                  : "Complete All Courses to Get Certificate"}
+                    ? "Get Certificate"
+                    : "Complete All Courses to Get Certificate"}
               </Button>
               {hasCertificate && (
                 <Typography variant="body2" color="success.main" mt={2}>

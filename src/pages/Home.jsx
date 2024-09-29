@@ -49,12 +49,12 @@ const Home = () => {
       </AppBar>
 
       <Container maxWidth="xl" style={{ marginBottom: "10px" }}>
-        <Grid  spacing={1}>
-        <div style={{marginTop:'40px'}}>
-          <Banner />
-        </div>
+        <Grid spacing={1}>
+          <div style={{ marginTop: "40px" }}>
+            <Banner />
+          </div>
           <Grid item xs={12}>
-            <Typography variant="h4" component="h1" gutterBottom >
+            <Typography variant="h4" component="h1" gutterBottom>
               Available Courses
             </Typography>
             <Grid container spacing={3} sx={{ mt: 4 }}>
