@@ -125,7 +125,7 @@ const UserPage = () => {
       }
       handleDialogClose();
     } catch (error) {
-      toast.error("Failed to save user.");
+      toast.error(error.response.data.message);
       console.error("Error saving user:", error);
     }
   };

@@ -121,11 +121,17 @@ const UserProfile = () => {
   // Handle profile update (with file upload)
   const handleProfileUpdate = async () => {
     const formData = new FormData();
+    if (user.birthday !== undefined) {
+      formData.append("birthday", user.birthday);
+    }
+    if (user.address !== undefined) {
+      formData.append("address", user.address);
+    }
     formData.append("name", user.name);
-    formData.append("address", user.address);
-    formData.append("birthday", user.birthday);
     formData.append("email", user.email);
+   if (user.numberphone !== undefined) {
     formData.append("numberphone", user.numberphone);
+    }
 
     // Append the file if it exists
     if (user.avt) {
@@ -134,12 +140,6 @@ const UserProfile = () => {
 
     try {
       const token = localStorage.getItem("token");
-      console.log(formData.get("name"));
-      console.log(formData.get("address"));
-      console.log(formData.get("birthday"));
-      console.log(formData.get("email"));
-      console.log(formData.get("numberphone"));
-      console.log(formData.get("avt"));
       const id = oldUser.id === undefined ? oldUser._id : oldUser.id;
       const response = await axios.put(
         `${API_BASE_URL}/users/change-infor/${id}`, // Replace with your actual API endpoint

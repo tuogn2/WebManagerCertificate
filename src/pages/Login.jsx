@@ -20,7 +20,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { loginUser, updateUser } from "../store/slices/authSlice";
+import { clearError, loginUser, updateUser } from "../store/slices/authSlice";
 import { auth, provider, signInWithPopup } from "../firebase"; // Updated import
 import { API_BASE_URL } from "../utils/constants";
 import axios from "axios";
@@ -33,6 +33,13 @@ const Login = ({ open, onClose }) => {
   const navigate = useNavigate();
   const { user, loading, error } = useSelector((state) => state.auth);
 
+
+
+
+
+  useEffect(() => {
+    dispatch(clearError()); // Xóa lỗi khi trang Login được mở
+  }, [dispatch]);
   useEffect(() => {
     if (user && user.role === "admin") {
       navigate("/admin-home");

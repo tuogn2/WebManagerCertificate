@@ -141,7 +141,6 @@ const BundleDetail = () => {
       setLoading(false);
     }
   };
-  console.log(bundle);
   return (
     <>
       <CssBaseline />

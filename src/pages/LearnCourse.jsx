@@ -19,6 +19,8 @@ import {
   FormControlLabel,
   Snackbar,
   Alert,
+  Modal,
+  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
 import Loading from "../components/Loading";
@@ -46,7 +48,7 @@ const LearnCourse = () => {
   const [quizResults, setQuizResults] = useState([]); // To store quiz results
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-
+  const [loadingquiz, setLoadingquiz] = useState(false);
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
@@ -58,6 +60,7 @@ const LearnCourse = () => {
         setLoading(false);
       }
     };
+
     const fetchQuizResults = async () => {
       try {
         const response = await axios.get(
@@ -81,6 +84,9 @@ const LearnCourse = () => {
     if (!enrollment.course) return false;
     return enrollment.course.toString() === id;
   });
+
+ 
+
 
   useEffect(() => {
     if (hasEnrolled) {
@@ -141,6 +147,7 @@ const LearnCourse = () => {
       setOpenSnackbar(true);
       return;
     }
+    setLoadingquiz(true);
     const submissionData = {
       userId: user._id,
       courseId: id,
@@ -190,6 +197,7 @@ const LearnCourse = () => {
           dispatch(completeEnrollment(hasEnrolled._id));
           setSnackbarMessage("Congratulations! You've earned a certificate.");
           setOpenSnackbar(true);
+          setLoadingquiz(false);
         } catch (certificateError) {
           console.error("Error creating certificate:", certificateError);
           setSnackbarMessage(
@@ -462,6 +470,19 @@ const LearnCourse = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      <Modal open={loadingquiz} onClose={() => {}}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress />
+        </div>
+      </Modal>
     </>
   );
 };

@@ -116,6 +116,7 @@ export default function OrganizationPage() {
     formData.append("name", selectedOrganization.name);
     formData.append("address", selectedOrganization.address);
     formData.append("walletaddress", selectedOrganization.walletaddress);
+    formData.append("email", selectedOrganization.email);
   
     if (inputFileRef.current && inputFileRef.current.files.length > 0) {
       formData.append("avatar", inputFileRef.current.files[0]);
@@ -147,8 +148,7 @@ export default function OrganizationPage() {
       setOpenUpdate(false);
       setSelectedOrganization(null); // Clear the selected organization after update
     } catch (error) {
-      console.error("Error updating organization:", error);
-      setError(error.message); // Set the error message for notification
+      setError(error?.response?.data?.message||"Error updating organization:"); // Set the error message for notification
     }
   };
   
@@ -418,6 +418,19 @@ export default function OrganizationPage() {
           <DialogContentText>
             Update the details of the selected organization.
           </DialogContentText>
+          <TextField
+            label="email"
+            name="email"
+            value={selectedOrganization?.email || ""}
+            onChange={(e) =>
+              setSelectedOrganization({
+                ...selectedOrganization,
+                email: e.target.value,
+              })
+            }
+            fullWidth
+            margin="normal"
+          />
           <TextField
             label="Name"
             name="name"
