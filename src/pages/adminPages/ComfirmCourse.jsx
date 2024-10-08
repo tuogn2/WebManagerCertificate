@@ -55,10 +55,13 @@ const ConfirmCourse = () => {
     setSelectedCourse(null);
     setModalOpen(false);
   };
-
+  const token = localStorage.getItem('token');
   const handleApprove = async (courseId) => {
     try {
-      await axios.put(`${API_BASE_URL}/course/${courseId}/activate`);
+      await axios.put(`${API_BASE_URL}/course/${courseId}/activate`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },});
       setCourses(courses.filter((course) => course._id !== courseId));
     } catch (error) {
       console.error("Error approving course:", error);
@@ -78,7 +81,10 @@ const ConfirmCourse = () => {
   const handleReject = async () => {
     try {
       if (courseToReject) {
-        await axios.delete(`${API_BASE_URL}/course/${courseToReject}`);
+        await axios.delete(`${API_BASE_URL}/course/${courseToReject}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào headers
+          },});
         setCourses(courses.filter((course) => course._id !== courseToReject));
       }
     } catch (error) {

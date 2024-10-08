@@ -7,12 +7,14 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import Routes from "./routes/Routes";
 import store, { persistor } from "./store/store";
-
+import { ThemeProvider } from "@mui/material";
+import theme from "./theme";
 
 
 
 function App() {
   return (
+    <ThemeProvider theme={theme}>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
@@ -20,6 +22,7 @@ function App() {
         </BrowserRouter>
       </PersistGate>
     </Provider>
+    </ThemeProvider>
   );
 }
 

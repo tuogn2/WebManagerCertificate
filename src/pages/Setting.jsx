@@ -96,10 +96,13 @@ const Setting = () => {
   const handleListItemClick = (section) => {
     setSelectedSection(section);
   };
-
+  const token = localStorage.getItem('token');
   // Function to handle account deletion
   const handleCloseAccount = async () => {
-    const data = await axios.delete(`${API_BASE_URL}/users/${user._id}`);
+    const data = await axios.delete(`${API_BASE_URL}/users/${user._id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Thêm token vào headers
+      },});
     if (data.status === 200) {
       alert("Account deleted successfully");
       dispatch(logoutUser());

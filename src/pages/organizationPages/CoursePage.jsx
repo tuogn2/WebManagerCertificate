@@ -151,10 +151,13 @@ export default function CoursePage() {
     setCourseToDelete(courseId);
     setConfirmDeleteOpen(true);
   };
-
+  const token = localStorage.getItem('token');
   const confirmDelete = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/course/${courseToDelete}`);
+      await axios.delete(`${API_BASE_URL}/course/${courseToDelete}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },});
       toast.success("Course deleted successfully!");
       setCourses(courses.filter((course) => course._id !== courseToDelete));
     } catch (error) {

@@ -50,7 +50,7 @@ const ChangePassword = () => {
       setNotification("");
     }
   }, [newPassword, retypePassword]);
-
+  const token = localStorage.getItem('token');
   const handleChangePassword = async (e) => {
     e.preventDefault();
     try {
@@ -58,7 +58,10 @@ const ChangePassword = () => {
         `${API_BASE_URL}/users/forgotpassword/${user._id === undefined ? user.id : user._id}`,
         {
           newPassword,
-        }
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào headers
+          },}
       );
       if (response.status === 200) {
         console.log("Password changed successfully:", response.data);

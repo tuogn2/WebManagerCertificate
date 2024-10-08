@@ -33,7 +33,7 @@ const UserPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null); // New state for file input
-
+  const token = localStorage.getItem('token');
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -74,7 +74,10 @@ const UserPage = () => {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/users/${userToDelete._id}`);
+      await axios.delete(`${API_BASE_URL}/users/${userToDelete._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },});
       setUsers(users.filter((user) => user._id !== userToDelete._id));
       toast.success("User deleted successfully!");
     } catch (error) {
@@ -111,7 +114,8 @@ const UserPage = () => {
   
         await axios.put(`${API_BASE_URL}/users/change-infor/${selectedUser._id}`, formData, {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "multipart/form-data", 
+            Authorization: `Bearer ${token}`, 
           },
         });
   

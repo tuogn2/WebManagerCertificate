@@ -64,7 +64,7 @@ const CourseDetail = () => {
     if (!enrollment.course) return false;
     return enrollment.course.toString() === course._id;
   });
-
+  const token = localStorage.getItem('token');
   const handleButtonClick = async () => {
     if (!user) {
       setMessage("You must be logged in to enroll in a course.");
@@ -106,7 +106,10 @@ const CourseDetail = () => {
           const response = await axios.post(`${API_BASE_URL}/enrollment`, {
             user: studentId,
             course: course._id,
-          });
+          }, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm token vào headers
+            },});
 
           console.log("Enrollment created successfully:", response.data);
           dispatch(addEnrollmentToUser(response.data));

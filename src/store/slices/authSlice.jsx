@@ -73,6 +73,11 @@ const authSlice = createSlice({
         });
       }
     },
+    addCertificateToUser: (state, action) => {
+      if (state.user) {
+        state.user.certificates.push(action.payload);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -98,6 +103,7 @@ export const {
   completeEnrollment,
   addWalletAddress,
   updateUser,
-  clearError
+  clearError,
+  addCertificateToUser
 } = authSlice.actions;
 export default authSlice.reducer;

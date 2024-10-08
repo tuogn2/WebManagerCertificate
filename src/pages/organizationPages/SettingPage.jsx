@@ -76,7 +76,8 @@ const SettingPage = () => {
       setAvatarPreview(previewUrl);
     }
   };
-
+  const token = localStorage.getItem('token');
+  
   const handleSave = async () => {
     setSaving(true);
     setError(null);
@@ -95,6 +96,7 @@ const SettingPage = () => {
       await axios.put(`${API_BASE_URL}/organization/${user.id || user._id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, 
         },
       });
       setSaving(false);
@@ -117,7 +119,10 @@ const SettingPage = () => {
       const response = await axios.put(`${API_BASE_URL}/organization/${user.id || user._id}/change-password`, {
         oldPassword,
         newPassword,
-      });
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },});
       setOpenPasswordDialog(false);
       setOldPassword("");
       setNewPassword("");

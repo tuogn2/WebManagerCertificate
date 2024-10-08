@@ -17,6 +17,11 @@ const getWeb3 = () => {
 // ABI của hợp đồng thông minh
 const abi =[
 	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "string",
@@ -58,44 +63,6 @@ const abi =[
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "courseId",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "studentId",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "studentName",
-				"type": "string"
-			},
-			{
-				"internalType": "address payable",
-				"name": "organization",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "organizationName",
-				"type": "string"
-			}
-		],
-		"name": "payForCourse",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
 	},
 	{
 		"inputs": [
@@ -183,6 +150,59 @@ const abi =[
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "courseId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "studentId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "studentName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "organizationName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "certificateId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "hash",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "imageUrl",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "score",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isCompleted",
+				"type": "bool"
+			}
+		],
+		"name": "createCertificate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -367,11 +387,44 @@ const abi =[
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "courseId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "studentId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "studentName",
+				"type": "string"
+			},
+			{
+				"internalType": "address payable",
+				"name": "organization",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "organizationName",
+				"type": "string"
+			}
+		],
+		"name": "payForCourse",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
 	}
 ]
 
 // Địa chỉ hợp đồng trên mạng
-const contractAddress = '0xD808E36AebC4c110405d407e79ED7DD04EC1B014';
+const contractAddress = '0x3859681C32ce57c9de5fe96Cf8e197E4b8c61f99';
 
 // Khởi tạo Web3 và hợp đồng
 const initContract = async () => {

@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 function AddCoursePage() {
   const inputFileRef = useRef(null);
   const { user } = useSelector((state) => state.auth);
+  const token = localStorage.getItem('token');
   const [course, setCourse] = useState({
     title: "",
     description: "",
@@ -125,6 +126,7 @@ function AddCoursePage() {
       const response = await axios.post(`${API_BASE_URL}/course/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, 
         },
       });
 

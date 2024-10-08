@@ -110,7 +110,7 @@ export default function OrganizationPage() {
     setOpenUpdate(false);
     setSelectedOrganization(null);
   };
-
+  const token = localStorage.getItem('token');
   const handleUpdate = async () => {
     const formData = new FormData();
     formData.append("name", selectedOrganization.name);
@@ -135,6 +135,7 @@ export default function OrganizationPage() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
@@ -166,7 +167,10 @@ export default function OrganizationPage() {
   const handleDeleteConfirm = async () => {
     try {
       await axios.put(
-        `${API_BASE_URL}/organization/${selectedOrganization._id}/activate`
+        `${API_BASE_URL}/organization/${selectedOrganization._id}/activate`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào headers
+          },}
       );
       setOrganizations((prevOrganizations) =>
         prevOrganizations.filter((org) => org._id !== selectedOrganization._id)
@@ -234,6 +238,7 @@ export default function OrganizationPage() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`, 
           },
         }
       );

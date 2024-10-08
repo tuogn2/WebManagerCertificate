@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -15,22 +15,24 @@ import {
   Box,
   Button,
   CircularProgress,
+  Modal,
 } from "@mui/material";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
-import payForCourse from "../utils/payForCourse";
-
+import Loading from "../components/Loading";
+import {addCertificateToUser} from "../store/slices/authSlice.jsx";
 const BundleDetail = () => {
   const { id } = useParams();
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [bundle, setBundle] = useState(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true); // Set loading to true initially
-
+  const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
     const fetchBundle = async () => {
       try {
@@ -55,12 +57,7 @@ const BundleDetail = () => {
   );
 
   if (loading) {
-    return (
-      <Container>
-        <CircularProgress />
-        <Typography variant="h6">Loading...</Typography>
-      </Container>
-    );
+    return <Loading />;
   }
 
   if (!bundle) {
@@ -85,50 +82,40 @@ const BundleDetail = () => {
       return enrollment?.completed;
     });
   };
-
+  const token = localStorage.getItem('token');
   const handleGetCertificate = async () => {
-    setLoading(true);
+    setModalOpen(true);
     try {
       const studentId = user?._id || "guest"; // Handle guest user
-      const studentName = user?.name || "Guest User"; // Default name for guest
-      const amount = 0.000000001;
-      const walletOr =
-        bundle.organization.walletaddress ||
-        "0x6087050c4069ab730d872e625E035A8fd8DeD600";
-      const organization = bundle.organization.name;
-
-      const paymentResult = await payForCourse(
-        studentId,
-        bundle._id,
-        studentName,
-        amount,
-        walletOr,
-        organization
+      const enrollmentResponse = await axios.post(
+        `${API_BASE_URL}/enrollment/createBundleEnrollment`,
+        {
+          user: studentId,
+          bundle: bundle._id,
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào headers
+          },}
       );
 
-      if (paymentResult.success) {
-        const enrollmentResponse = await axios.post(
-          `${API_BASE_URL}/enrollment/createBundleEnrollment`,
+      if (enrollmentResponse.data) {
+        const organizationId = bundle.organization._id;
+
+        const response = await axios.post(
+          `${API_BASE_URL}/certificates/createCertificateBunble`,
           {
             user: studentId,
-            bundle: bundle._id,
-          }
+            organization: organizationId,
+            bunbles: bundle._id,
+          }, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm token vào headers
+            },}
         );
-
-        if (enrollmentResponse.data) {
-          const organizationId = bundle.organization._id;
-
-          const response = await axios.post(
-            `${API_BASE_URL}/certificates/createCertificateBunble`,
-            {
-              user: studentId,
-              organization: organizationId,
-              bunbles: bundle._id,
-            }
-          );
-          setMessage("Certificate has been successfully issued!");
-          navigate("/");
-        }
+        console.log(response.data.certificate);
+        dispatch(addCertificateToUser(response.data.certificate));
+        setMessage("Certificate has been successfully issued!");
+        navigate("/");
       } else {
         setMessage(
           paymentResult.message || "Payment failed. Please try again."
@@ -138,7 +125,7 @@ const BundleDetail = () => {
       console.error("Error in getting certificate:", error);
       setMessage("Failed to get certificate. Please try again.");
     } finally {
-      setLoading(false);
+      setModalOpen(false);
     }
   };
   return (
@@ -213,7 +200,7 @@ const BundleDetail = () => {
           Courses in this Bundle:
         </Typography>
         <Grid container spacing={4}>
-          {bundle.courses.map((course) => {
+          {bundle?.courses.map((course) => {
             const enrollment = getEnrollmentStatus(course._id);
 
             return (
@@ -286,6 +273,35 @@ const BundleDetail = () => {
         {message && <Typography color="error.main">{message}</Typography>}
       </Container>
       <Footer />
+
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        aria-labelledby="loading-modal"
+        aria-describedby="certificate-loading"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "white",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+            textAlign: "center",
+          }}
+        >
+            <>
+              <CircularProgress />
+              <Typography variant="h6" sx={{ mt: 2 }}>
+                Processing your certificate...
+              </Typography>
+            </>
+        </Box>
+      </Modal>
     </>
   );
 };

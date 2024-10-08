@@ -25,7 +25,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 export default function SettingPage() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-
+  const token = localStorage.getItem('token');
   const [adminDetails, setAdminDetails] = useState({
     name: user.name || "",
     email: user.email || "",
@@ -78,7 +78,10 @@ export default function SettingPage() {
 
   const handleSaveChanges = async () => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/users/change-infor/${user._id || user.id}`, adminDetails);
+      const response = await axios.put(`${API_BASE_URL}/users/change-infor/${user._id || user.id}`, adminDetails, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },});
       dispatch(updateUser(response.data));
       setSnackbarMessage("User details updated successfully!");
       setSnackbarSeverity("success");
@@ -106,7 +109,10 @@ export default function SettingPage() {
       const response = await axios.put(`${API_BASE_URL}/users/change-password/${user._id || user.id}`, {
         currentPassword: passwordDetails.oldPassword,
         newPassword: passwordDetails.newPassword,
-      });
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },});
       setPasswordDetails({
         oldPassword: "",
         newPassword: "",

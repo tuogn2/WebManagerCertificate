@@ -43,7 +43,7 @@ const CourseBundles = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [bundleToDelete, setBundleToDelete] = useState(null);
-
+  const token = localStorage.getItem('token');
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -109,7 +109,10 @@ const CourseBundles = () => {
       if (editingBundle) {
         await axios.put(
           `${API_BASE_URL}/coursebundles/${editingBundle._id}`,
-          data
+          data, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm token vào headers
+            },}
         );
         toast.success("Cập nhật bundle khóa học thành công!");
       } else {
@@ -145,7 +148,10 @@ const CourseBundles = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/coursebundles/${bundleToDelete}`);
+      await axios.delete(`${API_BASE_URL}/coursebundles/${bundleToDelete}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },});
       toast.success("Xóa bundle khóa học thành công!");
       fetchCourseBundles();
     } catch (error) {

@@ -28,12 +28,15 @@ const ForgotPassword = () => {
 
   const [verificationCode, setVerificationCode] = useState("");
   const [enteredCode, setEnteredCode] = useState("");
-
+  const token = localStorage.getItem('token');
   const handleSendCode = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/users/send-code`, {
         email,
-      });
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },});
       setVerificationCode(response.data.code); // Assuming the server returns the code in response.data.code
       console.log("Verification code sent:", response.data.code);
     } catch (err) {
