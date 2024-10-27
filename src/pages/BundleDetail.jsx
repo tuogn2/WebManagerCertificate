@@ -22,7 +22,7 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import Loading from "../components/Loading";
-import {addCertificateToUser} from "../store/slices/authSlice.jsx";
+import { addCertificateToUser } from "../store/slices/authSlice.jsx";
 const BundleDetail = () => {
   const { id } = useParams();
   const { user } = useSelector((state) => state.auth);
@@ -82,20 +82,22 @@ const BundleDetail = () => {
       return enrollment?.completed;
     });
   };
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const handleGetCertificate = async () => {
     setModalOpen(true);
     try {
-      const studentId = user?._id || "guest"; // Handle guest user
+      const studentId = user?._id; // Handle guest user
       const enrollmentResponse = await axios.post(
         `${API_BASE_URL}/enrollment/createBundleEnrollment`,
         {
           user: studentId,
           bundle: bundle._id,
-        }, {
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`, // Thêm token vào headers
-          },}
+          },
+        }
       );
 
       if (enrollmentResponse.data) {
@@ -107,10 +109,12 @@ const BundleDetail = () => {
             user: studentId,
             organization: organizationId,
             bunbles: bundle._id,
-          }, {
+          },
+          {
             headers: {
               Authorization: `Bearer ${token}`, // Thêm token vào headers
-            },}
+            },
+          }
         );
         console.log(response.data.certificate);
         dispatch(addCertificateToUser(response.data.certificate));
@@ -162,9 +166,22 @@ const BundleDetail = () => {
             <Typography variant="h4" gutterBottom>
               {bundle.title}
             </Typography>
-            <Typography variant="body1" paragraph>
-              {bundle.description}
+            <Typography
+              variant="body1"
+              paragraph
+              sx={{
+                maxHeight: "40vh", // Đặt chiều cao tối đa
+                overflowY: "auto", // Kích hoạt cuộn dọc khi nội dung vượt quá
+                overflowX: "hidden", // Ẩn cuộn ngang để ngăn tràn ngang
+                whiteSpace: "pre-wrap", // Giữ nguyên ngắt dòng tự nhiên
+                wordWrap: "break-word", // Tự xuống dòng khi văn bản quá dài
+                paddingRight: "10px",
+                width: "60vh",
+              }}
+            >
+              {bundle?.description}
             </Typography>
+
             <Typography variant="h6" gutterBottom>
               Organization: {bundle?.organization?.name}
             </Typography>
@@ -204,7 +221,15 @@ const BundleDetail = () => {
             const enrollment = getEnrollmentStatus(course._id);
 
             return (
-              <Grid item xs={12} sm={6} md={4} key={course._id}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                key={course._id}
+                onClick={() => navigate(`/course/${course._id}`)}
+                style={{ cursor: "pointer" }}
+              >
                 <Card
                   style={{
                     display: "flex",
@@ -212,6 +237,17 @@ const BundleDetail = () => {
                     height: "100%",
                     borderRadius: "8px",
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "scale(1.05)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 20px rgba(0, 0, 0, 0.2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "scale(1)";
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 12px rgba(0, 0, 0, 0.1)";
                   }}
                 >
                   <CardMedia
@@ -294,12 +330,12 @@ const BundleDetail = () => {
             textAlign: "center",
           }}
         >
-            <>
-              <CircularProgress />
-              <Typography variant="h6" sx={{ mt: 2 }}>
-                Processing your certificate...
-              </Typography>
-            </>
+          <>
+            <CircularProgress />
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              Processing your certificate...
+            </Typography>
+          </>
         </Box>
       </Modal>
     </>
