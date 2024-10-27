@@ -64,7 +64,7 @@ const CourseDetail = () => {
     if (!enrollment.course) return false;
     return enrollment.course.toString() === course._id;
   });
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const handleButtonClick = async () => {
     if (!user) {
       setMessage("You must be logged in to enroll in a course.");
@@ -82,12 +82,12 @@ const CourseDetail = () => {
         }
 
         setIsProcessing(true); // Start processing
-        const studentId = user._id; 
-        const studentName = user.name; 
+        const studentId = user._id;
+        const studentName = user.name;
         const amount =
           course.price === 0
             ? 0.000000001
-            : (course.price / 100000).toFixed(18); 
+            : (course.price / 100000).toFixed(18);
         const walletOr =
           course.organization.walletaddress ||
           "0x6087050c4069ab730d872e625E035A8fd8DeD600";
@@ -103,13 +103,18 @@ const CourseDetail = () => {
         );
 
         if (paymentResult.success) {
-          const response = await axios.post(`${API_BASE_URL}/enrollment`, {
-            user: studentId,
-            course: course._id,
-          }, {
-            headers: {
-              Authorization: `Bearer ${token}`, // Thêm token vào headers
-            },});
+          const response = await axios.post(
+            `${API_BASE_URL}/enrollment`,
+            {
+              user: studentId,
+              course: course._id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Thêm token vào headers
+              },
+            }
+          );
 
           console.log("Enrollment created successfully:", response.data);
           dispatch(addEnrollmentToUser(response.data));
@@ -119,7 +124,9 @@ const CourseDetail = () => {
         }
       } catch (error) {
         console.error("Failed to process payment or create enrollment:", error);
-        setMessage("Failed to process payment or create enrollment. Please try again.");
+        setMessage(
+          "Failed to process payment or create enrollment. Please try again."
+        );
       } finally {
         setIsProcessing(false); // End processing
       }
@@ -164,7 +171,6 @@ const CourseDetail = () => {
                 >
                   <Box>
                     <Typography variant="h6">Details</Typography>
-                    <Typography>Duration: {course.duration} hours</Typography>
                     <Typography>Price: ${course.price}</Typography>
                     <Typography>
                       Participants: {course.participantsCount}
@@ -177,7 +183,13 @@ const CourseDetail = () => {
                     onClick={handleButtonClick}
                     disabled={isProcessing} // Disable button while processing
                   >
-                    {isProcessing ? <CircularProgress size={24} color="inherit" /> : (hasEnrolled ? "Go to Course" : "Join Course")}
+                    {isProcessing ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : hasEnrolled ? (
+                      "Go to Course"
+                    ) : (
+                      "Join Course"
+                    )}
                   </Button>
                 </Box>
               </CardContent>
@@ -187,13 +199,22 @@ const CourseDetail = () => {
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h4" gutterBottom>
                   Course Sections
                 </Typography>
                 {course.documents.map((item, index) => (
                   <Box key={index} sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1">{item.title}</Typography>
-                    <Typography variant="body2">
+                    <Typography variant="h5">{item.title}</Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        WebkitLineClamp: 3, // Limits to 3 lines
+                      }}
+                    >
                       {item.content || "No content available"}
                     </Typography>
                   </Box>
