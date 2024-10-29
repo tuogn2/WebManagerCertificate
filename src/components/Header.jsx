@@ -71,7 +71,7 @@ function Header() {
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.wallet.address);
   const balance = useSelector((state) => state.wallet.balance);
- 
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -264,7 +264,11 @@ function Header() {
                 )}
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar sx={{ marginLeft: "10px" }} src={user?.avt} alt={"avt"} />
+                    <Avatar
+                      sx={{ marginLeft: "10px" }}
+                      src={user?.avt}
+                      alt={"avt"}
+                    />
                   </IconButton>
                 </Tooltip>
                 <Menu

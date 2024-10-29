@@ -94,7 +94,7 @@ const LearnCourse = () => {
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const handleComplete = async (lessonId) => {
     if (!hasEnrolled) {
       setSnackbarMessage("You are not enrolled in this course.");
@@ -111,10 +111,12 @@ const LearnCourse = () => {
           progress:
             (updatedCompletedLessons.length / courseData.documents.length) *
             100,
-        }, {
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`, // Thêm token vào headers
-          },}
+          },
+        }
       );
       dispatch(updateEnrollment(response.data));
       setSnackbarMessage("Lesson marked as completed");
@@ -168,10 +170,12 @@ const LearnCourse = () => {
       // Submit the quiz
       const response = await axios.post(
         `${API_BASE_URL}/quiz/submit`,
-        submissionData, {
+        submissionData,
+        {
           headers: {
             Authorization: `Bearer ${token}`, // Thêm token vào headers
-          },}
+          },
+        }
       );
 
       // Handle successful submission
@@ -194,10 +198,12 @@ const LearnCourse = () => {
           console.log(certificateData);
           const certificateResponse = await axios.post(
             `${API_BASE_URL}/certificates`,
-            certificateData, {
+            certificateData,
+            {
               headers: {
                 Authorization: `Bearer ${token}`, // Thêm token vào headers
-              },}
+              },
+            }
           );
           dispatch(completeEnrollment(hasEnrolled._id));
           setSnackbarMessage("Congratulations! You've earned a certificate.");
@@ -222,6 +228,7 @@ const LearnCourse = () => {
 
       // Update the state with the top 3 results
       setQuizResults(topThreeResults);
+      setLoadingquiz(false);
     } catch (error) {
       console.error("Error submitting quiz:", error);
       setSnackbarMessage("Error submitting quiz. Please try again.");
@@ -236,8 +243,6 @@ const LearnCourse = () => {
   if (error || !courseData) {
     return <NotFound />;
   }
-
-
 
   return (
     <>
