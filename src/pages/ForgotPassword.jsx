@@ -17,27 +17,32 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import logo from "../assets/logo.png";
-import CloseIcon from "@mui/icons-material/Close";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  //   const email = queryParams.get("email");
-  const email = "tranhuy12072003@gmail.com";
+  const emailToSend = queryParams.get("email");
+  const [emailNew, setEmailNew] = useState("");
 
   const [verificationCode, setVerificationCode] = useState("");
   const [enteredCode, setEnteredCode] = useState("");
-  const token = localStorage.getItem('token');
-  const handleSendCode = async () => {
+  const token = localStorage.getItem("token");
+
+  const handleSendCodeEmail = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/users/send-code`, {
-        email,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Thêm token vào headers
-        },});
+      const response = await axios.post(
+        `${API_BASE_URL}/users/send-code`,
+        { email: emailToSend || emailNew },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào headers
+          },
+        }
+      );
       setVerificationCode(response.data.code); // Assuming the server returns the code in response.data.code
+      console.log("Token: ", token);
+
       console.log("Verification code sent:", response.data.code);
     } catch (err) {
       console.error("Error sending verification code:", err);
@@ -66,8 +71,8 @@ const ForgotPassword = () => {
 
   const handleClickSentCode = () => {
     setIsButtonDisabled(true);
-    setCountdown(60); // 60 seconds countdown
-    handleSendCode();
+    setCountdown(60);
+    handleSendCodeEmail();
   };
 
   const handleVerifyCode = () => {
@@ -137,10 +142,11 @@ const ForgotPassword = () => {
           {/* Email Input */}
           <TextField
             fullWidth
-            placeholder="Username or Email"
+            placeholder="Email"
             variant="outlined"
-            value={email === undefined ? "" : email}
-            disabled
+            value={token ? emailToSend : emailNew}
+            disabled={token ? true : false}
+            onChange={(e) => setEmailNew(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
