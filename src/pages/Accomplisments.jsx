@@ -14,6 +14,8 @@ import {
   Divider,
   LinearProgress,
   Tooltip,
+  ButtonBase,
+  Button,
 } from "@mui/material";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -23,9 +25,11 @@ import { API_BASE_URL } from "../utils/constants";
 import { useSelector } from "react-redux";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import AddLinkIcon from "@mui/icons-material/AddLink";
+import { useNavigate } from "react-router-dom";
 
 const Accomplishments = () => {
   const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
 
   // get all certificates
   const [certificates, setCertificates] = useState([]);
@@ -104,11 +108,11 @@ const Accomplishments = () => {
           </Typography>
           <Divider variant="middle" />
         </Box>
-        <Container maxWidth={"lg"} sx={{ mt: 2 }}>
-          <Grid container spacing={3}>
+        <Container maxWidth={"lg"} sx={{ mt: 5, mb: 20 }}>
+          <Grid container spacing={4}>
             {certificates.map((certificate) => (
               <Grid item xs={12} sm={6} md={4} key={certificate._id}>
-                <Card
+                <Button
                   sx={{
                     borderRadius: 2,
                     boxShadow: 3,
@@ -118,18 +122,22 @@ const Accomplishments = () => {
                       boxShadow: 6,
                     },
                   }}
+                  onClick={() =>
+                    navigate("/show-certificate", { state: certificate })
+                  }
                 >
                   <CardMedia
                     component="img"
-                    height="140"
+                    height="180"
                     image={certificate.imageUrl || "placeholder-image-url"} // Placeholder if no image
                     alt="Certificate"
-                    sx={{ borderRadius: "4px 4px 0 0" }}
+                    sx={{ borderRadius: "4px 4px 0 0", resize: "both" }}
                   />
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
-                      {certificate?.course ? certificate.course.title : certificate.bundle.title}
-                     
+                      {certificate?.course
+                        ? certificate.course.title
+                        : certificate.bundle.title}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                       Issued on:{" "}
@@ -159,7 +167,7 @@ const Accomplishments = () => {
                       </Tooltip>
                     </Box>
                   </CardContent>
-                </Card>
+                </Button>
               </Grid>
             ))}
           </Grid>

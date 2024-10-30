@@ -22,6 +22,7 @@ import ChangePassword from "../pages/ChangePassword";
 
 import ProtectedRoute from "../components/ProtectedRoute"; // Import ProtectedRoute
 import SearchPage from "../pages/SearchPage";
+import ShowCourseCertificate from "../pages/ShowCourseCertificate";
 const Routes = () => {
   return useRoutes([
     {
@@ -67,6 +68,11 @@ const Routes = () => {
       path: "/accomplishments",
       element: <ProtectedRoute allowedRoles={["customer"]} />, // Only customers
       children: [{ path: "", element: <Accomplishments /> }],
+    },
+    {
+      path: "/show-certificate",
+      element: <ProtectedRoute allowedRoles={["customer"]} />,
+      children: [{ path: "", element: <ShowCourseCertificate /> }],
     },
     {
       path: "/account-settings",

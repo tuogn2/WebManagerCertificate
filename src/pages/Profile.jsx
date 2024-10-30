@@ -129,8 +129,8 @@ const UserProfile = () => {
     }
     formData.append("name", user.name);
     formData.append("email", user.email);
-   if (user.numberphone !== undefined) {
-    formData.append("numberphone", user.numberphone);
+    if (user.numberphone !== undefined) {
+      formData.append("numberphone", user.numberphone);
     }
 
     // Append the file if it exists
