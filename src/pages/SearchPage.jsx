@@ -178,7 +178,13 @@ const SearchPage = () => {
                             <Typography gutterBottom variant="h5" component="div">
                               {bundle.title}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="text.secondary"  style={{
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  }}>
                               {bundle.description}
                             </Typography>
                           </CardContent>
@@ -211,7 +217,14 @@ const SearchPage = () => {
                             <Typography gutterBottom variant="h5" component="div">
                               {course.title}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="text.secondary"  style={{
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  }}
+  >
                               {course.description}
                             </Typography>
                           </CardContent>

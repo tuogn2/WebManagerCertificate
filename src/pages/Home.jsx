@@ -105,7 +105,13 @@ const Home = () => {
                         >
                           {course.title}
                         </Typography>
-                        <Typography variant="body2">
+                        <Typography variant="body2"  style={{
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  }}>
                           {course.description}
                         </Typography>
                       </CardContent>
@@ -167,7 +173,13 @@ const Home = () => {
                         >
                           {bundle.title}
                         </Typography>
-                        <Typography variant="body2">
+                        <Typography variant="body2"  style={{
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  }}>
                           {bundle.description}
                         </Typography>
                       </CardContent>
