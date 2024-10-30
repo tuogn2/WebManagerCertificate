@@ -123,7 +123,7 @@ const Accomplishments = () => {
                     },
                   }}
                   onClick={() =>
-                    navigate("/show-certificate", { state: certificate })
+                    navigate(`/show-certificate/${certificate._id}`)
                   }
                 >
                   <CardMedia

@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
-  Button,
   Card,
   Typography,
   Grid,
@@ -13,24 +12,87 @@ import {
   Avatar,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useSelector } from "react-redux";
+import axios from "axios";
+import { API_BASE_URL } from "../utils/constants";
+import NotFound from "./NotFound";
+import getCertificatesByStudentId from "../utils/getCertificatesByStudentId";
+import Loading from "../components/Loading";
 
 const ShowCourseCertificate = () => {
-  const location = useLocation();
-  const certificate = location.state;
-  const user = useSelector((state) => state.auth.user);
-  console.log(certificate, user);
+  const { id } = useParams();
+  const [user, setUser] = useState({});
+  const [certificate, setCertificate] = useState({});
+  // const [certificateExists, setCertificateExists] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state
 
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(certificate.issueDate));
+  useEffect(() => {
+    const fetchCertificate = async () => {
+      try {
+        setLoading(true);
+        const certResponse = await axios.get(
+          `${API_BASE_URL}/certificates/${id}`
+        );
+        setCertificate(certResponse.data);
 
-  console.log(formattedDate); // Output: "September 29, 2024"
+        const userResponse = await axios.get(
+          `${API_BASE_URL}/users/${certResponse.data.user._id}`
+        );
+        setUser(userResponse.data);
+        // const additionalCertificates = await getCertificatesByStudentId(
+        //   certResponse.data.user._id
+        // );
+        // console.log("Additional certificates:", additionalCertificates);
+        // const duplicateExists = additionalCertificates.data.some((cert) => {
+        //   console.log(
+        //     "Checking:",
+        //     cert.certificateId,
+        //     certResponse.data.certificateId
+        //   );
+        //   return cert.certificateId === certResponse.data.certificateId;
+        // });
+        // setCertificateExists(duplicateExists);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }finally {
+        setLoading(false); // Set loading to false after API calls are done
+    }
+    };
+
+    fetchCertificate();
+  }, [id]);
+
+
+  if (loading) {
+    return <Loading/>
+}
+
+  if (!certificate.course && !certificate.bundle) {
+    return <NotFound />;
+  }
+
+ 
+  if (!user._id) {
+    return <NotFound />;
+  }
+  // if (certificateExists ===false) {
+  //   return <> blockchain nothave</>
+  // }
+
+  // Function to format date safely
+  const formatDate = (dateString) => {
+    if (!dateString) return "Date not available"; // Handle missing date
+    const date = new Date(dateString);
+    return isNaN(date.getTime())
+      ? "Invalid date"
+      : new Intl.DateTimeFormat("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }).format(date);
+  };
 
   return (
     <>
@@ -49,7 +111,7 @@ const ShowCourseCertificate = () => {
         <Typography variant="h4" gutterBottom>
           {certificate?.course
             ? certificate.course.title
-            : certificate.bundle.title}
+            : certificate.bundle?.title}
         </Typography>
         <Grid container spacing={2}>
           {/* Left Side */}
@@ -69,9 +131,14 @@ const ShowCourseCertificate = () => {
                 <Avatar src={user?.avt} sx={{ width: 50, height: 50 }} />
                 <Box sx={{ marginLeft: "20px" }}>
                   <Typography variant="h6">
-                    Completed by {user?.name}
+                    Completed by {user?.name || "Unknown User"}
                   </Typography>
-                  <Typography variant="body2">{formattedDate}</Typography>
+                  <Typography variant="body2">
+                    Srore: <b>{certificate.score}</b>
+                  </Typography>
+                  <Typography variant="body2">
+                    {formatDate(certificate.issueDate)}
+                  </Typography>
                 </Box>
               </Box>
               <CheckCircleOutlineIcon fontSize="large" color="success" />
@@ -81,13 +148,13 @@ const ShowCourseCertificate = () => {
             <Box sx={{ marginTop: "20px" }}>
               <Typography variant="h5">Description</Typography>
               <Typography variant="body1">
-                {certificate.course.description}
+                {certificate.course?.description || "No description available"}
               </Typography>
             </Box>
 
-            {/* Skills Section */}
+            {/* Organization Section */}
             <Box sx={{ marginTop: "20px" }}>
-              <Typography variant="h5">About organization</Typography>
+              <Typography variant="h5">About Organization</Typography>
               <Box
                 sx={{
                   display: "flex",
@@ -97,15 +164,15 @@ const ShowCourseCertificate = () => {
                 }}
               >
                 <Avatar
-                  src={certificate.organization.avatar}
+                  src={certificate.organization?.avatar}
                   sx={{ width: 40, height: 40 }}
                 />
                 <Box>
                   <Typography variant="body1">
-                    {certificate.organization.name}
+                    {certificate.organization?.name || "Unknown Organization"}
                   </Typography>
                   <Typography variant="body1">
-                    {certificate.organization.email}
+                    {certificate.organization?.email || "No email available"}
                   </Typography>
                 </Box>
               </Box>

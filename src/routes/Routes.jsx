@@ -40,7 +40,10 @@ const Routes = () => {
     { path: "/course/:id", element: <CourseDetail /> },
     { path: "/bundle/:id", element: <BundleDetail /> },
     { path: "/change-password", element: <ChangePassword /> },
-
+    {
+      path: "/show-certificate/:id",
+      children: [{ path: "", element: <ShowCourseCertificate /> }],
+    },
     {
       path: "/course/:id/learn",
       element: <ProtectedRoute allowedRoles={["customer"]} />,
@@ -69,11 +72,7 @@ const Routes = () => {
       element: <ProtectedRoute allowedRoles={["customer"]} />, // Only customers
       children: [{ path: "", element: <Accomplishments /> }],
     },
-    {
-      path: "/show-certificate",
-      element: <ProtectedRoute allowedRoles={["customer"]} />,
-      children: [{ path: "", element: <ShowCourseCertificate /> }],
-    },
+   
     {
       path: "/account-settings",
       element: (

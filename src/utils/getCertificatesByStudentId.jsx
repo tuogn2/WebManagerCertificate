@@ -8,23 +8,10 @@ const getCertificatesByStudentId = async (studentId) => {
       throw new Error('Không thể khởi tạo Web3.');
     }
 
-    if (!window.ethereum) {
-      throw new Error('MetaMask không được cài đặt.');
-    }
-
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-    const accounts = await web3.eth.getAccounts();
-    const account = accounts[0];
-
-    if (!account) {
-      throw new Error('Không tìm thấy tài khoản. Vui lòng đăng nhập vào MetaMask.');
-    }
-
     // Gọi hàm getCertificatesByStudentId với studentId
     const certificates = await contract.methods
       .getCertificatesByStudentId(studentId)
-      .call({ from: account });
+      .call();
 
     return { success: true, data: certificates };
   } catch (error) {
