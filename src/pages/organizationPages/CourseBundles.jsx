@@ -339,10 +339,23 @@ const CourseBundles = () => {
                 image={bundle.image || "default-image-url.jpg"} // Set a default image URL
               />
               <CardContent>
-                <Typography variant="h5" component="div">
+                <Typography variant="h5" component="div" style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 1,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}> 
                   {bundle.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary"  style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3, // Limit to 3 lines
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      height: "4.5em", // Adjust height according to your line-height
+                    }}>
                   {bundle.description}
                 </Typography>
                 <Button
