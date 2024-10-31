@@ -6,6 +6,9 @@ import { Book, Dashboard, LibraryBooks, Settings } from "@mui/icons-material";
 import CoursePage from "./CoursePage";
 import SettingPage from "./SettingPage";
 import CourseBundles from "./CourseBundles";
+import StatsOr from "./StatsOr";
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+
 const MainContent = ({ selectedItem }) => {
   // Render content based on the selected item
   switch (selectedItem) {
@@ -19,6 +22,8 @@ const MainContent = ({ selectedItem }) => {
       return <CoursePage />;
     case "Course Bundles":
       return <CourseBundles />;
+      case "Stats":
+      return <StatsOr />;
     default:
       return (
         <Typography variant="h4">
@@ -33,6 +38,7 @@ const menuItems = [
   { text: "Course", icon: <Book /> },
   { text: "Setting", icon: <Settings /> },
   { text: "Course Bundles", icon: <LibraryBooks /> },
+  { text: "Stats", icon: < QueryStatsIcon/> },
 ];
 
 export default function OrganizationHome() {
