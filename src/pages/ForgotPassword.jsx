@@ -10,6 +10,8 @@ import {
   InputAdornment,
   IconButton,
   CssBaseline,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Close, Email } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -29,31 +31,13 @@ const ForgotPassword = () => {
   const [enteredCode, setEnteredCode] = useState("");
   const token = localStorage.getItem("token");
 
-  const handleSendCodeEmail = async () => {
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/users/send-code`,
-        { email: emailToSend || emailNew },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Thêm token vào headers
-          },
-        }
-      );
-      setVerificationCode(response.data.code); // Assuming the server returns the code in response.data.code
-      console.log("Token: ", token);
-
-      console.log("Verification code sent:", response.data.code);
-    } catch (err) {
-      console.error("Error sending verification code:", err);
-    }
-  };
-
-  // Handle sending the verification code
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [notification, setNotification] = useState("");
   const [isResetButtonEnabled, setIsResetButtonEnabled] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   useEffect(() => {
     let timer;
@@ -69,6 +53,31 @@ const ForgotPassword = () => {
     return () => clearTimeout(timer);
   }, [countdown, enteredCode]);
 
+  const handleSendCodeEmail = async () => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/users/send-code`,
+        { email: emailToSend || emailNew },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Corrected template literal
+          },
+        }
+      );
+      setVerificationCode(response.data.code); // Assuming the server returns the code in response.data.code
+      console.log("Token: ", token);
+      console.log("Verification code sent:", response.data.code);
+      setSnackbarMessage("Verification code sent successfully!");
+      setSnackbarSeverity("success");
+    } catch (err) {
+      console.error("Error sending verification code:", err);
+      setSnackbarMessage("Error sending verification code.");
+      setSnackbarSeverity("error");
+    } finally {
+      setSnackbarOpen(true);
+    }
+  };
+
   const handleClickSentCode = () => {
     setIsButtonDisabled(true);
     setCountdown(60);
@@ -81,10 +90,19 @@ const ForgotPassword = () => {
     if (enteredCode == verificationCode) {
       setNotification("Verification code is correct!");
       // Redirect to the reset password page
-      navigate("/change-password");
+      navigate(
+        `/change-password?email=${encodeURIComponent(emailToSend || emailNew)}`
+      );
     } else {
       setNotification("Verification code is incorrect. Please try again.");
     }
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   return (
@@ -113,7 +131,7 @@ const ForgotPassword = () => {
             <ArrowBackIcon />
           </IconButton>
 
-          {/* Back Button */}
+          {/* Close Button */}
           <IconButton
             sx={{ position: "absolute", top: 16, right: 16 }}
             onClick={() => navigate("/")}
@@ -216,6 +234,22 @@ const ForgotPassword = () => {
           )}
         </Paper>
       </Container>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

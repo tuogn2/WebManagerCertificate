@@ -9,13 +9,15 @@ import {
   Divider,
   IconButton,
   CssBaseline,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import logo from "../assets/logo.png";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logoutUser } from "../store/slices/authSlice";
 
 const ChangePassword = () => {
@@ -23,8 +25,15 @@ const ChangePassword = () => {
   const [retypePassword, setRetypePassword] = useState("");
   const [isResetButtonEnabled, setIsResetButtonEnabled] = useState(false);
   const [notification, setNotification] = useState("");
-  const navigate = useNavigate(); // Correctly use the useNavigate hook
-  const user = useSelector((state) => state.auth.user);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const email = queryParams.get("email");
+  const token = localStorage.getItem("token");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -50,34 +59,74 @@ const ChangePassword = () => {
       setNotification("");
     }
   }, [newPassword, retypePassword]);
-  const token = localStorage.getItem('token');
+
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/users/getuserbyemail/${email}`
+      );
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      setSnackbarMessage("Error fetching user. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return null;
+    }
+  };
+
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.put(
-        `${API_BASE_URL}/users/forgotpassword/${user._id === undefined ? user.id : user._id}`,
-        {
-          newPassword,
-        }, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Thêm token vào headers
-          },}
-      );
-      if (response.status === 200) {
-        console.log("Password changed successfully:", response.data);
-        setNotification("Password changed successfully!");
-        dispatch(logoutUser());
-        localStorage.removeItem("walletAddress");
-        localStorage.removeItem("balance");
-        navigate("/login");
-      } else {
-        setNotification("Error changing password. Please try again.");
-        console.error("Error changing password:", error);
-      }
-    } catch (error) {
-      setNotification("Error changing password. Please try again.");
-      console.error("Error changing password:", error);
+    let currentUser = user;
+    if (currentUser === null) {
+      currentUser = await fetchUser();
     }
+
+    if (currentUser) {
+      try {
+        const userId = currentUser._id || currentUser.id;
+        console.log("User ID:", userId);
+        console.log("Token:", token);
+
+        const response = await axios.put(
+          `${API_BASE_URL}/users/forgotpassword/${userId}`,
+          { newPassword },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("Password changed successfully:", response.data);
+          setSnackbarMessage("Password changed successfully!");
+          setSnackbarSeverity("success");
+          dispatch(logoutUser());
+          localStorage.removeItem("walletAddress");
+          localStorage.removeItem("balance");
+          navigate("/login");
+        } else {
+          setSnackbarMessage("Error changing password. Please try again.");
+          setSnackbarSeverity("error");
+          console.error("Error changing password:", response.data);
+        }
+      } catch (error) {
+        setSnackbarMessage("Error changing password. Please try again.");
+        setSnackbarSeverity("error");
+        console.error("Error changing password:", error);
+      } finally {
+        setSnackbarOpen(true);
+      }
+    }
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   return (
@@ -123,47 +172,43 @@ const ChangePassword = () => {
             Enter your new password to access your courses and certificates.
           </Typography>
 
-          {/* Password Fields */}
-          <form onSubmit={handleChangePassword}>
-            {/* New password Input */}
-            <TextField
-              fullWidth
-              placeholder="New password"
-              variant="outlined"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+          {/* New password Input */}
+          <TextField
+            fullWidth
+            placeholder="New password"
+            variant="outlined"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
 
-            {/* Retype new password */}
-            <TextField
-              label="Retype new password"
-              variant="outlined"
-              type="password"
-              fullWidth
-              value={retypePassword}
-              onChange={(e) => setRetypePassword(e.target.value)}
-              sx={{ mt: 2 }}
-            />
+          {/* Retype new password */}
+          <TextField
+            label="Retype new password"
+            variant="outlined"
+            type="password"
+            fullWidth
+            value={retypePassword}
+            onChange={(e) => setRetypePassword(e.target.value)}
+            sx={{ mt: 2 }}
+          />
 
-            <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 2 }} />
 
-            <Button
-              variant="contained"
-              color="success"
-              fullWidth
-              // onClick={handleChangePassword}
-              disabled={!isResetButtonEnabled}
-              type="submit"
-              sx={{
-                borderRadius: 20,
-                backgroundColor: "#00c4cc",
-                "&:hover": { backgroundColor: "#00b0b6" },
-              }}
-            >
-              Change Password
-            </Button>
-          </form>
+          <Button
+            variant="contained"
+            color="success"
+            fullWidth
+            onClick={handleChangePassword}
+            disabled={!isResetButtonEnabled}
+            sx={{
+              borderRadius: 20,
+              backgroundColor: "#00c4cc",
+              "&:hover": { backgroundColor: "#00b0b6" },
+            }}
+          >
+            Change Password
+          </Button>
 
           {/* Notification */}
           {notification && (
@@ -173,6 +218,22 @@ const ChangePassword = () => {
           )}
         </Paper>
       </Container>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
