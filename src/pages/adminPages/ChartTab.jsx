@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
-import { CircularProgress, Alert, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { CircularProgress, Alert, Select, MenuItem, FormControl, InputLabel, Button, Box } from '@mui/material';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { API_BASE_URL } from '../../utils/constants';
+import * as XLSX from 'xlsx';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -12,7 +13,7 @@ const ChartTab = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const [selectedType, setSelectedType] = useState('users'); // Thêm state cho loại dữ liệu
+    const [selectedType, setSelectedType] = useState('users');
 
     const handleYearChange = (event) => {
         setSelectedYear(event.target.value);
@@ -29,15 +30,13 @@ const ChartTab = () => {
                 const response = await axios.get(`${API_BASE_URL}/stats/bar-chart?year=${selectedYear}&type=${selectedType}`);
                 const data = response.data.data;
 
-                // Tạo nhãn cho biểu đồ
                 const labels = Array.from({ length: 12 }, (_, i) => `Tháng ${i + 1}`);
-                const counts = Array(12).fill(0); // Khởi tạo mảng 12 tháng với giá trị 0
+                const counts = Array(12).fill(0);
 
-                // Điền dữ liệu vào mảng counts
                 data.forEach(item => {
-                    const monthIndex = item._id - 1; // Chuyển đổi ID tháng sang chỉ số (0-11)
+                    const monthIndex = item._id - 1;
                     if (monthIndex >= 0 && monthIndex < 12) {
-                        counts[monthIndex] = item.count; // Gán giá trị count cho tháng tương ứng
+                        counts[monthIndex] = item.count;
                     }
                 });
 
@@ -45,7 +44,7 @@ const ChartTab = () => {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Số lượng người dùng',
+                            label: `Number of ${selectedType}`,
                             data: counts,
                             backgroundColor: 'rgba(75, 192, 192, 0.6)',
                         },
@@ -60,7 +59,19 @@ const ChartTab = () => {
         };
 
         fetchChartData();
-    }, [selectedYear, selectedType]); // Gọi lại API khi năm hoặc loại được chọn thay đổi
+    }, [selectedYear, selectedType]);
+
+    const exportToExcel = () => {
+        const ws = XLSX.utils.json_to_sheet(chartData.datasets[0].data.map((count, index) => ({
+            Month: chartData.labels[index],
+            Count: count
+        })));
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Chart Data');
+
+        XLSX.writeFile(wb, `ChartData_${selectedType}_${selectedYear}.xlsx`);
+    };
 
     if (loading) {
         return (
@@ -74,33 +85,38 @@ const ChartTab = () => {
         return <Alert severity="error">{error}</Alert>;
     }
 
-    // Tính toán các năm từ năm hiện tại - 10 đến năm hiện tại
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 5 }, (_, index) => currentYear - 4 + index);
-
-    // Danh sách loại dữ liệu
-    const types = ['users', 'organizations', 'certificates','enrollments', 'bundles', 'courses']; // Thay đổi danh sách loại tùy theo yêu cầu
+    const types = ['users', 'organizations', 'certificates', 'enrollments', 'bundles', 'courses'];
 
     return (
         <div>
-            <h1>Biểu đồ số lượng {selectedType} theo tháng</h1>
-            <FormControl variant="outlined" style={{ marginBottom: '20px', width: '150px' }}>
-                <InputLabel>Năm</InputLabel>
-                <Select value={selectedYear} onChange={handleYearChange} label="Năm">
-                    {years.map((year) => (
-                        <MenuItem key={year} value={year}>{year}</MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <FormControl variant="outlined" style={{ marginBottom: '20px', width: '150px' }}>
-                <InputLabel>Loại</InputLabel>
-                <Select value={selectedType} onChange={handleTypeChange} label="Loại">
-                    {types.map((type) => (
-                        <MenuItem key={type} value={type}>{type}</MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-            <Bar data={chartData} options={{ responsive: true }} />
+            <h1>Monthly {selectedType} Count Chart</h1>
+            <Box display="flex" alignItems="center" marginBottom="20px">
+                <FormControl variant="outlined" style={{ marginRight: '20px', width: '150px' }}>
+                    <InputLabel>Năm</InputLabel>
+                    <Select value={selectedYear} onChange={handleYearChange} label="Năm">
+                        {years.map((year) => (
+                            <MenuItem key={year} value={year}>{year}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl variant="outlined" style={{ marginRight: '20px', width: '150px' }}>
+                    <InputLabel>Loại</InputLabel>
+                    <Select value={selectedType} onChange={handleTypeChange} label="Loại">
+                        {types.map((type) => (
+                            <MenuItem key={type} value={type}>{type}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <Button variant="contained" onClick={exportToExcel}>
+                    Export Excel
+                </Button>
+            </Box>
+
+            <div style={{ marginTop: '20px' }}>
+                <Bar data={chartData} options={{ responsive: true }} />
+            </div>
         </div>
     );
 };

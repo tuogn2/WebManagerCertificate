@@ -13,7 +13,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@fontsource/roboto": "^5.0.14",
-    "@mui/icons-material": "^5.16.6",
+    "@mui/icons-material": "^6.1.6",
     "@mui/material": "^6.1.6",
     "@mui/styled-engine": "^6.1.1",
     "@mui/system": "^6.1.6",
@@ -34,7 +34,8 @@
     "react-spinners": "^0.14.1",
     "react-toastify": "^10.0.5",
     "redux-persist": "^6.0.0",
-    "web3": "^4.12.1"
+    "web3": "^4.12.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

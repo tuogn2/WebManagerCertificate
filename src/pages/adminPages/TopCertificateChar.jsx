@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import { CircularProgress, Alert, FormControl, Select, MenuItem, Button, Box } from '@mui/material';
 import { API_BASE_URL } from '../../utils/constants';
+import * as XLSX from 'xlsx';
 
 const TopCertificateChar = () => {
     const [chartData, setChartData] = useState({});
@@ -21,7 +22,6 @@ const TopCertificateChar = () => {
                 
             const response = await axios.get(endpoint);
             const data = response.data.topCertificates;
-            
 
             // Create labels and data for the chart
             const labels = data.map(item => item.title);
@@ -63,6 +63,18 @@ const TopCertificateChar = () => {
         setSelectedType(type);
     };
 
+    const exportToExcel = () => {
+        const ws = XLSX.utils.json_to_sheet(chartData.datasets[0].data.map((count, index) => ({
+            Title: chartData.labels[index],
+            Count: count,
+        })));
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Top Certificates');
+
+        XLSX.writeFile(wb, `TopCertificates_${selectedType}_${month}_${year}.xlsx`);
+    };
+
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -82,8 +94,10 @@ const TopCertificateChar = () => {
             },
         },
     };
- const currentYear = new Date().getFullYear();
+
+    const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 5 }, (_, index) => currentYear - 4 + index); 
+
     return (
         <div>
             <h2>Top Enrollment</h2>
@@ -99,9 +113,9 @@ const TopCertificateChar = () => {
                 </FormControl>
                 <FormControl variant="outlined" style={{ marginRight: '10px', minWidth: 120 }}>
                     <Select value={year} onChange={handleYearChange}>
-                    {years.map((year) => (
-                        <MenuItem key={year} value={year}>{year}</MenuItem>
-                    ))}
+                        {years.map((year) => (
+                            <MenuItem key={year} value={year}>{year}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
 
@@ -121,6 +135,13 @@ const TopCertificateChar = () => {
                         Bundles
                     </Button>
                 </div>
+                <Button 
+                    variant="contained" 
+                    onClick={exportToExcel} 
+                    style={{ marginLeft: '20px' }} // Add margin for spacing
+                >
+                    Export to Excel
+                </Button>
             </Box>
 
             <Bar data={chartData} options={options} />

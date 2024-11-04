@@ -4,6 +4,7 @@ import axios from 'axios';
 import { CircularProgress, Alert, FormControl, Select, MenuItem, Button, Box } from '@mui/material';
 import { API_BASE_URL } from '../../utils/constants';
 import { useSelector } from 'react-redux';
+import * as XLSX from 'xlsx';
 
 const StatsOr = () => {
     const [chartData, setChartData] = useState({});
@@ -64,6 +65,18 @@ const StatsOr = () => {
         setSelectedType(type);
     };
 
+    const handleExportToExcel = () => {
+        const ws = XLSX.utils.json_to_sheet(
+            chartData.labels.map((label, index) => ({
+                Title: label,
+                Enrollments: chartData.datasets[0].data[index]
+            }))
+        );
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Enrollments');
+        XLSX.writeFile(wb, `TopEnrollments_${selectedType}_${month}-${year}.xlsx`);
+    };
+
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -83,8 +96,10 @@ const StatsOr = () => {
             },
         },
     };
- const currentYear = new Date().getFullYear();
+ 
+    const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 5 }, (_, index) => currentYear - 4 + index); 
+
     return (
         <div>
             <h2>Top Enrollment</h2>
@@ -110,18 +125,21 @@ const StatsOr = () => {
                     <Button 
                         variant={selectedType === 'course' ? 'contained' : 'outlined'} 
                         onClick={() => handleTypeChange('course')}
-                        style={{ padding: '10px 20px' }} // Add padding for better size
+                        style={{ padding: '10px 20px' }}
                     >
                         Courses
                     </Button>
                     <Button 
                         variant={selectedType === 'bundle' ? 'contained' : 'outlined'} 
                         onClick={() => handleTypeChange('bundle')}
-                        style={{ padding: '10px 20px' }} // Add padding for better size
+                        style={{ padding: '10px 20px' }}
                     >
                         Bundles
                     </Button>
                 </div>
+                <Button variant="contained" color="primary" onClick={handleExportToExcel} style={{ marginLeft: '20px' }}>
+                    Export to Excel
+                </Button>
             </Box>
 
             <Bar data={chartData} options={options} />
