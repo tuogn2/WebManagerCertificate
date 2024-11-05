@@ -23,6 +23,7 @@ import ChangePassword from "../pages/ChangePassword";
 import ProtectedRoute from "../components/ProtectedRoute"; // Import ProtectedRoute
 import SearchPage from "../pages/SearchPage";
 import ShowCourseCertificate from "../pages/ShowCourseCertificate";
+import Stats from "../pages/Stats";
 const Routes = () => {
   return useRoutes([
     {
@@ -48,6 +49,11 @@ const Routes = () => {
       path: "/course/:id/learn",
       element: <ProtectedRoute allowedRoles={["customer"]} />,
       children: [{ path: "", element: <LearnCourse /> }],
+    },
+    {
+      path: "/stats/:id",
+      element: <ProtectedRoute allowedRoles={["customer"]} />,
+      children: [{ path: "", element: <Stats /> }],
     },
     // User routes (accessible to authenticated users)
     {

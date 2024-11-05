@@ -50,7 +50,7 @@ const settings = [
   "Profile",
   "Setting",
   "Accomplishments",
-  "Help Center",
+  "Stats",
   "Logout",
 ];
 
@@ -89,6 +89,8 @@ function Header() {
       navigate("/my-learning");
     } else if (setting === "Accomplishments") {
       navigate("/accomplishments");
+    } else if (setting === "Stats") {
+      navigate(`/stats/${user._id}`);
     } else if (setting === "Logout") {
       dispatch(logoutUser());
       dispatch(clearWallet());

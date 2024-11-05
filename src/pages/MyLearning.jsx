@@ -32,17 +32,24 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const MyLearning = () => {
-  const [tabValue, setTabValue] = useState(0); // 0: All, 1: Courses, 2: Bundles
+  const [tabValue, setTabValue] = useState(0); // 0: All, 1: Courses, 2: Bundles, 3: Starred
   const [anchorEl, setAnchorEl] = useState(null);
   const [sortOption, setSortOption] = useState(""); // Sort options: "", "alphabetical", "enrolledAt", "completed"
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const [enrollments, setEnrollment] = useState([]);
+  const [starredEnrollments, setStarredEnrollments] = useState([]); // State for starred enrollments
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     fetchEnrolledCourses();
   }, []);
+
+  useEffect(() => {
+    if (tabValue === 3) {
+      fetchStarredEnrollments(); // Fetch starred enrollments when "Starred" tab is selected
+    }
+  }, [tabValue]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -71,6 +78,17 @@ const MyLearning = () => {
     }
   };
 
+  const fetchStarredEnrollments = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/v1/stats/user-stats/${user._id || user.id}`
+      );
+      setStarredEnrollments(response.data.starredEnrollments || []); // Adjust this based on your API response structure
+    } catch (error) {
+      console.error("Error fetching starred enrollments: ", error);
+    }
+  };
+
   const sortEnrollments = (enrollments) => {
     let sortedEnrollments = [...enrollments];
     switch (sortOption) {
@@ -88,12 +106,12 @@ const MyLearning = () => {
         break;
       case "completed":
         sortedEnrollments = sortedEnrollments.filter(
-          (enrollment) => enrollment.completed ===true
+          (enrollment) => enrollment.completed === true
         );
         break;
-        case "uncompleted":
+      case "uncompleted":
         sortedEnrollments = sortedEnrollments.filter(
-          (enrollment) => enrollment.completed ===false
+          (enrollment) => enrollment.completed === false
         );
         break;
       default:
@@ -103,12 +121,17 @@ const MyLearning = () => {
   };
 
   const renderTabContent = () => {
-    const filteredEnrollments =
-      tabValue === 0
-        ? enrollments // All
-        : tabValue === 1
-          ? enrollments.filter((enrollment) => enrollment.bundle === undefined) // Courses
-          : enrollments.filter((enrollment) => enrollment.bundle !== undefined); // Bundles
+    let filteredEnrollments = [];
+
+    if (tabValue === 0) {
+      filteredEnrollments = enrollments; // All
+    } else if (tabValue === 1) {
+      filteredEnrollments = enrollments.filter((enrollment) => enrollment.bundle === undefined); // Courses
+    } else if (tabValue === 2) {
+      filteredEnrollments = enrollments.filter((enrollment) => enrollment.bundle !== undefined); // Bundles
+    } else if (tabValue === 3) {
+      filteredEnrollments = starredEnrollments; // Starred
+    }
 
     const sortedEnrollments = sortEnrollments(filteredEnrollments);
 
@@ -205,20 +228,17 @@ const MyLearning = () => {
                     Enrolled on:{" "}
                     {new Date(enrollment.enrolledAt).toLocaleDateString()}
                   </Typography>
-                  <Typography variant="body2" color={enrollment.completed ? "green" : "red"}>
+                  <Typography
+                    variant="body2"
+                    color={enrollment.completed ? "green" : "red"}
+                  >
                     {enrollment.completed ? "Completed" : "Not Completed"}
                   </Typography>
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleMenuClose}
-                  >
+                  <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
                     <MenuItem onClick={handleMenuClose}>Option 1</MenuItem>
                     <MenuItem onClick={handleMenuClose}>Option 2</MenuItem>
                     <MenuItem onClick={handleMenuClose}>Option 3</MenuItem>
                   </Menu>
-
-                 
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -262,38 +282,31 @@ const MyLearning = () => {
                 backgroundColor: "white",
                 display: "flex",
                 alignItems: "center",
-                p: 2,
+                p: 1,
               }}
             >
               <Tabs
                 value={tabValue}
                 onChange={handleTabChange}
-                aria-label="Learning Tabs"
-                indicatorColor="primary"
-                textColor="primary"
-                variant="scrollable"
-                scrollButtons="auto"
+                variant="fullWidth"
               >
                 <Tab label="All" />
                 <Tab label="Courses" />
                 <Tab label="Bundles" />
               </Tabs>
-              <FormControl sx={{ ml: 2, minWidth: 120 }}>
+              <FormControl sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel>Sort By</InputLabel>
-                <Select
-                  value={sortOption}
-                  onChange={handleSortChange}
-                  label="Sort By"
-                >
-                  <MenuItem value="">None</MenuItem>
+                <Select value={sortOption} onChange={handleSortChange}>
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
                   <MenuItem value="alphabetical">Alphabetical</MenuItem>
                   <MenuItem value="enrolledAt">Enrolled Date</MenuItem>
                   <MenuItem value="completed">Completed</MenuItem>
-                  <MenuItem value="uncompleted">Dont completed</MenuItem>
+                  <MenuItem value="uncompleted">Uncompleted</MenuItem>
                 </Select>
               </FormControl>
             </Box>
-
             {renderTabContent()}
           </Paper>
         </Container>
