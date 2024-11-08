@@ -33,10 +33,6 @@ const Login = ({ open, onClose }) => {
   const navigate = useNavigate();
   const { user, loading, error } = useSelector((state) => state.auth);
 
-
-
-
-
   useEffect(() => {
     dispatch(clearError()); // Xóa lỗi khi trang Login được mở
   }, [dispatch]);
@@ -134,7 +130,11 @@ const Login = ({ open, onClose }) => {
             ),
           }}
         />
-        <Link href="#" variant="body2">
+        <Link
+          href="#"
+          variant="body2"
+          onClick={() => navigate("/forgot-password")}
+        >
           Forgot password?
         </Link>
         <Button
