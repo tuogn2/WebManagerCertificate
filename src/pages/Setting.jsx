@@ -18,7 +18,6 @@ import {
   Typography,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
-import PaymentIcon from "@mui/icons-material/Payment";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -26,7 +25,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
-import ForgotPassword from "./ForgotPassword";
 import { logoutUser } from "../store/slices/authSlice";
 
 const Setting = () => {
@@ -96,13 +94,14 @@ const Setting = () => {
   const handleListItemClick = (section) => {
     setSelectedSection(section);
   };
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   // Function to handle account deletion
   const handleCloseAccount = async () => {
     const data = await axios.delete(`${API_BASE_URL}/users/${user._id}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Thêm token vào headers
-      },});
+      },
+    });
     if (data.status === 200) {
       alert("Account deleted successfully");
       dispatch(logoutUser());
