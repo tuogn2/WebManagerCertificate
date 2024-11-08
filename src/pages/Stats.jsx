@@ -13,19 +13,20 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { API_BASE_URL } from '../utils/constants';
+import { useSelector } from 'react-redux';
 
 const Stats = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Use the useNavigate hook for navigation
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/v1/stats/user-stats/66eb0cf6172bfb1dad6476d6');
+        const response = await axios.get(`${API_BASE_URL}/stats/user-stats/${user._id}`);
         setStats(response.data);
       } catch (err) {
         setError(err.message);

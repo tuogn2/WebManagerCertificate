@@ -35,6 +35,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useDispatch, useSelector } from "react-redux";
 import { API_BASE_URL } from "../utils/constants";
 import { updateUser } from "../store/slices/authSlice";
+import {isBirthdate,isTenDigitNumber} from "../regex/regex";
+import { toast } from "react-toastify";
 
 const UserProfile = () => {
   const dispatch = useDispatch(); // Get the dispatch function
@@ -81,7 +83,6 @@ const UserProfile = () => {
       });
   };
 
-  console.log("List certificates: ", certificates);
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
@@ -118,10 +119,15 @@ const UserProfile = () => {
     fileInputRef.current.click();
   };
 
+  
   // Handle profile update (with file upload)
   const handleProfileUpdate = async () => {
     const formData = new FormData();
     if (user.birthday !== undefined) {
+      if(!isBirthdate(user.birthday)){
+        toast.error("Birthday must be before today");
+        return;
+      }
       formData.append("birthday", user.birthday);
     }
     if (user.address !== undefined) {
@@ -130,6 +136,10 @@ const UserProfile = () => {
     formData.append("name", user.name);
     formData.append("email", user.email);
     if (user.numberphone !== undefined) {
+      if(!isTenDigitNumber(user.numberphone)){
+        toast.error("Phone number must be 10 digits");
+        return;
+      }
       formData.append("numberphone", user.numberphone);
     }
 
@@ -157,16 +167,17 @@ const UserProfile = () => {
         dispatch(updateUser(response.data));
 
         // Update snackbar state and open it
-        setSnackbarMessage("User updated successfully!");
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true); // Add this to open the snackbar
+        toast.success("User updated successfully!");
+        // setSnackbarMessage("User updated successfully!");
+        // setSnackbarSeverity("success");
+        // setSnackbarOpen(true); // Add this to open the snackbar
         setOpenModal(false);
       }
     } catch (error) {
       console.error("Error updating user:", error);
-      setSnackbarMessage("Failed to update user.");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
+     toast.error("An error occurred");
+      // setSnackbarSeverity("error");
+      // setSnackbarOpen(true);
     }
   };
 
