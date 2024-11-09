@@ -44,7 +44,6 @@ const Accomplishments = () => {
         setLoading(false);
       })
       .catch((error) => {
-        setError(error);
         setLoading(false);
       });
   }, []);
