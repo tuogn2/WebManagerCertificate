@@ -25,6 +25,7 @@ import {
 import PropTypes from "prop-types";
 import { API_BASE_URL } from "../../utils/constants";
 import axios from "axios";
+import {isEmail, isWalletAddress} from '../../regex/regex';
 
 // Tab panel component
 function TabPanel(props) {
@@ -112,7 +113,18 @@ export default function OrganizationPage() {
   };
   const token = localStorage.getItem('token');
   const handleUpdate = async () => {
+
+    if(!isWalletAddress(selectedOrganization.walletaddress)){
+      setError("Invalid wallet address");
+      return;
+    }
+    if(!isEmail(selectedOrganization.email)){
+      setError("Invalid email");
+      return;
+    }
+
     const formData = new FormData();
+
     formData.append("name", selectedOrganization.name);
     formData.append("address", selectedOrganization.address);
     formData.append("walletaddress", selectedOrganization.walletaddress);
@@ -167,11 +179,12 @@ export default function OrganizationPage() {
   const handleDeleteConfirm = async () => {
     try {
       await axios.put(
-        `${API_BASE_URL}/organization/${selectedOrganization._id}/activate`, {
+        `${API_BASE_URL}/organization/${selectedOrganization._id}/activate`,{}, {
           headers: {
-            Authorization: `Bearer ${token}`, // Thêm token vào headers
+            Authorization: `Bearer ${token}`, 
           },}
       );
+      
       setOrganizations((prevOrganizations) =>
         prevOrganizations.filter((org) => org._id !== selectedOrganization._id)
       );
@@ -220,6 +233,13 @@ export default function OrganizationPage() {
       setErrorSnackbar(true);
       return;
     }
+
+    if(!isWalletAddress(organization.walletaddress)){
+      setError("Invalid wallet address");
+      return;
+    }
+
+
 
     try {
       const formData = new FormData();

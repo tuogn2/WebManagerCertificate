@@ -84,7 +84,7 @@ export default function CoursePage() {
           params: { page, limit: 6 }, // Thêm tham số phân trang
         }
       );
-      
+      console.log(response.data);
       // Kiểm tra nếu không có khóa học
       if (response.data.message === "No courses found for this organization") {
         setCourses([]); // Cập nhật courses là mảng rỗng nếu không tìm thấy khóa học
@@ -92,7 +92,7 @@ export default function CoursePage() {
         return; // Không tiếp tục thực hiện các thao tác khác
       }
   
-      setCourses(response.data.courses);
+      setCourses(response?.data?.courses);
       setTotalPages(response.data.totalPages); // Cập nhật tổng số trang
     } catch (error) {
       // Kiểm tra nếu lỗi không phải là 'No courses found'
@@ -107,7 +107,7 @@ export default function CoursePage() {
       setLoading(false);
     }
   };
-  
+ 
 
   const handleSearch = async () => {
     if (!searchTerm) {
@@ -120,7 +120,7 @@ export default function CoursePage() {
       const response = await axios.get(`${API_BASE_URL}/course/search`, {
         params: { query: searchTerm },
       });
-      setCourses(response.data);
+      setCourses(response.data.courses);
       setTotalPages(1); // Reset total pages when searching
       setPage(1); // Reset to the first page
     } catch (error) {
@@ -214,7 +214,7 @@ export default function CoursePage() {
           </Box>
         ) : (
           <Grid container spacing={3}>
-            {courses.map((course) => (
+            {courses && courses.map((course) => (
               <Grid item xs={12} sm={6} md={4} key={course._id}>
                 <Card
                   sx={{

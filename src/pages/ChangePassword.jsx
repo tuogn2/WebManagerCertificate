@@ -24,7 +24,8 @@ const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [retypePassword, setRetypePassword] = useState("");
   const [isResetButtonEnabled, setIsResetButtonEnabled] = useState(false);
-  const [notification, setNotification] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState("");
+  const [retypePasswordError, setRetypePasswordError] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -47,16 +48,18 @@ const ChangePassword = () => {
       newPassword === retypePassword;
     setIsResetButtonEnabled(isValid);
 
-    if (!newPassword || !retypePassword) {
-      setNotification("Password fields cannot be empty.");
+    // Set validation messages for each input
+    setNewPasswordError("");
+    setRetypePasswordError("");
+    if (!newPassword) {
+      setNewPasswordError("Password cannot be empty.");
     } else if (!passwordRegex.test(newPassword)) {
-      setNotification(
+      setNewPasswordError(
         "Password must be at least 8 characters long, include one uppercase letter, one special character, and one number."
       );
-    } else if (newPassword !== retypePassword) {
-      setNotification("Passwords do not match.");
-    } else {
-      setNotification("");
+    }
+    if (newPassword !== retypePassword && retypePassword) {
+      setRetypePasswordError("Passwords do not match.");
     }
   }, [newPassword, retypePassword]);
 
@@ -100,7 +103,6 @@ const ChangePassword = () => {
         );
 
         if (response.status === 200) {
-          console.log("Password changed successfully:", response.data);
           setSnackbarMessage("Password changed successfully!");
           setSnackbarSeverity("success");
           dispatch(logoutUser());
@@ -110,12 +112,10 @@ const ChangePassword = () => {
         } else {
           setSnackbarMessage("Error changing password. Please try again.");
           setSnackbarSeverity("error");
-          console.error("Error changing password:", response.data);
         }
       } catch (error) {
         setSnackbarMessage("Error changing password. Please try again.");
         setSnackbarSeverity("error");
-        console.error("Error changing password:", error);
       } finally {
         setSnackbarOpen(true);
       }
@@ -140,14 +140,22 @@ const ChangePassword = () => {
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
-          background: "linear-gradient(135deg, highlight 30%, blue 90%)",
+          background: "linear-gradient(135deg, #1e90ff 30%, #00bfff 90%)",
+          maxWidth: '500px', // Restrict container width
+          px: 4, // Padding for better responsiveness
         }}
       >
         <Paper
           elevation={6}
-          sx={{ p: 4, borderRadius: 4, textAlign: "center" }}
+          sx={{
+            width: '100%',
+            maxWidth: '450px', // Fixed width for the Paper component
+            p: 4,
+            borderRadius: 4,
+            textAlign: "center",
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Enhanced shadow
+          }}
         >
-          {/* Back Button */}
           <IconButton
             sx={{ position: "absolute", top: 16, left: 16 }}
             onClick={() => navigate("/forgot-password")}
@@ -155,16 +163,14 @@ const ChangePassword = () => {
             <ArrowBackIcon />
           </IconButton>
 
-          {/* Logo */}
           <Box mb={2}>
             <img
-              src={logo} // Replace with your logo URL
+              src={logo}
               alt="Logo"
               style={{ borderRadius: "5%", width: 50, height: 50 }}
             />
           </Box>
 
-          {/* Title */}
           <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
             Change password
           </Typography>
@@ -172,7 +178,6 @@ const ChangePassword = () => {
             Enter your new password to access your courses and certificates.
           </Typography>
 
-          {/* New password Input */}
           <TextField
             fullWidth
             placeholder="New password"
@@ -180,9 +185,14 @@ const ChangePassword = () => {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            error={!!newPasswordError}
           />
+          {newPasswordError && (
+            <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+              {newPasswordError}
+            </Typography>
+          )}
 
-          {/* Retype new password */}
           <TextField
             label="Retype new password"
             variant="outlined"
@@ -190,8 +200,14 @@ const ChangePassword = () => {
             fullWidth
             value={retypePassword}
             onChange={(e) => setRetypePassword(e.target.value)}
+            error={!!retypePasswordError}
             sx={{ mt: 2 }}
           />
+          {retypePasswordError && (
+            <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+              {retypePasswordError}
+            </Typography>
+          )}
 
           <Divider sx={{ my: 2 }} />
 
@@ -209,17 +225,9 @@ const ChangePassword = () => {
           >
             Change Password
           </Button>
-
-          {/* Notification */}
-          {notification && (
-            <Typography variant="body2" color="error" sx={{ mt: 2 }}>
-              {notification}
-            </Typography>
-          )}
         </Paper>
       </Container>
 
-      {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

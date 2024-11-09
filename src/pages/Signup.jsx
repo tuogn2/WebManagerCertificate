@@ -17,7 +17,7 @@ import axios from "axios"; // Import axios
 import { API_BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../store/slices/authSlice";
-import {isEmail } from "../regex/regex";
+import {isEmail ,isValidPassword} from "../regex/regex";
 import { toast } from "react-toastify";
 
 const Signup = ({ open, onClose }) => {
@@ -33,8 +33,8 @@ const Signup = ({ open, onClose }) => {
         toast.error("Invalid email");
         return;
       }
-      if(password.length < 6){
-        toast.error("Password must be at least 6 characters");
+      if (!isValidPassword(password)) {
+        toast.error("password must be at least 8 characters long, include one uppercase letter, one special character, and one number.");
         return;
       }
       const response = await axios.post(`${API_BASE_URL}/auth/signup`, {

@@ -19,6 +19,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../utils/constants";
 import logo from "../assets/logo.png";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -65,16 +66,11 @@ const ForgotPassword = () => {
         }
       );
       setVerificationCode(response.data.code); // Assuming the server returns the code in response.data.code
-      console.log("Token: ", token);
-      console.log("Verification code sent:", response.data.code);
-      setSnackbarMessage("Verification code sent successfully!");
-      setSnackbarSeverity("success");
+     toast.success("Verification code sent successfully");
     } catch (err) {
-      console.error("Error sending verification code:", err);
-      setSnackbarMessage("Error sending verification code.");
-      setSnackbarSeverity("error");
+      toast.error("Failed to send verification code");
     } finally {
-      setSnackbarOpen(true);
+      // setSnackbarOpen(true);
     }
   };
 
@@ -85,16 +81,14 @@ const ForgotPassword = () => {
   };
 
   const handleVerifyCode = () => {
-    console.log("Entered code:", enteredCode);
-    console.log("Verification code:", verificationCode);
     if (enteredCode == verificationCode) {
-      setNotification("Verification code is correct!");
+      toast.success("Verification code is correct");
       // Redirect to the reset password page
       navigate(
         `/change-password?email=${encodeURIComponent(emailToSend || emailNew)}`
       );
     } else {
-      setNotification("Verification code is incorrect. Please try again.");
+      toast.error("Verification code is incorrect");
     }
   };
 

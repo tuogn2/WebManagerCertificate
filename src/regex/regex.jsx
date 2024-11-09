@@ -13,19 +13,24 @@ export const isTenDigitNumber = (text) => {
 
 // Hàm kiểm tra ngày sinh (định dạng DD/MM/YYYY hoặc YYYY-MM-DD)
 export const isBirthdate = (text) => {
-    // Kiểm tra định dạng ISO 8601 (YYYY-MM-DDTHH:MM:SS.SSSZ)
-    const pattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
-    if (!regex(pattern, text)) {
+    // Kiểm tra định dạng YYYY-MM-DD
+    const pattern = /^\d{4}-\d{2}-\d{2}$/;
+    if (!pattern.test(text)) {
         return false;
     }
 
-    // Chuyển đổi chuỗi ngày thành đối tượng Date
-    const birthDate = new Date(text);
+    // Chuyển chuỗi thành đối tượng Date
+    const inputDate = new Date(text);
+    //ngày hiện tại
     const today = new Date();
 
-    // So sánh ngày sinh với ngày hiện tại
-    return birthDate < today;
+    // Đặt thời gian của ngày hôm nay về đầu ngày để so sánh chính xác
+    today.setHours(0, 0, 0, 0);
+
+    // Kiểm tra nếu inputDate là một ngày hợp lệ và trước ngày hôm nay
+    return !isNaN(inputDate) && inputDate < today;
 };
+
 
 
 // Hàm kiểm tra giá khóa học (phải là số dương, không âm)
@@ -46,10 +51,16 @@ export const isEmail = (text) => {
     return regex(pattern, text);
 };
 
+
+
+export const isValidPassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+};
 export default {
     isTenDigitNumber,
     isBirthdate,
     isCoursePricePositive,
     isWalletAddress,
-    isEmail
+    isEmail,isValidPassword
 };

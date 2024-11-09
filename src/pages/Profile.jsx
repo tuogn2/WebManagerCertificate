@@ -124,6 +124,7 @@ const UserProfile = () => {
   const handleProfileUpdate = async () => {
     const formData = new FormData();
     if (user.birthday !== undefined) {
+      console.log(user.birthday);
       if(!isBirthdate(user.birthday)){
         toast.error("Birthday must be before today");
         return;

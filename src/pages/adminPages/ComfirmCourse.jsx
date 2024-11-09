@@ -124,20 +124,20 @@ const ConfirmCourse = () => {
                     overflow: "hidden",
                   }}
                 >
-                  {course.image && (
+                  
                     <Box
                       component="img"
-                      src={course.image}
-                      alt={course.title}
+                      src={course?.image}
+                      alt={course?.title}
                       sx={{
                         width: "100%",
-                        height: "auto",
-                        maxHeight: "150px",
+                        height: "150px", // Fixed height to reserve space
                         objectFit: "cover",
                         borderRadius: "4px",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     />
-                  )}
                   <Typography
                     variant="h6"
                     sx={{

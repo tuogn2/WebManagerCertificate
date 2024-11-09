@@ -21,6 +21,7 @@ import { updateUser } from "../../store/slices/authSlice";
 import axios from "axios";
 import { API_BASE_URL } from "../../utils/constants";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { isBirthdate, isEmail, isTenDigitNumber, isValidPassword } from "../../regex/regex";
 
 export default function SettingPage() {
   const dispatch = useDispatch();
@@ -77,6 +78,29 @@ export default function SettingPage() {
   };
 
   const handleSaveChanges = async () => {
+
+    if(isEmail(adminDetails.email) === false){
+      setSnackbarMessage("Invalid email address.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setOpenConfirmSave(false); // Close dialog
+      return;
+    }
+    if(isTenDigitNumber(adminDetails.numberphone) === false){
+      setSnackbarMessage("Phone number must contain exactly 10 digits.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setOpenConfirmSave(false); // Close dialog
+      return;
+    }
+    if(isBirthdate(adminDetails.birthday) === false){
+      setSnackbarMessage("birthday must be in the past.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setOpenConfirmSave(false); // Close dialog
+      return;
+    }
+
     try {
       const response = await axios.put(`${API_BASE_URL}/users/change-infor/${user._id || user.id}`, adminDetails, {
         headers: {
@@ -98,12 +122,25 @@ export default function SettingPage() {
   };
 
   const handleChangePassword = async () => {
+
+
+    if(isValidPassword(passwordDetails.newPassword) === false){
+      setSnackbarMessage("Password must contain at least 8 characters, including uppercase, lowercase, number and special character.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setOpenConfirmChangePassword(false); // Close dialog
+      return;
+    }
+
+
     if (passwordDetails.newPassword !== passwordDetails.confirmNewPassword) {
       setSnackbarMessage("New passwords do not match.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+      setOpenConfirmChangePassword(false); // Close dialog
       return;
     }
+
 
     try {
       const response = await axios.put(`${API_BASE_URL}/users/change-password/${user._id || user.id}`, {

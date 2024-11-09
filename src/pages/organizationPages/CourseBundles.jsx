@@ -116,7 +116,11 @@ const CourseBundles = () => {
         );
         toast.success("Cập nhật bundle khóa học thành công!");
       } else {
-        await axios.post(`${API_BASE_URL}/coursebundles`, data);
+        await axios.post(`${API_BASE_URL}/coursebundles`, data,{
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào headers
+          },
+        });
         toast.success("Tạo bundle khóa học thành công!");
       }
       resetForm();
@@ -202,7 +206,6 @@ const CourseBundles = () => {
   if (loading) {
     return <CircularProgress />;
   }
-  console.log(courses);
   return (
     <Container sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>

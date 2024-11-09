@@ -16,11 +16,12 @@ import axios from "axios";
 import { API_BASE_URL } from "../../utils/constants";
 import { useRef } from "react";
 import { useSelector } from "react-redux";
-
+import { toast } from "react-toastify";
+import { isCoursePricePositive } from "../../regex/regex";
 function AddCoursePage() {
   const inputFileRef = useRef(null);
   const { user } = useSelector((state) => state.auth);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const [course, setCourse] = useState({
     title: "",
     description: "",
@@ -108,6 +109,21 @@ function AddCoursePage() {
     e.preventDefault();
 
     try {
+      if (
+        course.title === "" ||
+        course.description === "" ||
+        course.price === 0 ||
+        course.documents.length === 0 ||
+        course.finalQuiz.questions.length === 0
+      ) {
+        toast.error("Please fill all fields");
+        return;
+      }
+      if(isCoursePricePositive(course.price) === false){
+        toast.error("Price must be a positive number");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("title", course.title);
       formData.append("description", course.description);
@@ -126,13 +142,13 @@ function AddCoursePage() {
       const response = await axios.post(`${API_BASE_URL}/course/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.status === 201) {
         console.log("Course submitted:", response.data);
-        alert("Course submitted for admin review!");
+        toast.success("Course submitted successfully");
         // Clear the form after submission
         setCourse({
           title: "",
@@ -164,7 +180,7 @@ function AddCoursePage() {
       }
     } catch (error) {
       console.error("Failed to submit course:", error);
-      alert("Failed to submit course. Please try again.");
+      toast.error("Failed to submit course");
     }
   };
 

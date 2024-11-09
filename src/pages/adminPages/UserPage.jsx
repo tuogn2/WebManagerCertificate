@@ -21,7 +21,7 @@ import { API_BASE_URL } from "../../utils/constants";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import {isBirthdate, isEmail, isTenDigitNumber} from '../../regex/regex';
 const UserPage = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -94,18 +94,32 @@ const UserPage = () => {
       if (isEditing) {
         // Append user data to FormData only if they are defined
         if (selectedUser.name) {
+        
           formData.append("name", selectedUser.name);
         }
         if (selectedUser.email) {
+          if(!isEmail(selectedUser.email)){
+            toast.error("Email is invalid");
+            return;
+          }
           formData.append("email", selectedUser.email);
         }
         if (selectedUser.numberphone) {
+          if(!isTenDigitNumber(selectedUser.numberphone)){
+            toast.error("Phone number must be 10 digits");
+            return;
+          }
           formData.append("numberphone", selectedUser.numberphone);
         }
         if (selectedUser.address) {
           formData.append("address", selectedUser.address);
         }
         if (selectedUser.birthday) {
+          console.log(selectedUser.birthday);
+          if(!isBirthdate(selectedUser.birthday)){
+            toast.error("Birthday must to be before today");
+            return;
+          }
           formData.append("birthday", selectedUser.birthday);
         }
         if (avatarFile) {

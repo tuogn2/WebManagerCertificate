@@ -17,6 +17,7 @@ import { API_BASE_URL } from "../../utils/constants";
 import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { isValidPassword, isWalletAddress } from "../../regex/regex";
 
 const SettingPage = () => {
   const { user } = useSelector((state) => state.auth);
@@ -83,6 +84,15 @@ const SettingPage = () => {
     setError(null);
 
     const formData = new FormData();
+
+    if(isWalletAddress(organization.walletaddress) === false){
+      toast.error("Wallet Address is invalid");
+      setSaving(false);
+      return;
+    }
+
+
+
     formData.append("name", organization.name);
     formData.append("address", organization.address);
     formData.append("email", organization.email);
@@ -115,6 +125,12 @@ const SettingPage = () => {
       return;
     }
 
+    if(isValidPassword(newPassword) === false){
+      toast.error("Password must contain at least 8 characters, 1 uppercase letter, 1 number and 1 special character");
+      return;
+    }
+
+
     try {
       const response = await axios.put(`${API_BASE_URL}/organization/${user.id || user._id}/change-password`, {
         oldPassword,
@@ -130,7 +146,7 @@ const SettingPage = () => {
       toast.success("Password changed successfully!");
     } catch (error) {
       console.error("Error changing password:", error);
-      toast.error("Failed to change password");
+      toast.error(error.response.data.message || "Failed to change password");
     }
   };
 
