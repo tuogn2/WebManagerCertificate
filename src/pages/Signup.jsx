@@ -47,6 +47,7 @@ const Signup = ({ open, onClose }) => {
       console.log("Signup successful:", response.data);
       // Redirect or perform any action upon successful signup
       dispatch(updateUser(response.data.user));
+      localStorage.setItem("token", response.data.token);
       navigate('/');
     } catch (error) {
       // Handle errors
