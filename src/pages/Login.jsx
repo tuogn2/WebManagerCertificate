@@ -39,7 +39,8 @@ const Login = ({ open, onClose }) => {
   useEffect(() => {
     if (user && user.role === "admin") {
       navigate("/admin-home");
-    } else if (user && user.role === "customer") navigate("/");
+    } else if (user && user.role === "customer") 
+      navigate("/");
     else if (user && user.role === "organization")
       navigate("/organization-home");
   }, [user, navigate]);
@@ -80,11 +81,14 @@ const Login = ({ open, onClose }) => {
 
       if (response.data && response.data.token) {
         // Lưu thông tin người dùng và token
+        
+
         dispatch(updateUser(response.data.user));
         localStorage.setItem("token", response.data.token);
 
         // Điều hướng sang trang tương ứng dựa trên vai trò của người dùng
         navigate("/"); // Thay đổi tùy vào logic của bạn
+
         toast.success("Google login successful");
       } else {
         throw new Error("Login failed: No token received");

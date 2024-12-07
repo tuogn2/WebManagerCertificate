@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { API_BASE_URL } from "../../utils/constants";
 import CourseDetailsModal from "../../components/CourseDetailsModal";
+import { toast } from "react-toastify";
 
 const ConfirmCourse = () => {
   const [courses, setCourses] = useState([]);
@@ -55,19 +56,25 @@ const ConfirmCourse = () => {
     setSelectedCourse(null);
     setModalOpen(false);
   };
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const handleApprove = async (courseId) => {
     try {
-      await axios.put(`${API_BASE_URL}/course/${courseId}/activate`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Thêm token vào headers
-        },});
+      await axios.put(
+        `${API_BASE_URL}/course/${courseId}/activate`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm token vào headers
+          },
+        }
+      );
+      toast.success("Course approved successfully!");
+
       setCourses(courses.filter((course) => course._id !== courseId));
     } catch (error) {
       console.error("Error approving course:", error);
     }
   };
-
   const handleRejectOpen = (courseId) => {
     setCourseToReject(courseId);
     setDialogOpen(true);
@@ -84,8 +91,10 @@ const ConfirmCourse = () => {
         await axios.delete(`${API_BASE_URL}/course/${courseToReject}`, {
           headers: {
             Authorization: `Bearer ${token}`, // Thêm token vào headers
-          },});
+          },
+        });
         setCourses(courses.filter((course) => course._id !== courseToReject));
+        toast.success("Rejected successfully!");
       }
     } catch (error) {
       console.error("Error rejecting course:", error);
@@ -124,20 +133,19 @@ const ConfirmCourse = () => {
                     overflow: "hidden",
                   }}
                 >
-                  
-                    <Box
-                      component="img"
-                      src={course?.image}
-                      alt={course?.title}
-                      sx={{
-                        width: "100%",
-                        height: "150px", // Fixed height to reserve space
-                        objectFit: "cover",
-                        borderRadius: "4px",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
+                  <Box
+                    component="img"
+                    src={course?.image}
+                    alt={course?.title}
+                    sx={{
+                      width: "100%",
+                      height: "150px", // Fixed height to reserve space
+                      objectFit: "cover",
+                      borderRadius: "4px",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  />
                   <Typography
                     variant="h6"
                     sx={{

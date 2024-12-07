@@ -26,7 +26,7 @@ import { useSelector } from "react-redux";
 import CourseDetailsModal from "../../components/CourseDetailsModal";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 
 // Tab panel component
 function TabPanel(props) {
@@ -91,7 +91,7 @@ export default function CoursePage() {
         setTotalPages(0); // Đặt tổng số trang về 0
         return; // Không tiếp tục thực hiện các thao tác khác
       }
-  
+
       setCourses(response?.data?.courses);
       setTotalPages(response.data.totalPages); // Cập nhật tổng số trang
     } catch (error) {
@@ -107,7 +107,6 @@ export default function CoursePage() {
       setLoading(false);
     }
   };
- 
 
   const handleSearch = async () => {
     if (!searchTerm) {
@@ -151,13 +150,14 @@ export default function CoursePage() {
     setCourseToDelete(courseId);
     setConfirmDeleteOpen(true);
   };
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const confirmDelete = async () => {
     try {
       await axios.delete(`${API_BASE_URL}/course/${courseToDelete}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Thêm token vào headers
-        },});
+        },
+      });
       toast.success("Course deleted successfully!");
       setCourses(courses.filter((course) => course._id !== courseToDelete));
     } catch (error) {
@@ -182,30 +182,6 @@ export default function CoursePage() {
         </Tabs>
       </Box>
 
-      {/* Search Input */}
-      <Box sx={{ mt: 2, display: "flex", alignItems: "center" }}>
-        <TextField
-          label="Search Courses"
-          variant="outlined"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ flexGrow: 1, mr: 2 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <Button variant="contained" onClick={handleSearch}>
-          Search
-        </Button>
-        <Button variant="outlined" onClick={handleRefresh} sx={{ ml: 2 }}>
-          Refresh
-        </Button>
-      </Box>
-
       {/* View Courses Tab */}
       <TabPanel value={value} index={0}>
         {loading ? (
@@ -213,80 +189,108 @@ export default function CoursePage() {
             <CircularProgress />
           </Box>
         ) : (
+          <>{/* Search Input */}
+            <Box sx={{ mt: 2,mb:3, display: "flex", alignItems: "center" }}>
+              <TextField
+                label="Search Courses"
+                variant="outlined"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                sx={{ flexGrow: 1, mr: 2 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button variant="contained" onClick={handleSearch}>
+                Search
+              </Button>
+              <Button variant="outlined" onClick={handleRefresh} sx={{ ml: 2 }}>
+                Refresh
+              </Button>
+            </Box>
           <Grid container spacing={3}>
-            {courses && courses.map((course) => (
-              <Grid item xs={12} sm={6} md={4} key={course._id}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    boxShadow: 4,
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                      boxShadow: 8,
-                    },
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={course.image}
-                    alt={course.title}
-                    sx={{ borderRadius: "4px 4px 0 0" }}
-                  />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
-                      {course.title}
-                      <span
-                        style={{
-                          color: course.isActive ? "green" : "red",
-                          marginLeft: "10px",
-                        }}
-                      >
-                        {course.isActive ? " (Approved)" : " (Pending Approval)"}
-                      </span>
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mb: 2 }}
-                    >
-                      {course.description}
-                    </Typography>
-                  </CardContent>
-                  <Box
+          
+
+            {courses &&
+              courses.map((course) => (
+                <Grid item xs={12} sm={6} md={4} key={course._id}>
+                  <Card
                     sx={{
+                      height: "100%",
                       display: "flex",
+                      flexDirection: "column",
                       justifyContent: "space-between",
-                      alignItems: "center",
-                      p: 2,
-                      borderTop: "1px solid #e0e0e0",
+                      boxShadow: 4,
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                        boxShadow: 8,
+                      },
                     }}
                   >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      onClick={() => handleOpenModal(course)}
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={course.image}
+                      alt={course.title}
+                      sx={{ borderRadius: "4px 4px 0 0" }}
+                    />
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography variant="h6" fontWeight="bold" gutterBottom>
+                        {course.title}
+                        <span
+                          style={{
+                            color: course.isActive ? "green" : "red",
+                            marginLeft: "10px",
+                          }}
+                        >
+                          {course.isActive
+                            ? " (Approved)"
+                            : " (Pending Approval)"}
+                        </span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                      >
+                        {course.description}
+                      </Typography>
+                    </CardContent>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        p: 2,
+                        borderTop: "1px solid #e0e0e0",
+                      }}
                     >
-                      View Course
-                    </Button>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      color="error"
-                      onClick={() => handleDelete(course._id)}
-                    >
-                      Delete
-                    </Button>
-                  </Box>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => handleOpenModal(course)}
+                      >
+                        View Course
+                      </Button>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(course._id)}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  </Card>
+                </Grid>
+              ))}
+          </Grid></>
         )}
 
         {/* Pagination */}
