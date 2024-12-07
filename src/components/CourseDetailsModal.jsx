@@ -51,7 +51,7 @@ function CourseDetailsModal({ modalOpen, handleCloseModal, selectedCourse }) {
               Description: {selectedCourse.description}
             </Typography>
             <Typography variant="body1">
-              Price: ${selectedCourse.price}
+              Price: {selectedCourse.price} ETH
             </Typography>
             <Typography variant="body1">
               Organization: {selectedCourse.organization.name}

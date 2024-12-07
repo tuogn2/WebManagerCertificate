@@ -14,7 +14,7 @@ import { API_BASE_URL } from "../../utils/constants.jsx";
 // Modify your thunk in courseSlice
 export const getAllCourses = createAsyncThunk(
   "courses/getAllCourses",
-  async (limit = 12, { getState }) => {
+  async (limit = 6, { getState }) => {
     const { courses } = getState().courses;
     const offset = courses.length; // Calculate the offset based on current courses length
     const response = await axios.get(

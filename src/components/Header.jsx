@@ -234,7 +234,7 @@ function Header() {
                 }}
                 onClick={() => navigate("/")}
               />
-              <Typography sx={{ cursor: "pointer" }}>M-Certificate</Typography>
+              <Typography sx={{ cursor: "pointer" }}>CERT-SMART</Typography>
             </Box>
           </Box>
 

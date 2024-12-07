@@ -20,12 +20,13 @@ import { API_BASE_URL } from "../utils/constants";
 import NotFound from "./NotFound";
 import getCertificatesByStudentId from "../utils/getCertificatesByStudentId";
 import Loading from "../components/Loading";
+import NotOnBlockchain from "./NotOnBlockchain";
 
 const ShowCourseCertificate = () => {
   const { id } = useParams();
   const [user, setUser] = useState({});
   const [certificate, setCertificate] = useState({});
-  // const [certificateExists, setCertificateExists] = useState(false);
+  const [certificateExists, setCertificateExists] = useState(false);
   const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
@@ -41,47 +42,47 @@ const ShowCourseCertificate = () => {
           `${API_BASE_URL}/users/${certResponse.data.user._id}`
         );
         setUser(userResponse.data);
-        // const additionalCertificates = await getCertificatesByStudentId(
-        //   certResponse.data.user._id
-        // );
-        // console.log("Additional certificates:", additionalCertificates);
-        // const duplicateExists = additionalCertificates.data.some((cert) => {
-        //   console.log(
-        //     "Checking:",
-        //     cert.certificateId,
-        //     certResponse.data.certificateId
-        //   );
-        //   return cert.certificateId === certResponse.data.certificateId;
-        // });
-        // setCertificateExists(duplicateExists);
+        const additionalCertificates = await getCertificatesByStudentId(
+          certResponse.data.user._id
+        );
+        console.log("Additional certificates:", additionalCertificates);
+        const duplicateExists = additionalCertificates.data.some((cert) => {
+          console.log(
+            "Checking:",
+            cert.certificateId,
+            certResponse.data.certificateId
+          );
+          return cert.certificateId === certResponse.data.certificateId;
+        });
+        setCertificateExists(duplicateExists);
       } catch (error) {
         console.error("Error fetching data:", error);
-      }finally {
+      } finally {
         setLoading(false); // Set loading to false after API calls are done
-    }
+      }
     };
 
     fetchCertificate();
   }, [id]);
 
+  console.log("Certificate:", certificateExists);
 
   if (loading) {
-    return <Loading/>
-}
+    return <Loading />;
+  }
 
   if (!certificate.course && !certificate.bundle) {
     return <NotFound />;
   }
 
- 
+  
   if (!user._id) {
     return <NotFound />;
   }
-  // if (certificateExists ===false) {
-  //   return <> blockchain nothave</>
-  // }
-
-  // Function to format date safely
+  if (certificateExists === false) {
+     return <NotOnBlockchain/>
+  }
+  
   const formatDate = (dateString) => {
     if (!dateString) return "Date not available"; // Handle missing date
     const date = new Date(dateString);

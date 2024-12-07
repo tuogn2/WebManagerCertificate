@@ -12,24 +12,36 @@ import {
   IconButton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { API_BASE_URL } from "../utils/constants.jsx";
 
 function Search() {
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchResults, setSearchResults] = useState({ courses: [], bundles: [] });
+  const [searchResults, setSearchResults] = useState({
+    courses: [],
+    bundles: [],
+  });
   const [searchError, setSearchError] = useState(null);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const searchRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation(); // Hook để lấy URL hiện tại
 
   const [recentSearches, setRecentSearches] = useState([]);
 
   useEffect(() => {
     // Load recent searches from localStorage
-    const storedSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+    const storedSearches =
+      JSON.parse(localStorage.getItem("recentSearches")) || [];
     setRecentSearches(storedSearches);
-  }, []);
+
+    // Cập nhật `query` từ tham số URL (nếu có)
+    const urlParams = new URLSearchParams(location.search);
+    const queryFromURL = urlParams.get("query");
+    if (queryFromURL) {
+      setQuery(queryFromURL);
+    }
+  }, [location.search]);
 
   const handleSearchChange = async (event) => {
     const query = event.target.value;
@@ -58,15 +70,15 @@ function Search() {
   const handleSearchClick = () => {
     if (query.trim()) {
       // Check if the query already exists in recentSearches
-      let updatedSearches = recentSearches.filter(search => search !== query);
-  
+      let updatedSearches = recentSearches.filter((search) => search !== query);
+
       // Add the query to the top of the list
       updatedSearches = [query, ...updatedSearches].slice(0, 3);
-  
+
       // Save the updated searches to localStorage
-      localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+      localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
       setRecentSearches(updatedSearches);
-  
+
       // Navigate to the search page
       navigate(`/search?query=${encodeURIComponent(query)}`);
     }
@@ -89,6 +101,7 @@ function Search() {
         placeholder="What do you want to learn?"
         autoComplete="off"
         variant="outlined"
+        value={query} // Hiển thị giá trị query trong thanh tìm kiếm
         onFocus={() => setShowSuggestions(true)}
         onBlur={(event) => {
           if (!searchRef.current?.contains(event.relatedTarget)) {
@@ -135,6 +148,8 @@ function Search() {
             borderRadius: "10px",
             padding: "10px",
             boxShadow: 3,
+            maxHeight: 400, 
+            overflowY: 'auto', 
           }}
           tabIndex={-1}
         >
@@ -148,7 +163,9 @@ function Search() {
                   fontWeight: "bold",
                 }}
               >
-                {searchError ? "Error fetching search results" : "Search Results"}
+                {searchError
+                  ? "Error fetching search results"
+                  : ""}
               </ListSubheader>
             }
           >
@@ -160,9 +177,17 @@ function Search() {
               <>
                 {searchResults.courses.map((course) => (
                   <ListItemButton
+                    sx={{
+                      userSelect: "none",
+                      color: "black",
+                      fontWeight: "bold",
+                    }}
                     key={course._id}
                     alignItems="center"
-                    onClick={() => navigate(`/course/${course._id}`)}
+                    onClick={() => {
+                      navigate(`/course/${course._id}`);
+                      setShowSuggestions(false);
+                    }}
                   >
                     <ListItemAvatar>
                       <Avatar src={course.image} />
@@ -172,9 +197,17 @@ function Search() {
                 ))}
                 {searchResults.bundles.map((bundle) => (
                   <ListItemButton
+                    sx={{
+                      userSelect: "none",
+                      color: "black",
+                      fontWeight: "bold",
+                    }}
                     key={bundle._id}
                     alignItems="center"
-                    onClick={() => navigate(`/bundle/${bundle._id}`)}
+                    onClick={() => {
+                      navigate(`/bundle/${bundle._id}`);
+                      setShowSuggestions(false);
+                    }}
                   >
                     <ListItemAvatar>
                       <Avatar src={bundle.image} />

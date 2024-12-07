@@ -87,7 +87,7 @@ const CourseDetail = () => {
         const amount =
           course.price === 0
             ? 0.000000001
-            : (course.price / 100000).toFixed(18);
+            : (course.price).toFixed(18);
         const walletOr =
           course.organization.walletaddress ||
           "0x6087050c4069ab730d872e625E035A8fd8DeD600";
@@ -171,7 +171,7 @@ const CourseDetail = () => {
                 >
                   <Box>
                     <Typography variant="h6">Details</Typography>
-                    <Typography>Price: ${course.price}</Typography>
+                    <Typography>Price: {course.price} ETH</Typography>
                     <Typography>
                       Participants: {course.participantsCount}
                     </Typography>
