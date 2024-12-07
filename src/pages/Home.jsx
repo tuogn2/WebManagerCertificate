@@ -22,7 +22,6 @@ import {
 import Loading from "../components/Loading";
 import Banner from "../components/Banner";
 import CourseList from "../components/CourseList";
-import CourseBundles from "../../../rush/WebManagerCertificate/src/pages/organizationPages/CourseBundles";
 import CourseBundleList from "../components/CourseBundleList";
 
 const Home = () => {
