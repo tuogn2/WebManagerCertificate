@@ -53,6 +53,7 @@ const CourseBundles = () => {
       const response = await axios.get(
         `${API_BASE_URL}/coursebundles/${user.id || user._id}`
       );
+      console.log(response.data);
       setCourseBundles(response.data);
     } catch (error) {
       console.error("Có lỗi khi lấy danh sách bundle khóa học!", error);
@@ -65,7 +66,7 @@ const CourseBundles = () => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/course/organization/${user.id || user._id}`
+          `${API_BASE_URL}/course/organization/${user.id || user._id}?full=true`
         );
         setCourses(response.data.courses);
       } catch (error) {
@@ -258,6 +259,7 @@ const CourseBundles = () => {
               sx={{ mb: 2 }}
             />
             <FormControl fullWidth required sx={{ mb: 2 }}>
+            
               <InputLabel>Khóa Học</InputLabel>
               <Select
                 multiple
