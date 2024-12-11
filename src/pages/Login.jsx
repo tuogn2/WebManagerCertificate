@@ -53,8 +53,10 @@ const Login = ({ open, onClose }) => {
 
   // Set default values
   useEffect(() => {
-    setEmail("tranhuy12072003@gmail.com");
-    setPassword("123456789");
+    setEmail("");
+    setPassword("");
+    // setEmail("tranhuy12072003@gmail.com");
+    // setPassword("123456789");
   }, []);
 
   const handleLogin = () => {

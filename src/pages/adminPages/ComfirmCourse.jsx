@@ -18,6 +18,7 @@ import { API_BASE_URL } from "../../utils/constants";
 import CourseDetailsModal from "../../components/CourseDetailsModal";
 import { toast } from "react-toastify";
 
+
 const ConfirmCourse = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
